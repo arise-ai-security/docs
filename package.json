@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/arise-ai-security/docs.git"
   },
-  "homepage": "https://arise-ai-security.github.io/",
+  "homepage": "https://arise-ai-security.github.io/docs",
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",

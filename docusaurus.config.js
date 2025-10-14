@@ -5,7 +5,7 @@ const config = {
   favicon: "img/favicon.ico",
 
   url: "https://arise-ai-security.github.io",
-  baseUrl: "/",
+  baseUrl: "/docs/",
 
   organizationName: "arise-ai-security", // GitHub org/user name
   projectName: "docs", // GitHub repo name
