@@ -14,9 +14,9 @@ hide_title: true
 ### API's and Architecture
 
 ### Theory
-- **[Overview](sec-bench/theory/overview)** - Framework overview and key contributions
-- **[SEC-Bench Method](sec-bench/theory/secbench-method)** - Detailed methodology of SEC-Bench
-- **[Evaluation and Findings](sec-bench/theory/evaluation-findings)** - Evaluation methodology
+- **[Overview](theory/overview)** - Framework overview and key contributions
+- **[SEC-Bench Method](theory/secbench-method)** - Detailed methodology of SEC-Bench
+- **[Evaluation and Findings](theory/evaluation-findings)** - Evaluation methodology
 
 ### Experiments
 
