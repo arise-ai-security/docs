@@ -14,7 +14,7 @@ hide_title: true
 ### API's and Architecture
 
 ### Theory
-- **[Overview](sec-bench/theory/overview)** - Framework overview and key contributions
+- **[Overview](theory/overview)** - Framework overview and key contributions
 
 ### Experiments
 
