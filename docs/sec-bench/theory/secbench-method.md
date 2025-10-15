@@ -74,8 +74,35 @@ Let agents to create a working PoC for a known vulnerability, given only a basic
 ### Vulnerability Patching
 Let agents create security fixes for known vulnerabilities given a vulnerability description, access to the codebase, and a working PoC. This evaluates an agent’s capacity to understand root causes and create reliable security patches. The multi-stage evaluation process first applies the generated patch, then compiles the patched code to ensure successful project build, and finally executes the original PoC against the patched codebase to confirm mitigation. Success requires meeting two criteria: a valid patch that compiles correctly and prevents the sanitizer from reporting the vulnerability.
 
-## Success Metric
+## Success Metrics
+### Verifier Success Metrics
+The average success rates of the builder, exploiter, and fixer agents are 81.7%, 39.4%, and 69.2%, respectively across projects, including `gpac`, `imagemagick`, `mruby`, etc. Builder, exploiter, and fixer are executed sequentially, meaning that if the previous agent fails, the next agent will not be executed. 
 
-## Input Construction
+**The building step** is the easiest, as project documentation is usually well-structured and actively maintained. The builder can readily understand the project structure and build the project. 
+
+**The exploiter step** is the most difficult and has the lowest success rate because PoCs are not always provided in bug reports, and when available, the information can be inaccurate or obsolete. In such cases, the exploiter agent must understand the bug reports and generate the PoC from scratch. 
+
+**The fixer step** is also challenging, as there may be multiple candidate commits to fix the vulnerability. The fixer agent needs to understand all commits and generate a unified patch. Even worse, official fix commits can sometimes introduce new vulnerabilities, further complicating the generation of a reliable patch.
+
+### Evaluator Success Metrics
+More information about the evaluation results can be found in the [Evaluation and Findings](evaluation-findings) section.
 
 ## Quality Checks
+The team uses manual inspections to concentrate on the quality of bug reports and patches, to reflect the real-world scenarios.
+
+### Bug Report Quality
+To prevent agents directly copying the patch from the GitHub Issues, all bug reports are inspected and directly provided patches are removed while preserving essential context.
+
+### Patch Quality
+#### Round 1
+Manually validate agent-generated patches by reviewing patch content and comparing with
+official patches, to ensure that patches do not simply remove vulnerable code without proper fixes.
+#### Round 2
+Verify patch applicability and vulnerability resolution. A patch is considered correct if: 
+1. the PoC triggers sanitizer errors at the base commit;
+2. the patch applies successfully to the base commit;
+3. the PoC fails to trigger sanitizer errors at the patched commit.
+#### Round 3
+Manually adjust base commits for problematic instances. 
+1. Locate official patch commits from the [NVD database](https://nvd.nist.gov/) and iterate backwards from patch commits to base commits. 
+2. For each commit, verify Round 2 above. Commits satisfying 3 conditions become new base commits.
