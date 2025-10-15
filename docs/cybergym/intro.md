@@ -9,7 +9,7 @@ hide_title: true
 
 > A Realistic Large-Scale Benchmark for AI Cybersecurity Capabilities
 
-CyberGym is a benchmark designed to evaluate AI agents' ability to identify and exploit real-world cybersecurity vulnerabilities. Based on the research paper [arxiv.org/abs/2506.02548](https://arxiv.org/abs/2506.02548).
+CyberGym is a benchmark designed to evaluate AI agents' ability to identify and exploit real-world cybersecurity vulnerabilities. Based on the [research paper](https://arxiv.org/abs/2506.02548).
 
 ## 🚀 Quick Start
 
