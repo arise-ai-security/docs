@@ -85,6 +85,7 @@ const sidebars = {
           items: [
             'sec-bench/theory/overview',
             'sec-bench/theory/secbench-method',
+            'sec-bench/theory/evaluation-findings',
           ],
         },
       ],

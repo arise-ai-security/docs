@@ -25,7 +25,7 @@ const config = {
         docs: {
           routeBasePath: "/", // This makes docs the root
           sidebarPath: require.resolve("./sidebars.js"),
-          editUrl: "https://github.com/arise-ai-security/docs/tree/main/docs/",
+          editUrl: "https://github.com/arise-ai-security/docs/tree/main/",
         },
         blog: false,
         theme: {
