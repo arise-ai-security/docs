@@ -17,7 +17,7 @@ We review contemporary research papers and projects in the field of cybersecurit
 - **[CyberGym Overview](cybergym/)** - Comprehensive CyberGym Overview.
 
 #### SEC-Bench
-- **[SEC-Bench Overview](secbench/)** - Comprehensive SEC-Bench Overview.
+- **[SEC-Bench Overview](sec-bench/)** - Comprehensive SEC-Bench Overview.
 
 #### FaultLine
 - **[FaultLine Overview](faultline/)** - Comprehensive FaultLine Overview.
