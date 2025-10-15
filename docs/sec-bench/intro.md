@@ -15,6 +15,8 @@ hide_title: true
 
 ### Theory
 - **[Overview](theory/overview)** - Framework overview and key contributions
+- **[SEC-Bench Method](theory/secbench-method)** - Detailed methodology of SEC-Bench
+- **[Evaluation and Findings](theory/evaluation-findings)** - Evaluation methodology
 
 ### Experiments
 
