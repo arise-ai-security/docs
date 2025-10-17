@@ -36,6 +36,8 @@ CyberGym is a benchmark designed to evaluate AI agents' ability to identify and 
 - **[PoC Generation with Codex](experiments/codex)** - End-to-end PoC generation process using the `codex` engine
 - **[PoC Generation with Enigma](experiments/enigma)** - End-to-end PoC generation process using the `enigma` engine
 - **[PoC Generation with OpenHands](experiments/openhands)** - End-to-end PoC generation process using the `openhands` engine
+- **[PoC Generation Process](experiments/poc-generation)** - High-level overview of the PoC generation process
+- **[PoC Verification](experiments/poc-verification)** - PoC verification process function calls and details
 
 ## 🔗 Links
 
