@@ -1,5 +1,5 @@
 ---
-slug: /reviews
+slug: /reviews/
 title: Reviews Overview
 sidebar_position: 1
 hide_title: true
