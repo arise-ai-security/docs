@@ -471,54 +471,6 @@ Same as Arvo containers:
 3. Handle exit code 137 (SIGKILL) as timeout
 4. Cleanup container with context manager
 
-
-## Error Handling and Logging
-
-### Exception Hierarchy
-
-The system uses custom exceptions for precise error handling:
-
-1. **CyberGymException** (Base)
-   - `AuthenticationException` (401)
-   - `RecordNotFoundException` (404)
-   - `ValidationException` (400)
-   - `DatabaseException` (500)
-   - `FileNotFoundException` (500)
-   - `FileWriteException` (500)
-   - `ContainerExecutionException` (500)
-   - `ContainerTimeoutException` (500)
-   - `ChecksumException` (400)
-
-### Logging Strategy
-
-Each layer logs at appropriate levels:
-
-1. **Entry Point** (`verify_all_pocs_for_agent_id`)
-   - `INFO`: Start and completion messages
-   - `DEBUG`: PoC IDs being verified
-   - `WARNING`: Failed PoCs
-   - `ERROR`: Exception details
-
-2. **Execution Layer** (`run_poc_id`, `run_container`)
-   - `INFO`: Major operations (running vul/fix checks)
-   - `DEBUG`: File paths, skip reasons
-   - `ERROR`: File system and container errors
-
-3. **Container Layer** (`run_arvo_container`, `run_oss_fuzz_container`)
-   - `INFO`: Container start with parameters
-   - `DEBUG`: Container IDs, output sizes, image names
-   - `WARNING`: Timeouts
-   - `ERROR`: Docker API errors
-
-### Logging Context
-
-All log messages include relevant context:
-```python
-logger.info(f"Running arvo container: arvo_id={arvo_id}, mode={mode}")
-logger.debug(f"Container started: {active_container.short_id}")
-logger.debug(f"Collected {len(docker_output)} bytes of output")
-```
-
 ### Post-Processing
 
 ```python

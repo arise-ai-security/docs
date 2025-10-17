@@ -8,7 +8,7 @@ This page provides a high-level overview of how Proof-of-Concept (PoC) exploits 
 
 ## Overview
 
-The PoC generation process is an iterative, AI-driven approach where an LLM-powered agent autonomously explores a cybersecurity challenge environment, analyzes vulnerabilities, and attempts to generate exploits. The agent operates within a sandboxed environment with access to Linux command-line tools and follows a structured reasoning framework.
+The PoC generation process is an iterative process that operates within a sandboxed Docker environment with access to Linux command-line tools and follows a structured reasoning framework.
 
 ## Generation Process
 
@@ -16,7 +16,7 @@ The PoC generation process is an iterative, AI-driven approach where an LLM-powe
 The generation process begins with:
 - Creating an isolated Docker container environment based on the specified engine (e.g., `cybench`)
 - Setting up temporary directories for inputs and logs
-- Initializing the working directory (`/tmp/cyber-bench`) where the agent operates
+- Initializing the working directory (`/tmp/cyber-bench`) where the agent is allowed to operate
 - Providing the agent with the necessary files and challenge description
 
 ### 2. Agent Configuration
@@ -30,10 +30,9 @@ The AI agent is configured with:
 The agent receives:
 - A challenge description explaining the objective (generate an exploit PoC)
 - Initial files including `README.md` with instructions and `submit.sh` for submission
-- Information about target files (e.g., `repo-vul.tar.gz` containing vulnerable source code, `description.txt` with vulnerability details)
-- Submission format and success criteria
+- Prompt the agent with "you do not know anything about this problem so far."
 
-### 4. Iterative Reasoning Framework
+### 4. Iterative Reasoning Framework With Required Response Format
 For each iteration, the agent follows a structured response format:
 
 1. **Reflection**: Analyzes previous observations, errors, and their causes
@@ -45,7 +44,10 @@ For each iteration, the agent follows a structured response format:
 4. **Log**: Maintains an enumerated list of executed commands with concise conclusions
 5. **Command**: Provides a single executable command to gather information or make progress
 
-### 5. Progressive Exploration
+### 5. Example Iteration Response
+Provide some examples to help agent follow the instructions.
+
+### 6. Progressive Exploration
 The agent systematically:
 - Enumerates files and directories to understand the challenge structure
 - Extracts and analyzes target program source code
@@ -54,12 +56,13 @@ The agent systematically:
 - Develops and tests exploit strategies
 - Creates PoC files (binary or text inputs) designed to trigger vulnerabilities
 
-### 6. PoC Submission
+### 7. PoC Submission
 Once the agent generates a candidate exploit:
 - The PoC is saved as a file in the working directory
 - The agent executes `bash submit.sh /path/to/poc` to submit the exploit
 - The submission system validates whether the PoC successfully triggers the vulnerability
 - Success results in capturing a flag (format: `flag{****************}`)
+- Please check [PoC Verification Page](poc-verification.md) page for more details.
 
 ## Key Characteristics
 
@@ -83,22 +86,6 @@ Once the agent generates a candidate exploit:
 - Revisits and updates the research plan based on new information
 - Attempts alternative approaches when blocked
 
-## Limitations and Challenges
-
-As illustrated in the example case:
-- The agent may encounter missing files or incomplete challenge setups
-- Limited iterations can prevent solving complex challenges
-- The agent must work with available information and tools
-- Success depends on the LLM's ability to reason about security vulnerabilities
-
-## Success Metrics
-
-A successful PoC generation results in:
-- A valid exploit file that triggers the target vulnerability
-- Successful submission via the verification system
-- Capture of the challenge flag
-- Complete documentation of the generation process in logs
-
 ## Output and Logging
 
 The system generates comprehensive logs including:
@@ -107,5 +94,3 @@ The system generates comprehensive logs including:
 - All executed commands and their outputs
 - Final status (success or failure)
 - Timestamped execution records for analysis
-
-This structured approach enables systematic evaluation of AI agents' capabilities in cybersecurity tasks and provides insights into their reasoning processes when generating exploits.
