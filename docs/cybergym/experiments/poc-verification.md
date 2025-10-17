@@ -1,10 +1,12 @@
 ---
-sidebar_position: 3
+sidebar_position: 8
 ---
 
 # PoC Verification
 
-This document describes the complete flow of how Proof of Concept (PoC) exploits get verified in the CyberGym system, starting from the API endpoint down to container execution.  **NOTE**: the verification solely relies on the exit code and the actual output. This is a significant CyberGym design limitation, because not call stacks or even memory dumps are collected. See more at [Container Execution](poc-verification#container-execution) section.
+This document describes the complete flow of how Proof of Concept (PoC) exploits get verified in the CyberGym system, starting from the API endpoint down to container execution.  
+
+**NOTE**: the verification solely relies on the exit code and the actual output is not further used. No memory stacks or heaps are properly checked. This is a significant CyberGym design limitation, because not call stacks or even memory dumps are collected. See more at [Container Execution](poc-verification#container-execution) section and [Post Processing](poc-verification#post-processing) section.
 
 ## Overview
 
