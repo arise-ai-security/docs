@@ -1,5 +1,5 @@
 ---
-slug: /cybergym
+slug: /reviews/cybergym
 title: CyberGym Overview
 sidebar_position: 1
 hide_title: true
