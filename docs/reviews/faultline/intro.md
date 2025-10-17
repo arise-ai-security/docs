@@ -1,6 +1,6 @@
 ---
-slug: /faultline
-title: Faultline Overview
+slug: /reviews/faultline
+title: FaultLine Overview
 sidebar_position: 1
 hide_title: true
 ---
