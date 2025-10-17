@@ -10,20 +10,20 @@ This is a documentation site for ARiSE Lab's cybersecurity research projects, fo
 
 ## 📚 Documentations
 
-### Agentic Research Reviews
+### [Agentic Research Reviews](reviews/)
 We review contemporary research papers and projects in the field of cybersecurity and LLM, providing insights and analyses.
 
 #### CyberGym
-- **[CyberGym Overview](cybergym/)** - Comprehensive CyberGym Overview.
+- **[CyberGym Overview](reviews/cybergym/)** - Comprehensive CyberGym Overview.
 
 #### SEC-Bench
-- **[SEC-Bench Overview](sec-bench/)** - Comprehensive SEC-Bench Overview.
+- **[SEC-Bench Overview](reviews/sec-bench/)** - Comprehensive SEC-Bench Overview.
 
 #### FaultLine
-- **[FaultLine Overview](faultline/)** - Comprehensive FaultLine Overview.
+- **[FaultLine Overview](reviews/faultline/)** - Comprehensive FaultLine Overview.
 
 #### CVE-Bench
-- **[CVE-Bench Overview](cve-bench/)** - Comprehensive CVE-Bench Overview.
+- **[CVE-Bench Overview](reviews/cve-bench/)** - Comprehensive CVE-Bench Overview.
 
 ## 🥰 Members
 - **[In Keun Kim]** - Description

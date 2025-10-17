@@ -1,5 +1,5 @@
 ---
-slug: /sec-bench
+slug: /reviews/sec-bench
 title: SEC-Bench Overview
 sidebar_position: 1
 hide_title: true
