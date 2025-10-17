@@ -69,6 +69,8 @@ const sidebars = {
             'cybergym/experiments/codex',
             'cybergym/experiments/enigma',
             'cybergym/experiments/openhands',
+            'cybergym/experiments/poc-generation',
+            'cybergym/experiments/poc-verification',
           ],
         },
       ],
