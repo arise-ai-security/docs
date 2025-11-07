@@ -1,5 +1,5 @@
 const config = {
-  title: "CyberGym",
+  title: "ARiSE Docs",
   tagline:
     "A Realistic Large-Scale Benchmark for AI Cybersecurity Capabilities",
   favicon: "img/favicon.ico",
