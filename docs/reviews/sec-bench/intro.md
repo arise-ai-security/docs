@@ -20,7 +20,7 @@ SEC-Bench is a benchmark designed to evaluate AI agents' ability to identify and
 - **[Evaluation and Findings](theory/evaluation-findings)** - Evaluation methodology
 
 ### Experiments
-- **[SEC-Verifier](sec-verifier)** - Framework overview and reproduction guide.
+- **[SEC-Verifier](sec-verifier/)** - Framework overview and reproduction guide.
 
 ## 🔗 Links
 
