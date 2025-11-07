@@ -9,6 +9,8 @@ hide_title: true
 SEC-Verifier is the backbone of the multi-agent stage of the Sec-bench. In this part, we will illustrate how to run the builder agent, exploiter agent, and fixer agent on open-source GitHub repositories.
 
 ## Getting Started
+- **[Installation](getting-started/installation)** - Prerequisites for SEC-Verifier.
+- **[Reproduction](getting-started/reproduction)** - SEC-Verifier Reproductions using GPT-4o and CVE.
 
 ### API's and Architecture
 
