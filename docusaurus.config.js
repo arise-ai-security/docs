@@ -86,12 +86,16 @@ const config = {
                 to: "/weekly/week3-2025-10-17",
               },
               {
-                label: "Week 4 (2025-10-31)",
-                to: "/weekly/week4-2025-10-31",
+                label: "Week 4 (2025-10-24)",
+                to: "/weekly/week4-2025-10-24",
               },
               {
-                label: "Week 5 (2025-11-07)",
-                to: "/weekly/week5-2025-11-07",
+                label: "Week 5 (2025-10-31)",
+                to: "/weekly/week5-2025-10-31",
+              },
+              {
+                label: "Week 6 (2025-11-07)",
+                to: "/weekly/week6-2025-11-07",
               },
               // Add more weekly reports here
             ],
