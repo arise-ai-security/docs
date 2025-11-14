@@ -97,6 +97,14 @@ const config = {
                 label: "Week 6 (2025-11-07)",
                 to: "/weekly/week6-2025-11-07",
               },
+              {
+                label: "Week 7 (2025-11-14)",
+                to: "/weekly/week7-2025-11-14",
+              },
+              {
+                label: "Brainstorming Session (2025-11-07)",
+                to: "/weekly/brainstorming/brainstorming-2025-11-07",
+              }
               // Add more weekly reports here
             ],
           },
