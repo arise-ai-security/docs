@@ -2,6 +2,8 @@
 
 Research ideas and potential improvements for the SecVerifier multi-agent vulnerability reproduction system.
 
+- Writen by In Keun Kim
+
 ---
 
 ## Possible Enhancements
