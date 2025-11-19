@@ -28,18 +28,13 @@ Each node in the tree represents an agent with the following attributes:
 
 ### Agent Node Actions
 Each agent node acts in accordance with the following workflow:
-1. **Analyze Objective:** 
+1. **Analyze Objective:** : Based on LLM's internal reasoning, the task complexity, and the current budget.
 2. **Create High-Level Task Type:**
-    - **Atomic Task:** 
-    - **Composite Task:** 
-3. **Create ToDo List:**
-    - **Spawn Subordinate Nodes:**
-4. **Monitor Subordinate Nodes:**
-5. **Update Budget:**
-6. **Redo or Terminate:**
-7. **Report to Supervisor:**
-
-TODO
+    - **Atomic Task:** Finish it directly.
+    - **Composite Task:** Delegate to subordinate nodes.
+5. **Update Budget:** Based on the [reward mechanism](#reward-mechanism).
+6. **Redo or Terminate:**: Based on the [task assignment mechanism](#task-assignment-mechanism).
+7. **Report to Supervisor:** Report the result no matter success or failure to the supervisor node, in order to create more context for next task.
 
 ### Tree Structure Illustration
 
@@ -141,6 +136,10 @@ flowchart TB
 
 ```
 
+About Task Spawning: When the supervisor node decides to create a sub-task, it spawns by default 3 agents with different internal LLM models with the same assigned task and equal budget split. This diversity facilitates the possibility of success, because different models have different strengths and weaknesses. The supervisor node only needs one successful subordinate node to complete the sub-task, and the rest of subordinate nodes are immediately terminated to save budget. If one subordinate agent is successful, the supervisor recollects the given budget from that node with a reward ratio (e.g., 1.2x), and the rest of unfinished subordinate nodes lose their given budget with no reward or penalty ratio (e.g., 1x). Failed subordinate node return their remaining budget with a penalty ration (e.g. 0.8x) back to the supervisor node.
+
+About Verification Task: In this workflow, it is possible that we can have recursive verification tasks, but our verification trigger is based on heuristics, which makes this scenario less likely to happen.
+
 ### Agent Lifecycle
 
 There are three main scenarios that trigger the termination of an agent node:
@@ -152,7 +151,18 @@ There are three main scenarios that trigger the termination of an agent node:
 Consider a scenario where the objective is the following:
 - **Objective:** Count the number of words in a given text file.
 
-TODO
+1. **Root Node Creation**: A root agent node is created with a powerful LLM model (e.g., GPT-5) and a budget of 1000.
+2. **Task Decomposition**: The root node analyzes the objective and decomposes it into 3 equally subtasks each with a budget of 333, and the amount of budget is allocated based on the root node's internal reasoning:
+   - Sub-task 1: Open the text file.
+   - Sub-task 2: Run `wc` word count.
+   - Sub-task 3: Print the result.
+3. **Sub-Task Assignment**: The root node creates a task queue with the three subtasks.
+    - Sub-task 1 is composite, so it spawns 3 subordinate nodes with different models (e.g., Claude Sonnet 4.5, Gemini Pro, GPT-4o) and allocates 111 budget to each. However, the supervisor root node explicitly instructs 3 subordinate nodes to use different methods to open the file (e.g., vim, vi, and nano).
+    - vim is not available on the machine, so the subordinate 1 will try to become a thinking supervisor node to instruct its subordinate nodes to install vim. However, because its's too costly to create a subtree, its allocated 111 budget can quickly deplete. 
+    - vi is readily availble on the machine, so subordinate 2 is able to open the file successfully and report back to the root node, and all other sibling subordinate nodes are immediately terminated to save budget.
+4. **Budget Recollection**: The root supervisor node recollects the remaining budget from subordinate 2 with a reward ratio of 1.2x, and the rest of subordinate nodes lose their allocated budget with no reward or penalty ratio, which means that the root node's current budget is now 1000 - 333 + (111 * 1.2) + 222 = 1022.2; The reward ratio and penalty ratio are hyperparameters that can be tuned. Since the subordinate 2 is successful, even though subordinate 1 depletes its budget, the supervisor node does not create a penalty on subordinate 1's failure. However, if all subordinate nodes fail, then the supervisor node will create a penalty on all of them.
+5. **Verification**: If the supervisor node is suspicous on the previous finished sub-task based on the verification heuristic, then it will inject a verification task to the top of the task queue. If not, then no verification task is created.
+6. **Pop Next Task** The root node pops the next task from the task queue. 
 
 ## Task Evaluation/ Verificaiton
 It is significantly challenging to evaluate the successes of the tree-structured agentic system, but it is crucial to establish a robust evaluation framework.
@@ -198,31 +208,41 @@ Assume that we have not implemented any pruning strategy, and our tree is relati
 
 - Let **D** be the depth of the tree.
 - Let **B** be the average branching factor (number of subordinate nodes spawned by every thinking node).
-- Let **N_d** be the average amount of token consumption of a node at depth d. It is expected that N_d decreases as d increases, because deeper nodes are likely to be exposed only to the selected files that they need to access.
-- Let **T_d** be the average computational cost per token (both input and output) for a node at depth d. It is expected that C_d decreases as d increases, because deeper nodes are likely to be less advanced models. Assume that input tokens cost the same as output tokens, but in practice, output tokens are likely to be 2 to 3 times slower to generate depending on the model selection.
+- Let **N_d** be the average amount of token consumption of a node at depth **d**. It is expected that **N_d** decreases as d increases, because deeper nodes are likely to be exposed only to the selected files that they need to access.
+- Let **T_d** be the average computational cost per token (both input and output) for a node at depth **d**. It is expected that **T_d** decreases as d increases, because deeper nodes are likely to be less advanced models. Assume that input tokens cost the same as output tokens, but in practice, output tokens are likely to be 2 to 3 times slower to generate depending on the model selection.
 - Let **F** be the average file I/O cost for every a working node.
 
-Then the total computational cost C of the entire tree can be approximated as:
+Then the total computational cost **C** of the entire tree can be approximated as:
 
-TODO
+The Total Amount of Thinking Nodes ≈ The Total Amount of Working Nodes ≈ B^D
+
+Cost of Thinking Nodes ≈ B^D * N_D * T_D
+
+Cost of Working Nodes ≈ B^D * (N_D * T_D + F)
+
+Therefore, the total computational cost C can be expressed as:
+C ≈ B^D * (2 * N_D * T_D + F)
+
+In practice, the branching factor B is restrained to be 3, and ideally each corresponding to one OpenAI, Anthropic, and Google model. Therefore, the depth D becomes the major factor that influences the total computational cost C, and we plan to restrain the amount of depth by our budget management, a.k.a reward mechanism, to kill large sub-trees.
 
 ### Runtime Speed-Up
 To mitigate the computational cost, we propose the following strategies:
 1. **Budget Constraints**: Each node has a budget that limits the number of tokens it
 2. **Branch Pruning**: Implement a pruning mechanism to remove less promising branches of the tree based on intermediate results and budget consumption.
-3. 
-
-TODO
+3. TODO
 
 ## Potential Challenges
 1. **Dockers**
 2. **File System Restore**
-3. 
+3. TODO
 
 TODO
 
 ## Benefits of Agentic Tree Design
+1. About [Reward Mechanism](#reward-mechanism), due to the nature of tree structure, the budget can be dynamically increased or decreased based on the performance of subordinate nodes. Also, the amount of change is exponential if one sub-branch is particularly successful or failed. This design encourages exploration of more successful approach in a branch, and also punishes and even terminate the branches that are not performing well or too large.
+
 TODO
+
 
 ## Implementation Plan
 TODO
