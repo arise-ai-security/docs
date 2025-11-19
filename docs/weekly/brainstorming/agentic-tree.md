@@ -39,6 +39,8 @@ Each agent node acts in accordance with the following workflow:
 6. **Redo or Terminate:**
 7. **Report to Supervisor:**
 
+TODO
+
 ### Tree Structure Illustration
 
 ```mermaid
@@ -73,128 +75,84 @@ graph TD;
 ### Reward Mechanism
 ```mermaid
 flowchart TB
-    A("Supervisor Node") --> A_b[("Current Budget = X")];
+    A("Supervisor Node S") --> A_b[("Budget of S = X")];
     A --> A_o[("Objective = Y")];
     A --> A_c[("Configurations = Z")];
     
-    A_o --> A_t1(["sub-task1 = X1"]);
-    A_o --> A_t2(["sub-task2 = X2"]);
-    A_o --> A_t3(["sub-task3 = X2"]);
+    A_o --> A_t1(["sub-task1 = Y1"]);
+    A_o --> A_t2(["sub-task2 = Y2"]);
+    A_o --> A_t3(["sub-task3 = Y3"]);
 
     A_t2 --> B{"Task Type?"};
     
     B -- "ATOMIC" --> B1["Execute Task Directly"];
     B1--> H{"Report Status?"};
-    B -- "COMPOSITE" --> B2["Delegate to Subordinate Nodes"];
+    B -- "COMPOSITE" --> B2["Delegate to Subordinate Nodes With Budget X_Y2"];
     
-    B2 --> E{"All Children 'SUCCESS'?"};
-    E -- "YES" --> F["Report 'SUCCESS' to Parent"];
-    E -- "NO" --> G["Report 'FAILURE' to Parent"];
+    B2 --> Bchild("Subordinate Node for Y2");
+    A_t2 --> Bchild_b[("Budget = X_Y2")];
+    Bchild_b -- "Greater Than 0" --> B2;
+    Bchild_b -- "Less Than or Equal to 0" --> END["END of Supervisor Node S Lifecycle"];
+    Bchild -- "Spawned to be Subtree Superviosr with Objective = X2" --> A;
+    Bchild ---> E{"Completion Status?"};
     
-    H -- "'SUCCESS'" --> I["Parent Node Increases Budget"];
-    H -- "'FAILURE'" --> J["Parent Node Decreases Budget"];
+    H -- "'SUCCESS'" --> I["S Increases Budget"];
+    H -- "'FAILURE'" --> J["S Decreases Budget"];
     
-    F --> I;
-    G --> J;
+    E -- "YES" --> H;
+    E -- "NO" --> J;
+
+    I -- "PLUS Reward Ration * X_Y2" --> A_b;
+    J -- "MINUS Penalty Ration * X_Y2" --> A_b;
+
+    style A fill:#bbf,stroke:#333,stroke-width:2px
+    style Bchild_b fill:#bdf,stroke:#333,stroke-width:2px
+    style A_b fill:#bdf,stroke:#333,stroke-width:2px
+    style END fill:#ffcccc,stroke:#333,stroke-width:2px
 ```
 
 ### Task Assignment Mechanism
+```mermaid
+flowchart TB
+    A("Supervisor Node S") --> Obejctive["Objective = Y"];
+    Obejctive --> Tasks["` TASK QUEUE:
+    sub-task 1
+    sub-task 2
+    sub-task 3 
+    ...`"];
+    Tasks --> pop{"Pop First Task"};
+    pop --> Task1["sub-task"];
+    Task1 --> Decision{"Completed?"};
+    Decision -- "YES" --> Update["Update Task Queue"];
+
+    Update -- "Trigger Verification" --> insert{"Insert Verification Task?"};
+
+    Decision -- "NO" --> Report["Report to Supervisor Node S"];
+    Report --"Failure Reason to Finish Current sub-task"--> redo{"Redo sub-task?"};
+
+    insert -- "Yes, Add Verification Task to Head of Queue" --> Tasks;
+    insert -- "No, Choose Next Task" --> pop;
+
+    redo -- "Yes, Re-insert REVISED sub-task to Head of Queue" --> Tasks;
+    redo -- "No, Proceed to Next Task" --> END["END of Supervisor Node S Lifecycle"];
+    
+    style A fill:#bbf,stroke:#333,stroke-width:2px
+    style END fill:#ffcccc,stroke:#333,stroke-width:2px
+
+```
 
 ### Agent Lifecycle
 
-### Tree Structure Workflow
-```mermaid
-flowchart TB
-    %% --- Global Components ---
-    R["Shared Data Repository (R)<br/>(Metadata, Logs, Artifacts)"];
-    style R fill:#ffefd1,stroke:#ffd79b,stroke-width:2px;
-
-    %% --- Client & Root Node ---
-    C["Client (C)"] --> M["Manager (M) / Root N0"];
-    
-    subgraph "Container E_0 (Root Workspace)"
-        direction TB
-        M --> M_AP["N0: Analyzing Part (AP)"];
-        M_AP -.-> R; 
-        %% Log analysis
-        M_AP --> M_Decision{"ATOMIC or COMPOSITE?"};
-        M_Decision -- "COMPOSITE" --> M_WP_D["N0: Worker Part (WP-D)<br/>Decompose to Task 1...k"];
-        M_WP_D -.-> R;
-        %% Log sub-tasks
-    end
-    
-    M_WP_D --> Spawn1["Spawns Portfolio for Task 1<br/>(e.g., N_1a, N_1b... in new containers)"];
-
-    %% --- Generic Node Lifecycle (Represents any node Ni) ---
-    subgraph "Node Ni in Container Ei"
-        direction TB
-        Start("Start Node Ni<br/>(Receives Task)");
-        Start --> AP["Analyzing Part (AP)"];
-        AP -.-> R;
-        %% Log analysis
-        AP --> Decision{"ATOMIC or COMPOSITE?"};
-        style Decision fill:#d1ffe,stroke:#9bffd7,stroke-width:2px;
-
-        %% --- Path 1: Composite (Intermediate Node) ---
-        Decision -- "COMPOSITE" --> WP_D["Worker Part (WP-D)<br/>Decomposition Mode"];
-        WP_D -.-> R;
-        %% Log new sub-tasks
-        WP_D --> Spawn_Child["Spawns Child Portfolio<br/>(Child nodes in new containers)"];
-        Spawn_Child --> End_Composite["Waits for Child Success"];
-
-        %% --- Path 2: Atomic (Leaf Node) ---
-        Decision -- "ATOMIC" --> WP_E["Worker Part (WP-E)<br/>Execution Mode (Leaf)"];
-        WP_E --> Test["Run Tests in Container Ei"];
-        Test -- "PASS" --> Success["Report 'SUCCESS' to Parent"];
-        Success -.-> R; 
-        %% Save code artifact
-        Success --> End_Atomic["Node Task Complete"];
-
-        Test -- "FAIL" --> Failure["Report 'FAILURE' to Parent"];
-        Failure --> End_Atomic;
-    end
-    
-    %% --- Linking and Termination ---
-    Spawn1 --> Start; 
-    %% The spawned node starts its lifecycle
-    End_Atomic --> Terminate;
-    End_Composite --> Terminate;
-
-    subgraph "Orchestration Logic (External to Node)"
-        direction TB
-        Terminate["Parent Node Receives 'SUCCESS'"];
-        Terminate --> Terminate_Siblings["Terminates Sibling Nodes"];
-        Terminate --> Adopt_State["Adopts Successful Code State"];
-        Adopt_State --> M_Loop["M: Receives Task 1 Success<br/>Starts Task 2..."];
-    end
-
-    %% --- Final Output ---
-    M_Loop --> M_Report["M: Reports Final Result"];
-    M_Report --> C;
-
-    %% --- Styles ---
-    classDef client fill:#d6fadd,stroke:#5cb85c,stroke-width:2px;
-    class C client;
-    
-    classDef root fill:#ececff,stroke:#9696ff,stroke-width:2px;
-    class M,M_AP,M_Decision,M_WP_D root;
-    
-    classDef node fill:#fff,stroke:#ccc,stroke-width:2px;
-    class Start,AP,WP_D,WP_E,Test,End_Composite,End_Atomic,Success,Failure node;
-
-    classDef term fill:#ffcccc,stroke:#cc0000,stroke-width:2px;
-    class Terminate,Terminate_Siblings,Failure term;
-
-    classDef spawn fill:#f9f,stroke:#333,stroke-width:1px,stroke-dasharray: 5 5;
-    class Spawn1,Spawn_Child spawn;
-    
-    classDef success fill:#dff0d8,stroke:#3c763d,stroke-width:2px;
-    class Success,Adopt_State,M_Loop,M_Report success;
-```
+There are three main scenarios that trigger the termination of an agent node:
+1. **Budget Depletion**: If the current budget of the agent node drops to zero or below, the agent node is terminated immediately.
+2. **Objective Completion**: Once the agent node successfully completes its assigned objective and reports the results to its supervisor node, it is terminated.
+3. **Failed Subtask**: If the agent node fails to complete a critical subtask and the supervisor node decides not to reassign it (based on budget constraints or task importance), the agent node is terminated. If a subtask is aborted by the supervisor, then the every agent under the supervisor subtree is also terminated, because the objective is not doable with a missing subtask.
 
 ### Example Workflow Illustration
 Consider a scenario where the objective is the following:
 - **Objective:** Count the number of words in a given text file.
+
+TODO
 
 ## Task Evaluation/ Verificaiton
 It is significantly challenging to evaluate the successes of the tree-structured agentic system, but it is crucial to establish a robust evaluation framework.
@@ -254,11 +212,17 @@ To mitigate the computational cost, we propose the following strategies:
 2. **Branch Pruning**: Implement a pruning mechanism to remove less promising branches of the tree based on intermediate results and budget consumption.
 3. 
 
+TODO
+
 ## Potential Challenges
 1. **Dockers**
 2. **File System Restore**
 3. 
 
+TODO
+
 ## Benefits of Agentic Tree Design
+TODO
 
 ## Implementation Plan
+TODO
