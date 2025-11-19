@@ -39,6 +39,8 @@ Each agent node acts in accordance with the following workflow:
 6. **Redo or Terminate:**
 7. **Report to Supervisor:**
 
+TODO
+
 ### Tree Structure Illustration
 
 ```mermaid
@@ -85,10 +87,12 @@ flowchart TB
     
     B -- "ATOMIC" --> B1["Execute Task Directly"];
     B1--> H{"Report Status?"};
-    B -- "COMPOSITE" --> B2["Delegate to Subordinate Nodes"];
+    B -- "COMPOSITE" --> B2["Delegate to Subordinate Nodes With Budget X_Y2"];
     
     B2 --> Bchild("Subordinate Node for Y2");
     A_t2 --> Bchild_b[("Budget = X_Y2")];
+    Bchild_b -- "Greater Than 0" --> B2;
+    Bchild_b -- "Less Than or Equal to 0" --> END["END of Supervisor Node S Lifecycle"];
     Bchild -- "Spawned to be Subtree Superviosr with Objective = X2" --> A;
     Bchild ---> E{"Completion Status?"};
     
@@ -101,13 +105,48 @@ flowchart TB
     I -- "PLUS Reward Ration * X_Y2" --> A_b;
     J -- "MINUS Penalty Ration * X_Y2" --> A_b;
 
+    style A fill:#bbf,stroke:#333,stroke-width:2px
+    style Bchild_b fill:#bdf,stroke:#333,stroke-width:2px
+    style A_b fill:#bdf,stroke:#333,stroke-width:2px
+    style END fill:#ffcccc,stroke:#333,stroke-width:2px
 ```
 
 ### Task Assignment Mechanism
+```mermaid
+flowchart TB
+    A("Supervisor Node S") --> Obejctive["Objective = Y"];
+    Obejctive --> Tasks["` TASK QUEUE:
+    sub-task 1
+    sub-task 2
+    sub-task 3 
+    ...`"];
+    Tasks --> pop{"Pop First Task"};
+    pop --> Task1["sub-task"];
+    Task1 --> Decision{"Completed?"};
+    Decision -- "YES" --> Update["Update Task Queue"];
+
+    Update -- "Trigger Verification" --> insert{"Insert Verification Task?"};
+
+    Decision -- "NO" --> Report["Report to Supervisor Node S"];
+    Report --"Failure Reason to Finish Current sub-task"--> redo{"Redo sub-task?"};
+
+    insert -- "Yes, Add Verification Task to Head of Queue" --> Tasks;
+    insert -- "No, Choose Next Task" --> pop;
+
+    redo -- "Yes, Re-insert REVISED sub-task to Head of Queue" --> Tasks;
+    redo -- "No, Proceed to Next Task" --> END["END of Supervisor Node S Lifecycle"];
+    
+    style A fill:#bbf,stroke:#333,stroke-width:2px
+    style END fill:#ffcccc,stroke:#333,stroke-width:2px
+
+```
 
 ### Agent Lifecycle
 
-### Tree Structure Workflow
+There are three main scenarios that trigger the termination of an agent node:
+1. **Budget Depletion**: If the current budget of the agent node drops to zero or below, the agent node is terminated immediately.
+2. **Objective Completion**: Once the agent node successfully completes its assigned objective and reports the results to its supervisor node, it is terminated.
+3. **Failed Subtask**: If the agent node fails to complete a critical subtask and the supervisor node decides not to reassign it (based on budget constraints or task importance), the agent node is terminated. If a subtask is aborted by the supervisor, then the every agent under the supervisor subtree is also terminated, because the objective is not doable with a missing subtask.
 
 ### Example Workflow Illustration
 Consider a scenario where the objective is the following:
@@ -173,11 +212,17 @@ To mitigate the computational cost, we propose the following strategies:
 2. **Branch Pruning**: Implement a pruning mechanism to remove less promising branches of the tree based on intermediate results and budget consumption.
 3. 
 
+TODO
+
 ## Potential Challenges
 1. **Dockers**
 2. **File System Restore**
 3. 
 
+TODO
+
 ## Benefits of Agentic Tree Design
+TODO
 
 ## Implementation Plan
+TODO
