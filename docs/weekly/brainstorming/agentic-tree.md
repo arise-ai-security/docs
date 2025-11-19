@@ -233,8 +233,8 @@ To mitigate the computational cost, we propose the following strategies:
 
 ## Potential Challenges
 1. **Dockers**
-2. **File System Restore**
-3. TODO
+2. **File System Restore**: After a sub-agent fails to complete the task, the file system should be restored to the previous state before the sub-agent made any changes. This keeps the file system clean for the next possible sub-agent to work on the same task again. This can be potentially solved by the git. However, some changes made to the system outside of the git repository (e.g., installing new packages, changing system configurations) may not be tracked by git. Therefore, we may need to implement a more robust snapshot and restore mechanism that captures the entire system state, not just the git repository. One possible solution is to use containerization technologies like Docker or virtual machines to encapsulate the entire environment for each sub-agent. However, this approach is expensive to implement for every single sub-agent.
+3. **Verification Task Insertion Heuristics**
 
 TODO
 
