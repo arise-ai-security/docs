@@ -41,9 +41,68 @@ Each agent node acts in accordance with the following workflow:
 
 ### Tree Structure Illustration
 
-TODO
+```mermaid
+---
+config:
+  look: handDrawn
+  theme: neutral
+---
+graph TD;
+    president([Root Node with GPT 5 → Objective: Fix the vulnerability reported at ...])-->thinker1([thinker1]);
+    president-->thinker2([thinker2: Exploiter Agent with Claude Sonnet 4.5 → Objective: Create working exploit for ...]);
+    president-->thinker3([thinker3]);
+    
+    thinker1-->thinker1.1([...]);
+    
+    thinker2-->thinker2.1([thinker2.1: File Editor Agent with Claude Haiku → Objective: change the function ...]);
+    thinker2-->thinker2.2([thinker2.2: Verifier Agent with Gemini Pro → Objective: Verify the Previous Task]);
+    thinker2-->thinker2.3([thinker2.3]);
+    
+    thinker3-->thinker3.1([...]);
 
+    thinker2.1-->thinker2.1.1([...]);
+    thinker2.2-->thinker2.2.1([thinker2.2.1 with GPT 4o → Objective: Verify the correctness of unit tests for ...]);
+    thinker2.3-->thinker2.3.1([...]);
 
+    thinker2.1.1-->worker2.1.1([leaf Node with GPT 3 → Atomic Task: Delete Line Number ...]);
+    thinker2.2.1-->worker2.2.1([leaf Node → Atomic Task: Write unit tests to ...]);
+    thinker2.3.1-->worker2.3.1([leaf Node → Atomic Task: Change Access Permission of file ...]);
+
+```
+
+### Reward Mechanism
+```mermaid
+flowchart TB
+    A("Supervisor Node") --> A_b[("Current Budget = X")];
+    A --> A_o[("Objective = Y")];
+    A --> A_c[("Configurations = Z")];
+    
+    A_o --> A_t1(["sub-task1 = X1"]);
+    A_o --> A_t2(["sub-task2 = X2"]);
+    A_o --> A_t3(["sub-task3 = X2"]);
+
+    A_t2 --> B{"Task Type?"};
+    
+    B -- "ATOMIC" --> B1["Execute Task Directly"];
+    B1--> H{"Report Status?"};
+    B -- "COMPOSITE" --> B2["Delegate to Subordinate Nodes"];
+    
+    B2 --> E{"All Children 'SUCCESS'?"};
+    E -- "YES" --> F["Report 'SUCCESS' to Parent"];
+    E -- "NO" --> G["Report 'FAILURE' to Parent"];
+    
+    H -- "'SUCCESS'" --> I["Parent Node Increases Budget"];
+    H -- "'FAILURE'" --> J["Parent Node Decreases Budget"];
+    
+    F --> I;
+    G --> J;
+```
+
+### Task Assignment Mechanism
+
+### Agent Lifecycle
+
+### Tree Structure Workflow
 ```mermaid
 flowchart TB
     %% --- Global Components ---
@@ -132,14 +191,6 @@ flowchart TB
     classDef success fill:#dff0d8,stroke:#3c763d,stroke-width:2px;
     class Success,Adopt_State,M_Loop,M_Report success;
 ```
-
-### Reward Mechanism
-
-### Task Assignment Mechanism
-
-### Agent Lifecycle
-
-### Tree Structure Workflow
 
 ### Example Workflow Illustration
 Consider a scenario where the objective is the following:
