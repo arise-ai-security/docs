@@ -12,7 +12,7 @@ We have successfully reproduced and even refactored the SEC-Verifier with a bett
 
 The weak point of the current SEC-Verifier is that it only allows a linear chain of agents. For example, if the Builder fails to create a working exploit, the Exploiter will not be able to proceed. To address this limitation, we propose a tree-structured agentic system where multiple agents can be spawned at each stage, and the decision-making agent is able to produce fine-grained actions to fix the issues.
 
-**Note**: We use terms agents and nodes interchangeably in this document.
+**Note**: We use terms agents and nodes interchangeably in this document. By default, we only introduce three sub-agents when we delegate a sub-task.
 
 ## Core Algorithm of Tree-Structured Agentic System
 Our proposed tree-structured system is highly recursive, and actions taken by agent nodes are dependent on the current budget. Every single node is a subclass of a superclass of an abstract AgentNode. This tree system allows multiple models to collaborate, compare and select the best actions to finish a given task, and even backtrack the to redo the failed objective if needed.
@@ -232,17 +232,23 @@ To mitigate the computational cost, we propose the following strategies:
 3. TODO
 
 ## Potential Challenges
-1. **Dockers**
-2. **File System Restore**: After a sub-agent fails to complete the task, the file system should be restored to the previous state before the sub-agent made any changes. This keeps the file system clean for the next possible sub-agent to work on the same task again. This can be potentially solved by the git. However, some changes made to the system outside of the git repository (e.g., installing new packages, changing system configurations) may not be tracked by git. Therefore, we may need to implement a more robust snapshot and restore mechanism that captures the entire system state, not just the git repository. One possible solution is to use containerization technologies like Docker or virtual machines to encapsulate the entire environment for each sub-agent. However, this approach is expensive to implement for every single sub-agent.
-3. **Verification Task Insertion Heuristics**
+### Dockers
+For every worker agent to be able to fully autonoumously make changes to the target repository, we need to ensure that the working environment is consistent and isolated. One potential solution is to use Docker containers for each worker agent. Each container can have its own isolated file system, network settings, and installed packages, which prevents conflicts between different agents and ensures that changes made by one agent do not affect others. If the chagens are not successful, then we need to restore the entire container to the previous state by destroying the current container. However, if the changes are successfully made, then it's hard to merge changes. 
 
-TODO
+One potential solution is to exclusively use 3 containers for every single branch of three worker agents at every single end of a branch.
+
+### File System Restore
+After a sub-agent fails to complete the task, the file system should be restored to the previous state before the sub-agent made any changes. This keeps the file system clean for the next possible sub-agent to work on the same task again. This can be potentially solved by the git. However, some changes made to the system outside of the git repository (e.g., installing new packages, changing system configurations) may not be tracked by git. Therefore, we may need to implement a more robust snapshot and restore mechanism that captures the entire system state, not just the git repository. One possible solution is to use containerization technologies like Docker or virtual machines to encapsulate the entire environment for each sub-agent. However, this approach is expensive to implement for every single sub-agent.
+
+### Verification Task Insertion Heuristics
+The heuristics for verification task insertion may not be optimal, and may lead to either excessive verification tasks that waste budget, or insufficient verification tasks that fail to catch false negatives.
 
 ## Benefits of Agentic Tree Design
 1. About [Reward Mechanism](#reward-mechanism), due to the nature of tree structure, the budget can be dynamically increased or decreased based on the performance of subordinate nodes. Also, the amount of change is exponential if one sub-branch is particularly successful or failed. This design encourages exploration of more successful approach in a branch, and also punishes and even terminate the branches that are not performing well or too large.
 
-TODO
+2. About [Task Assignment Mechanism](#task-assignment-mechanism), the tree structure allows for more flexible task management, as the supervisor nodes can dynamically adjust the task queue based on the performance of subordinate nodes. This flexibility enables the system to adapt to changing circumstances and optimize resource allocation. Especially in the cybersecurity domain, multiple task selections are more likely to be needed, because the issues are usually complex and multi-faceted.
 
+3. Compared to Copilot-like agents or Claude Code, we introduced the multi-agent collaboration system. Copilot-like system is essentially a linked-list of To-Do tasks accompilshed by only one agent, and the system is not flexible to handle one failed sub-task. In our experience, if Copilot fails to tackle one sub-task, it is likely that it will redo it with little improvement. Our sytem can potentially avoid this issue because of the diversity of multiple sub-agents working on the same task.
 
 ## Implementation Plan
 TODO
