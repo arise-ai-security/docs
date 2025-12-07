@@ -249,6 +249,3 @@ The heuristics for verification task insertion may not be optimal, and may lead 
 2. About [Task Assignment Mechanism](#task-assignment-mechanism), the tree structure allows for more flexible task management, as the supervisor nodes can dynamically adjust the task queue based on the performance of subordinate nodes. This flexibility enables the system to adapt to changing circumstances and optimize resource allocation. Especially in the cybersecurity domain, multiple task selections are more likely to be needed, because the issues are usually complex and multi-faceted.
 
 3. Compared to Copilot-like agents or Claude Code, we introduced the multi-agent collaboration system. Copilot-like system is essentially a linked-list of To-Do tasks accompilshed by only one agent, and the system is not flexible to handle one failed sub-task. In our experience, if Copilot fails to tackle one sub-task, it is likely that it will redo it with little improvement. Our sytem can potentially avoid this issue because of the diversity of multiple sub-agents working on the same task.
-
-## Implementation Plan
-TODO
