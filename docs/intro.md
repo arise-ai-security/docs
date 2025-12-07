@@ -31,7 +31,7 @@ We review contemporary research papers and projects in the field of cybersecurit
 - **[Caroline Cahill]** - Description
 
 ## 🗓️ Weekly Reports
-- **[Week 6 - November 7, 2025](weekly/week6-2025-11-07)** - Latest Report
+- **[Week 9 - December 6, 2025](weekly/week9-2025-12-6)** - Latest Report
 
 ## 🔗 Links
 
