@@ -10,6 +10,12 @@ This is a documentation site for ARiSE Lab's cybersecurity research projects, fo
 
 ## 📚 Documentations
 
+### [Agentic Projects](projects/)
+Our hands-on explorations and implementations of cybersecurity projects.
+
+#### Tree-Structured Agentic System
+- **[ARiSE SEC-LION Overview](projects/arise-sec-lion/)** - Comprehensive documentation on the Tree-Structured Agentic System, ARiSE SEC-LION, including system design, task assignment mechanisms, and reward allocation strategies.
+
 ### [Agentic Research Reviews](reviews/)
 We review contemporary research papers and projects in the field of cybersecurity and LLM, providing insights and analyses.
 
