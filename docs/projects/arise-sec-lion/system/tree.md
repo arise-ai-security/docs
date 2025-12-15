@@ -1,6 +1,6 @@
 ---
-title: Tree-Strucuted Agentic System Overview
-sidebar_position: 1
+title: Tree-Strucuted Agentic System Design Overview
+sidebar_position: 2
 ---
 
 import ReactFlowTree from '@site/src/components/ReactFlowTree';
