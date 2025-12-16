@@ -36,15 +36,15 @@ This section describes how our system implements access control mechanism to man
 Human supervisions to the system can be in various forms, including: prompting, rewording, human task breakdown, and human feedbacks. However, our agentic tree grows exponentially fast, and human interventions are not as effective as expected. For example, prompting with clearer and direct instructions at the root may be only helpful for top-level agents to plan how to break down the objective. Our high-level goal for this system is to learn on its own. For example, for a completed task, other agents may decide to verify it or not with unit tests.
 
 ### State
-State $S_t$ is fomally defined as how one agent perceives and understands its environment. In our system, it includes the current context that the agent has. Ancestor agents' thoguhts are included in the objective.
+State $\mathcal{S_t}$ is fomally defined as how one agent perceives and understands its environment. In our system, it includes the current context that the agent has. Ancestor agents' thoguhts are included in the objective.
 
 $$
-S_t = (\text{objective}, \text{budget}, \text{task queue}, \text{file system snapshot with access}, \text{sub-agents' states})
+\mathcal{S_t} = (\text{objective}, \text{budget}, \text{task queue}, \text{file system snapshot with access}, \text{sub-agents' states})
 $$
 
 **Note**: Sub-agents' states here refer to only the the agents that the current agent spawns, not all agents in the entire sub-tree. This decision to avoid over-arching control over the entire sub-tree is to encourage decentralization and autonomy among agents.
 
-We applied Markov Decision Process (MDP) to our system, which implies that the agent takes action **exclusively** based on the current state $S_t$ without considering any prior states $S_{t-1}, S_{t-2}, ...$. In our case, thinker agents are supposed to design task queue, rewards, or access controls based on what they currently know about the present state.
+We applied Markov Decision Process (MDP) to our system, which implies that the agent takes action **exclusively** based on the current state $\mathcal{S_t}$ without considering any prior states $\mathcal{S_{t-1}}, \mathcal{S_{t-2}}, ...$. In our case, thinker agents are supposed to design task queue, rewards, or access controls based on what they currently know about the present state.
 
 However, state is a stricter concept, which includes all of information of the environment. For example, chess games can be fully observed, and every single agent's current positions are known to all players. In our system, the environment is only partially observable, since each agent only has access to a subset of files in the coding environment and the agents are not always aware of their subagents' states, such as their task queue and updated objective, until they report back.
 
@@ -52,7 +52,7 @@ However, state is a stricter concept, which includes all of information of the e
 Obsevation is a partial description of the current state that the agent can perceive. In our system, it includes the objective, current budget, task queue, and file system snapshot with access. Sub-agents' states are not fully observed until they report back.
 
 ### Action
-Action $A_t$ is the decision made by the agent based on its current state. In our system, thinker nodes 
+Action $\mathcal{A_t}$ is the decision made by the agent based on its current state.
 
 Each agent node acts in accordance with the following workflow:
 1. **Analyze Objective:** : Based on LLM's internal reasoning, the task complexity, and the current budget.
@@ -80,7 +80,23 @@ If sub-agents have reported back their states, this agent should summarize their
 - **Definition**: 
 - **Reward Hypothesis**: all goals can be described as the maximization of the expected return (expected cumulative reward). In our system, the reward is gained or lost when the exploration (task execution) is completed, and it can be exponentially propagated back to ancestor agents through reward allocation mechanism. However, if the tree grows too deep, the budget for eacch agent will be so small that the reward signal is weak, so that the tree shoud be kept in a reasonable depth.
 
-### Policy 
+### Policy
+Policy $\pi$ is a function that maps from agent's state to agent action. So it defines the agent’s behavior at a given time.
+
+$$
+\pi: \mathcal{S} \rightarrow \mathcal{A}
+$$
+
+We adopts a *stochastic policy*, which means that the action taken by the agent is probabilistic given the current state. This is designed to incorporate several proposed heuristics including the [verification heuristics](/weekly/brainstorming/agentic-tree.md#verification-task-insertion-heuristics). Our policy should be able to randomly decide to spawn verification sub-agents to double-check the work with certain probability not solely determined by reports or objective checks. LLM essentially learn from textual report data, which can be biased by certain hallucinations in the subagents. As discussed in the [Failed Subtask section](/weekly/brainstorming/agentic-tree#agent-lifecycle), one hallucination in a subagent's task can cause direct failure of the entire objective.
+
+$$
+\begin{aligned}
+\pi(\mathcal{a}|\mathcal{s}) &= P[\mathcal{A}|\mathcal{s}] \\
+&= \text{Probability Distribution over the set of actions given the current state} \\
+\end{aligned}
+$$
+
+**Note**: We expand the original weakly defined heuristics in [brain-storming notes](/weekly/brainstorming/agentic-tree.md) into a more formal stochastic policy framework here.
 
 ## Q-Learning:
 
