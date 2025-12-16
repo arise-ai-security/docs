@@ -1,3 +1,5 @@
+/* KaTeX styles for math rendering */
+@import "katex/dist/katex.min.css";
 /**
  * Custom CSS for CyberGym documentation
  */

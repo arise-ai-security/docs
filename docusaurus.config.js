@@ -1,3 +1,22 @@
+// Safe loaders for ESM-only remark/rehype plugins when using CJS config
+const remarkMath = (() => {
+  try {
+    const m = require('remark-math');
+    return m && (m.default || m);
+  } catch {
+    return null;
+  }
+})();
+
+const rehypeKatex = (() => {
+  try {
+    const m = require('rehype-katex');
+    return m && (m.default || m);
+  } catch {
+    return null;
+  }
+})();
+
 const config = {
   title: "ARiSE Docs",
   tagline:
@@ -26,6 +45,9 @@ const config = {
           routeBasePath: "/", // This makes docs the root
           sidebarPath: require.resolve("./sidebars.js"),
           editUrl: "https://github.com/arise-ai-security/docs/tree/main/",
+          // Enable LaTeX/Math via remark-math and rehype-katex
+          remarkPlugins: [remarkMath].filter(Boolean),
+          rehypePlugins: [rehypeKatex].filter(Boolean),
         },
         blog: false,
         theme: {
