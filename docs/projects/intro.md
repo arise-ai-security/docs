@@ -1,6 +1,6 @@
 ---
 slug: /projects/
-title: Tree-Structured Agentic System
+title: All Projects
 sidebar_position: 1
 hide_title: true
 ---

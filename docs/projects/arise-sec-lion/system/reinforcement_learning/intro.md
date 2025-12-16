@@ -1,11 +1,11 @@
 ---
-slug: /projects/arise-sec-lion/system/policy_update/
-title: Policy Update Overview
+slug: /projects/arise-sec-lion/system/reinforcement_learning/
+title: Reinforcement Learning Overview
 sidebar_position: 1
 hide_title: true
 ---
 
-# Policy Update Overview
+# Reinforcement Learning Overview
 The bigger picture of proposal of tree structured system is to incorporate the ideas of reinforcement learning but at a higher level. The strength of agentic system is that the agents repeatedly gain more knowledge about the task thorugh explorations in the environment (coding space) and interactions with other agents. We aim to design a system that thinking agents can think more with trial-and-errors and working agents gain more instructions through better context provided by the ancestor agents. This idea is inspired by this HuggingFace blog post: [An Introduction to Deep Reinforcement Learning](https://huggingface.co/blog/deep-rl-intro#what-is-reinforcement-learning) and UC Berkeley CS188 Slides on [Reinforcement Learning 1](https://inst.eecs.berkeley.edu/~cs188/fa25/assets/lectures/cs188-fa25-lec10.pdf) and [Reinforcement Learning 2](https://inst.eecs.berkeley.edu/~cs188/fa25/assets/lectures/cs188-fa25-lec11.pdf). 
 
 This agentic tree system adapts the active reinforcement learning framework, intuitively illustrated below:
@@ -13,6 +13,8 @@ This agentic tree system adapts the active reinforcement learning framework, int
 *Credit: UC Berkeley CS188*
 
 Our system have two different agents: thinkers and workers. Thinkers utilize their reasoning capabilities to perform offline planning by creating task breakdowns based on its current understanding of the task and context provided by ancestor agents. Workers, on the other hand, focus on executing specific tasks assigned to them by their parent thinkers. Workers uses online planning by following the instructions provided in the context from ancestor thinkers to perform actions in the coding environment. Their supervisor nodes learn from the actual execution results and real-life behaviors of their workers.
+
+**Notes:** Contrast to the original proposal in [brain-storming notes](/weekly/brainstorming/agentic-tree.md), this page delineates more formal definitions and practical implementations of the reinforcement learning techniques we used to optimize the tree-structured agentic system. One *Major Change* is that we do not intentionally spawn agents with different models directly. Instead, our supervisor agents decide to regulate sub-agents' model configurations (model name, temperature, max tokens, etc.) as part of the action space when they design sub-tasks. Also, if one branch is failing, the supervisor agent can decide to respawn a sub-agent with a more capable model or more resources.
 
 ## 📚 Documentations
 
@@ -67,6 +69,7 @@ If sub-agents have reported back their states, this agent should summarize their
 6. **Redo, Verify, or Terminate:** After all sub-agents finished, the agent can also decide to redo the task or terminate it based on the objective fullfillment. If the agent is skeptical about the correctness of the result, it can also spawn verification sub-agents to double-check the work with the remaining budget.
 7. **Reward Recollection**: recalculate the budget based on the [reward allocation mechanism](./reward_alloc.md), and hand it back to its supervisor.
 
+**Note:** Even though it seems that an agent can have undeterministic or even infinite ways of tackling simple tasks and designing sub-tasks for complex tasks, we still consider our action space to be *discrete and finite*. These two actions' effects, i.e changes to the coding environment, can be underterministic, but they themselves can be categorized into working or thinking. 
 ### Value
 
 ### Reward
