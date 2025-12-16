@@ -8,9 +8,13 @@ hide_title: true
 # Reinforcement Learning Overview
 The bigger picture of proposal of tree structured system is to incorporate the ideas of reinforcement learning but at a higher level. The strength of agentic system is that the agents repeatedly gain more knowledge about the task thorugh explorations in the environment (coding space) and interactions with other agents. We aim to design a system that thinking agents can think more with trial-and-errors and working agents gain more instructions through better context provided by the ancestor agents. This idea is inspired by this HuggingFace blog post: [An Introduction to Deep Reinforcement Learning](https://huggingface.co/blog/deep-rl-intro#what-is-reinforcement-learning) and UC Berkeley CS188 Slides on [Reinforcement Learning 1](https://inst.eecs.berkeley.edu/~cs188/fa25/assets/lectures/cs188-fa25-lec10.pdf) and [Reinforcement Learning 2](https://inst.eecs.berkeley.edu/~cs188/fa25/assets/lectures/cs188-fa25-lec11.pdf). 
 
-This agentic tree system adapts the active reinforcement learning framework, intuitively illustrated below:
+
+## Holistic View
+This agentic tree system adapts the **active reinforcement learning** framework, intuitively illustrated below:
 ![active RL](./activeRL.jpg)
 *Credit: UC Berkeley CS188*
+
+Our agents needs to use online planning to take actions in real world, and typically the transitions between states and rewards are unknown before hand. This is why we uses [**Q-Learning: sample-based Q-value iteration**](#q-learning).
 
 Our system have two different agents: thinkers and workers. Thinkers utilize their reasoning capabilities to perform offline planning by creating task breakdowns based on its current understanding of the task and context provided by ancestor agents. Workers, on the other hand, focus on executing specific tasks assigned to them by their parent thinkers. Workers uses online planning by following the instructions provided in the context from ancestor thinkers to perform actions in the coding environment. Their supervisor nodes learn from the actual execution results and real-life behaviors of their workers.
 
@@ -79,3 +83,7 @@ If sub-agents have reported back their states, this agent should summarize their
 ### Policy 
 
 ## Q-Learning:
+
+### Value-Based Method:
+
+### Q-Value Iteration
