@@ -1,5 +1,5 @@
 ---
-title: Tree-Strucuted Agentic System Reward Allocation Mechanism
+title: Reward Allocation Mechanism
 sidebar_position: 3
 ---
 
