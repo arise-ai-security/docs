@@ -48,6 +48,14 @@ We applied Markov Decision Process (MDP) to our system, which implies that the a
 
 However, state is a stricter concept, which includes all of information of the environment. For example, chess games can be fully observed, and every single agent's current positions are known to all players. In our system, the environment is only partially observable, since each agent only has access to a subset of files in the coding environment and the agents are not always aware of their subagents' states, such as their task queue and updated objective, until they report back.
 
+- **State Transition Function**
+  The state transition function $\mathcal{T}$ defines the underlying unknown mechanism that makes the state-transition given a policy. It is defined as:
+  $$
+  \mathcal{T}(\mathcal{s}, \mathcal{a}, \mathcal{s'}) = \mathcal{T}(\mathcal{s}, \mathcal{\pi(s)}, \mathcal{s'})
+  $$
+  In our model, it is infeasible to learn the exact $\mathcal{T}$, because the coding environment is highly complex and dynamic. Instead, we use *model-free reinforcement learning* technique Q-learning to learn optimal policies without explicitly modeling the state transition function.
+
+
 ### Observation
 Obsevation is a partial description of the current state that the agent can perceive. In our system, it includes the objective, current budget, task queue, and file system snapshot with access. Sub-agents' states are not fully observed until they report back.
 
@@ -74,10 +82,26 @@ If sub-agents have reported back their states, this agent should summarize their
 7. **Reward Recollection**: recalculate the budget based on the [reward allocation mechanism](./reward_alloc.md), and hand it back to its supervisor.
 
 **Note:** Even though it seems that an agent can have undeterministic or even infinite ways of tackling simple tasks and designing sub-tasks for complex tasks, we still consider our action space to be *discrete and finite*. These two actions' effects, i.e changes to the coding environment, can be underterministic, but they themselves can be categorized into working or thinking. 
+
 ### Value
+Value function $\mathcal{V}^{\pi}(\mathcal{s})$ is a function that maps a state to the expected value of being at that state.
+$$
+\mathcal{V}^{\pi}(\mathcal{s}): \mathcal{S} \rightarrow \mathbb{R}
+$$
+
+The value of a state is the expected discounted return the agent can get if it starts in that state, and then act according to our policy.
+
 
 ### Reward
-- **Definition**: 
+Reward/ Return $\mathcal{R}$ is the feedback signal received by the agent after taking an action in a particular state.
+
+- **Reward Function**
+  The reward function $\mathcal{R}$ defines the underlying unknown mechanism that makes the state-transition given a policy. It is defined as:
+  $$
+  \mathcal{R}(\mathcal{s}, \mathcal{a}, \mathcal{s'}) = \mathcal{R}(\mathcal{s}, \mathcal{\pi(s)}, \mathcal{s'})
+  $$
+  In our model, it is infeasible to learn the exact $\mathcal{R}$, because the coding environment is highly complex and dynamic, and the exact benefit of certain exploration is not measurable. For example, if one agent decides to implement the logging feature extensively, it may not directly contribute to the objective achievement, but it can help other agents to debug their code more easily. In this case, the reward is not quantifiable.
+
 - **Reward Hypothesis**: all goals can be described as the maximization of the expected return (expected cumulative reward). In our system, the reward is gained or lost when the exploration (task execution) is completed, and it can be exponentially propagated back to ancestor agents through reward allocation mechanism. However, if the tree grows too deep, the budget for eacch agent will be so small that the reward signal is weak, so that the tree shoud be kept in a reasonable depth.
 
 ### Policy
