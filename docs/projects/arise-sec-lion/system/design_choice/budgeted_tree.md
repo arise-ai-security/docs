@@ -4,6 +4,7 @@ sidebar_position: 3
 ---
 
 import BudgetedTree from '@site/src/components/budgeted_tree';
+import BudgetedTreeCatastrophicBreakdown from '@site/src/components/budgeted_tree_catastrophic_breakdown';
 
 # Design Choice 2: Recursive Planning and Working With Budget Allowance
 
@@ -50,3 +51,27 @@ tree ./output/12dad0e4-f455-4fc0-92e2-0c04644a92e1
 ![alt text](./CompetingBranch.jpg)
 3. **Complete and Sound Approach**: With budget constraints, agents are able to focus on more complete and sound approaches to solve the task. For example, in this case study, after the simple implementations, agents also create test folders to verify the correctness of the code, and edge cases like symbolic links are also considered. When some agents have sufficient amount of budget, even documentations on the testing part are created. A simpler and memory safe python script is used to verify the work, and because of the containerized environment, agents are able to compile the code, run the tests and verify the results automatically and autonomously. With a reward allocation mechanism, agents are incentivized to produce more focused work that if the budget is low, they would not waste resources on verifications or testings.
 4. **No Seperation of Responsibilities**: In this current implementation, all of agents have full view and edit access to all files in the coding environment. This works when the supervisor nodes are able to seperate and design sub-tasks cleanly without no inter-dependency. However, for a larger project, the lack of access controls can cause file-editing race condtions, repeated work, or conflicting changes. A better approach should include file locks to ensure that only one agent can edit or use a file with permissions. Supervisor nodes are supposed to design access controls for their sub-agents, and this design choice can be similar to task assignment mechanism.
+5. **No Bigger Picture**: the sub-tasks divided by the supervisor nodes together can not represent the whole objective of the supervisor. For example, in the objective, C is required and other implementation details are also specified. However, the sub-tasks created merely reflect on implmentation details but do not include the requirement of using C language. This is supposed to be mitigated by a better task assignment mechanism and supervisor's monitor on the progress. Currently, sub-tasks are created execlusively at LLM's discretion by parsing its response. A more advanced model should be in charge of task-planning if the current state is highly valued, and finished task should be verified against the overall objective.
+6. **Catastrophic Breakdown**: This system does not support a mechanism to ensure the objective is fullfiled or not. If the sub-tasks are incorrectly designed, all of the following agents will work towards to a wrong goal. The following example shows how a catastrophic breakdown happens when the boss node designed inaccurate sub-tasks and forgot to mention the required C language. All of the following agents are working towards to implement the file counting program in Python, leading to a complete failure to achieve the objective.
+
+- **Failure to Break Down Objective at Root**:
+The following is an interactive diagram showing how the catastrophic breakdown happens in the budgeted tree-structured agentic system. You can pan, zoom, and explore relationships between agents. **Please Click on the root node to inspect the inaccurate sub-task breakdown**.
+<BudgetedTreeCatastrophicBreakdown/>
+
+- **Generated Files Due to Root Decision Failure**:
+Only Python files are generated, failing to meet the objective of writing C code, even though the agents are able to implement the multi-threading file counting program correctly in Python.
+```bash
+tree ./output/293a067d-59ac-40ec-9e62-238c3f06cc05
+./output/293a067d-59ac-40ec-9e62-238c3f06cc05
+|-- __pycache__
+|   |-- bm_string_search.cpython-312.pyc
+|   |-- multithreading_config.cpython-312.pyc
+|   `-- test_bm_string_search.cpython-312.pyc
+|-- bm_string_search.py
+|-- count_files.py
+|-- file_counter.py
+|-- multithreading_config.py
+`-- test_bm_string_search.py
+
+2 directories, 8 files
+```

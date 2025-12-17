@@ -33,11 +33,8 @@ We review contemporary research papers and projects in the field of cybersecurit
 
 ## 🥰 Members
 - **[In Keun Kim]** - Description
-- **[Song Li]** - Description
+- **[Song Li](https://www.linkedin.com/in/song--li/)** - Description
 - **[Caroline Cahill]** - Description
-
-## 🗓️ Weekly Reports
-- **[Week 9 - December 6, 2025](weekly/week9-2025-12-6)** - Latest Report
 
 ## 🔗 Links
 

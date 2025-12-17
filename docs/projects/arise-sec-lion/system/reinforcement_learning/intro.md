@@ -142,14 +142,14 @@ $$
 
 In our system: the policy guides the agent to perform an [action](#action) given a state.
 
-## Q-Learning:
+## Q-Learning
 Q-Learning is a model-free reinforcement learning algorithm that allows an agent to learn the value of actions in specific states without requiring a model of the environment. It operates by iteratively updating a Q-table, which stores the maximum expected future rewards for taking a given action in a given state. The agent explores the environment, performs actions, and observes the immediate rewards and subsequent states. This is called **off-policy learning**, because it in theory converages on an optimal policy with adequate exploration.
 
 In our system:
 We chose Q-learning because both $\mathcal{T}$ and $\mathcal{R}$ are not fully known to the agent. Q-learning is 
 sample-based Q-value iteration, and our agents learn $Q(\mathcal{s}, \mathcal{a})$ values when they are enabled. Our agents are supposed to use learned Q-Value as the value function to help them to gauge the observed state.
 
-### Value-Based Method:
+### Value-Based Method
 A value function $\mathcal{V}$ that maps a state to the expected value of being at that state is trained.
 
 ### Q-Value Iteration
