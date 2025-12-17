@@ -89,8 +89,9 @@ $$
 \mathcal{V}^{\pi}(\mathcal{s}): \mathcal{S} \rightarrow \mathbb{R}
 $$
 
-The value of a state is the expected discounted return the agent can get if it starts in that state, and then act according to our policy.
-
+In our system:
+- **Thinkers**: the value of a state is direct metric for agents to break down the objective into sub-tasks given the current budget. A higher value indicates that the current state is more favorable for achieving the overall goal, guiding thinkers to design effective task breakdowns. For example, if the current state has a high budget and likely leads to high expected rewards, the thinker agent may decide to break down the objective into more detailed and careful sub-tasks that require more resources. For example, if the agent is supposed to write a core C program to resolve a vulnerability, it may decide to create sub-tasks including writing unit tests, implementing logging features, and handling edge cases. However, if the agent is only supposed to write some testing documnets, the value is lower, and the agent may decide to create only a few simple sub-tasks.
+- **Workers**: the value is a metric for agents to gauge the effectiveness of their actions in real coding. A high value indicates that the current state is more likely to lead to successful task completion, guiding workers to make informed decisions during code execution. For example, if writing a writing a simple Python script to search for keywords in files, a higher value may indicate that the current code structure is efficient and likely to achieve the desired functionality. In contrast, a lower value indicates the possible generated code quality is not desirable given the instruction context, and the worker agent may need to reconsider its approach, refactor the code, or seek additional context from ancestor thinkers.
 
 ### Reward
 Reward/ Return $\mathcal{R}$ is the feedback signal received by the agent after taking an action in a particular state.
