@@ -142,14 +142,51 @@ $$
 
 In our system: the policy guides the agent to perform an [action](#action) given a state.
 
+## Design Choices: Reinforcement Learning Techniques
+In this section, we would explain why we chose to use Q-learning as our primary designed reinforcement learning technique. Please check out [HuggingFace Blog Post: Q-Learning 1](https://huggingface.co/blog/deep-rl-q-part1), [HuggingFace Blog Post: Q-Learning 2](https://huggingface.co/blog/deep-rl-q-part2), and [UC Berkeley CS188 Slides on Learning Methods](https://inst.eecs.berkeley.edu/~cs188/fa25/assets/lectures/cs188-fa25-lec11.pdf#page=3) for more details.
+
+### Flowchart
+The following is RL design choices flowchart. This should facilitate the understanding of the flow of our reinforcement learning design.
+```mermaid
+flowchart TB
+  G1("Goal 1: Compute $$\mathcal{V^*}, \mathcal{Q^*}, \mathcal{\pi}^*$$") --> MDP_Check{"Is the MDP known?"};
+  G2("Goal 2: Evaluate a fixed policy $$\mathcal{\pi}$$") --> MDP_Check;
+  MDP_Check --"Yes"--> MDP_Known["Known MDP: Offline Solution"];
+  MDP_Check --"No"--> Learn_MDP{"Approximate MDP?"}
+  Learn_MDP --"Yes"--> MDP_Unknown_Model["Unknown MDP: Model-Based"];
+  Learn_MDP --"No"-->  MDP_Unknown_Model_Free["Unknown MDP: Model-Free"];
+
+  MDP_Known --"Goal 1 Technique"--> Val_Policy_Iter["Value/Policy Iteration"];
+  MDP_Known --"Goal 2 Technique"--> Policy_Eval["Policy Evaluation"];
+
+  MDP_Unknown_Model --"Goal 1 Technique"--> Val_Policy_Iter_Approx["Value/Policy Iteration on Approximated MDP"];
+  MDP_Unknown_Model --"Goal 2 Technique"--> Policy_Eval_Approx["Policy Evaluation on Approximated MDP"];
+
+  MDP_Unknown_Model_Free --"Goal 1 Technique"--> Q_Learning["Q-Learning"];
+  MDP_Unknown_Model_Free --"Goal 2 Technique"--> Val_Learning["Value Learning"];
+
+  style G1 fill:#bbf,stroke:#333,stroke-width:2px
+  style Val_Policy_Iter fill:#bbf,stroke:#333,stroke-width:2px
+  style Val_Policy_Iter_Approx fill:#bbf,stroke:#333,stroke-width:2px
+  style Q_Learning fill:#bbf,stroke:#333,stroke-width:2px
+
+  style G2 fill:#abc,stroke:#333,stroke-width:2px
+  style Policy_Eval fill:#abc,stroke:#333,stroke-width:2px
+  style Policy_Eval_Approx fill:#abc,stroke:#333,stroke-width:2px
+  style Val_Learning fill:#abc,stroke:#333,stroke-width:2px
+```
+**Note**: Value Learning is also known as Value-Based Method, which aims to learn a value function $\mathcal{V}$ that maps a state to the expected value of being at that state. Value learning methods include techniques like **Temporal Difference (TD) Learning**, **Direct Evaluation**, and **Monte Carlo methods**.
+
+### Learning Method Choice Comparisons
+In this section, we would compare different learning methods and explain why we chose Q-learning in regards to our system's requirements.
+
+TODO
+
 ## Q-Learning
 Q-Learning is a model-free reinforcement learning algorithm that allows an agent to learn the value of actions in specific states without requiring a model of the environment. It operates by iteratively updating a Q-table, which stores the maximum expected future rewards for taking a given action in a given state. The agent explores the environment, performs actions, and observes the immediate rewards and subsequent states. This is called **off-policy learning**, because it in theory converages on an optimal policy with adequate exploration.
 
 In our system:
 We chose Q-learning because both $\mathcal{T}$ and $\mathcal{R}$ are not fully known to the agent. Q-learning is 
 sample-based Q-value iteration, and our agents learn $Q(\mathcal{s}, \mathcal{a})$ values when they are enabled. Our agents are supposed to use learned Q-Value as the value function to help them to gauge the observed state.
-
-### Value-Based Method
-A value function $\mathcal{V}$ that maps a state to the expected value of being at that state is trained.
 
 ### Q-Value Iteration

@@ -133,7 +133,6 @@ flowchart TB
     
     style A fill:#bbf,stroke:#333,stroke-width:2px
     style END fill:#ffcccc,stroke:#333,stroke-width:2px
-
 ```
 
 About Task Spawning: When the supervisor node decides to create a sub-task, it spawns by default 3 agents with different internal LLM models with the same assigned task and equal budget split. This diversity facilitates the possibility of success, because different models have different strengths and weaknesses. The supervisor node only needs one successful subordinate node to complete the sub-task, and the rest of subordinate nodes are immediately terminated to save budget. If one subordinate agent is successful, the supervisor recollects the given budget from that node with a reward ratio (e.g., 1.2x), and the rest of unfinished subordinate nodes lose their given budget with no reward or penalty ratio (e.g., 1x). Failed subordinate node return their remaining budget with a penalty ration (e.g. 0.8x) back to the supervisor node.
