@@ -177,10 +177,13 @@ flowchart TB
 ```
 **Note**: Value Learning is also known as Value-Based Method, which aims to learn a value function $\mathcal{V}$ that maps a state to the expected value of being at that state. Value learning methods include techniques like **Temporal Difference (TD) Learning**, **Direct Evaluation**, and **Monte Carlo methods**.
 
-### Learning Method Choice Comparisons
+### Why we chose Q-Learning?
 In this section, we would compare different learning methods and explain why we chose Q-learning in regards to our system's requirements.
 
-TODO
+- **Goal Selection**: We do not a fixed policy as a clearly defined function. Our input to policy is state observation, which is highly dynamic and not quantifiable. Instead, we want to compute the optimal value function $\mathcal{V^*}$, optimal Q-value function $\mathcal{Q^*}$, and optimal policy $\mathcal{\pi}^*$ that maximizes the expected cumulative reward. This leads us to **Goal 1** in the flowchart.
+- **MDP Knowledge**: Our system does not have a known MDP, because we do not have a direct knowledge on state transition function $\mathcal{T}$ and reward function $\mathcal{R}$. One action in the coding environment can lead to highly undeterministic state transitions and rewards. This leads us to the "No" branch in the flowchart.
+- **Model-Based or Model-Free**: In order to approximate the MDP, we need to learn with empirical data: 1. count outcomes $\mathcal{s'}$ for each $\mathcal{s}, \mathcal{a}$; 2. Normalize to give an estimate of $\mathcal{\hat{T}}(\mathcal{s}, \mathcal{a}, \mathcal{a'})$; 3. Discover each reward estimate $\mathcal{\hat{R}}(\mathcal{s}, \mathcal{a}, \mathcal{a'})$ as we experience $(\mathcal{s}, \mathcal{a}, \mathcal{s'})$. However, we can not afford to experience or even a subset of all possible state transitions. Our tree is growing exponentially fast, and empirical data is not sufficient because it is very resource-consuming even for agents just to try to figure out a pattern. Also, it is unclear if even a trial is correct or not. This leads us to the "No" branch in the flowchart.
+- **Q-Learning or Value Learning**: Because we want to achieve **Goal 1**, and we are in a model-free setting, Q-Learning is the most suitable choice.
 
 ## Q-Learning
 Q-Learning is a model-free reinforcement learning algorithm that allows an agent to learn the value of actions in specific states without requiring a model of the environment. It operates by iteratively updating a Q-table, which stores the maximum expected future rewards for taking a given action in a given state. The agent explores the environment, performs actions, and observes the immediate rewards and subsequent states. This is called **off-policy learning**, because it in theory converages on an optimal policy with adequate exploration.
