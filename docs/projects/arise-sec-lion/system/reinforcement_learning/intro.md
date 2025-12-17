@@ -21,6 +21,7 @@ Our system have two different agents: thinkers and workers. Thinkers utilize the
 **Notes:** Contrast to the original proposal in [brain-storming notes](/weekly/brainstorming/agentic-tree.md), this page delineates more formal definitions and practical implementations of the reinforcement learning techniques we used to optimize the tree-structured agentic system. 
 - **Major Change 1**: we do not intentionally spawn agents with different models directly. Instead, our supervisor agents decide to regulate sub-agents' model configurations (model name, temperature, max tokens, etc.) as part of the action space when they design sub-tasks. Also, if one branch is failing, the supervisor agent can decide to respawn a sub-agent with a more capable model or more resources.
 - **Major Change 2**: we do not have conflicting notations on rewards and budget changes. Reward here explicitly refers to the feedback signal received by the agent after taking an action in a particular state in the RL setting.
+- **Major Change 3**: we now use more formally defined value function $\mathcal{V}$, implemented by Q-Value, to allow agent to quantify the current state. In the brain-storming notes, we simply ask LLM to use its internal deep-thinking to evaluate the state, which is not very consistent and reliable because we will reconfigure model choices and hyper-parameters for different agents.
 
 ## 📚 Documentations
 
@@ -142,7 +143,13 @@ $$
 In our system: the policy guides the agent to perform an [action](#action) given a state.
 
 ## Q-Learning:
+Q-Learning is a model-free reinforcement learning algorithm that allows an agent to learn the value of actions in specific states without requiring a model of the environment. It operates by iteratively updating a Q-table, which stores the maximum expected future rewards for taking a given action in a given state. The agent explores the environment, performs actions, and observes the immediate rewards and subsequent states. This is called **off-policy learning**, because it in theory converages on an optimal policy with adequate exploration.
+
+In our system:
+We chose Q-learning because both $\mathcal{T}$ and $\mathcal{R}$ are not fully known to the agent. Q-learning is 
+sample-based Q-value iteration, and our agents learn $Q(\mathcal{s}, \mathcal{a})$ values when they are enabled. Our agents are supposed to use learned Q-Value as the value function to help them to gauge the observed state.
 
 ### Value-Based Method:
+A value function $\mathcal{V}$ that maps a state to the expected value of being at that state is trained.
 
 ### Q-Value Iteration
