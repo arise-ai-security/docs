@@ -1,6 +1,6 @@
 ---
 title: Task Assignment Mechanism
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # Task Assignment Overview

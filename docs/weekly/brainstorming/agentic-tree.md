@@ -97,8 +97,8 @@ flowchart TB
     E -- "YES" --> H;
     E -- "NO" --> J;
 
-    I -- "PLUS Reward Ration * X_Y2" --> A_b;
-    J -- "MINUS Penalty Ration * X_Y2" --> A_b;
+    I -- "PLUS Reward Ratio * X_Y2" --> A_b;
+    J -- "MINUS Penalty Ratio * X_Y2" --> A_b;
 
     style A fill:#bbf,stroke:#333,stroke-width:2px
     style Bchild_b fill:#bdf,stroke:#333,stroke-width:2px
