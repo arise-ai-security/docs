@@ -90,7 +90,7 @@ $$
 $$
 
 In our system:
-- **Thinkers**: the value of a state is direct metric for agents to break down the objective into sub-tasks given the current budget. A higher value indicates that the current state is more favorable for achieving the overall goal, guiding thinkers to design effective task breakdowns. For example, if the current state has a high budget and likely leads to high expected rewards, the thinker agent may decide to break down the objective into more detailed and careful sub-tasks that require more resources. For example, if the agent is supposed to write a core C program to resolve a vulnerability, it may decide to create sub-tasks including writing unit tests, implementing logging features, and handling edge cases. However, if the agent is only supposed to write some testing documnets, the value is lower, and the agent may decide to create only a few simple sub-tasks.
+- **Thinkers**: the value of a state is direct metric for agents to break down the objective into sub-tasks given the current budget. A higher value indicates that the current state is more favorable for achieving the overall goal, guiding thinkers to design effective task breakdowns. For example, if the current state has a high budget and likely leads to high expected rewards, the thinker agent may decide to break down the objective into more detailed and careful sub-tasks that require more resources. For example, if the agent is supposed to write a core C program to resolve a vulnerability, it may decide to create sub-tasks including writing unit tests, implementing logging features, and handling edge cases. However, if the agent is only supposed to write some testing documnets, the value is lower, and the agent may decide to create only a few simple sub-tasks. Also a low value may leads to *termination* of the entire branch if the agent thinks that the current state is unlikely to lead to success.
 - **Workers**: the value is a metric for agents to gauge the effectiveness of their actions in real coding. A high value indicates that the current state is more likely to lead to successful task completion, guiding workers to make informed decisions during code execution. For example, if writing a writing a simple Python script to search for keywords in files, a higher value may indicate that the current code structure is efficient and likely to achieve the desired functionality. In contrast, a lower value indicates the possible generated code quality is not desirable given the instruction context, and the worker agent may need to reconsider its approach, refactor the code, or seek additional context from ancestor thinkers.
 
 ### Reward
@@ -101,9 +101,16 @@ Reward/ Return $\mathcal{R}$ is the feedback signal received by the agent after 
   $$
   \mathcal{R}(\mathcal{s}, \mathcal{a}, \mathcal{s'}) = \mathcal{R}(\mathcal{s}, \mathcal{\pi(s)}, \mathcal{s'})
   $$
-  In our model, it is infeasible to learn the exact $\mathcal{R}$, because the coding environment is highly complex and dynamic, and the exact benefit of certain exploration is not measurable. For example, if one agent decides to implement the logging feature extensively, it may not directly contribute to the objective achievement, but it can help other agents to debug their code more easily. In this case, the reward is not quantifiable.
+  In our model, it is infeasible to learn the exact $\mathcal{R}$, because the coding environment is highly complex and dynamic, and the exact benefit of certain exploration is not measurable. For example, if one agent decides to implement the logging feature extensively, it may not directly contribute to the objective achievement, but it can help other agents to debug their code more easily. Still, the reward is not quantifiable.
 
 - **Reward Hypothesis**: all goals can be described as the maximization of the expected return (expected cumulative reward). In our system, the reward is gained or lost when the exploration (task execution) is completed, and it can be exponentially propagated back to ancestor agents through reward allocation mechanism. However, if the tree grows too deep, the budget for eacch agent will be so small that the reward signal is weak, so that the tree shoud be kept in a reasonable depth.
+
+In our system: rewards are more deliberately designed through the [reward allocation mechanism](./reward_alloc.md) to provide feedback to agents based on their performance in completing tasks.
+On a high level:
+- **Thinkers**: recollect rewards based on the successful completion of sub-tasks by their subordinate workers. If the sub-agents complete their tasks effectively and contribute positively to the overall objective, the thinker agent receives a positive reward, encouraging it to design effective task breakdowns and allocate resources wisely. Conversely, if sub-agents fail or perform poorly, the thinker may receive a negative reward, prompting it to reconsider its task design and resource allocation strategies. Rewards are the only factor to change an allocated amount of an agent's budget. All agents are motivated to maximize their expected cumulative rewards through better task designs, resource allocations, and execution strategies.
+- **Workers**: receive rewards based on the successful completion of their assigned tasks and supervisor feedback.
+
+**Note**: we need to consider the depth of the tree and budget gain percentage to gauge the reward.
 
 ### Policy
 Policy $\pi$ is a function that maps from agent's state to agent action. So it defines the agent’s behavior at a given time.
@@ -122,6 +129,9 @@ $$
 $$
 
 **Note**: We expand the original weakly defined heuristics in [brain-storming notes](/weekly/brainstorming/agentic-tree.md) into a more formal stochastic policy framework here.
+
+
+In our system: the policy guides the agent to perform an [action](#action) given a state.
 
 ## Q-Learning:
 
