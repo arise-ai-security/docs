@@ -193,3 +193,65 @@ We chose Q-learning because both $\mathcal{T}$ and $\mathcal{R}$ are not fully k
 sample-based Q-value iteration, and our agents learn $Q(\mathcal{s}, \mathcal{a})$ values when they are enabled. Our agents are supposed to use learned Q-Value as the value function to help them to gauge the observed state.
 
 ### Q-Value Iteration
+Learn $\mathcal{Q}(\mathcal{s}, \mathcal{a})$ as you go:
+- **Receive a Sample**: 
+$$
+(\mathcal{s}, \mathcal{a}, \mathcal{s'}, \mathcal{r})
+$$
+- **New Sample Estimate**: 
+$$
+\text{sample} = \mathcal{R}(\mathcal{s}, \mathcal{a}, \mathcal{s'}) + \gamma \max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'}, \mathcal{a'})
+$$
+- **Update Q-Value**:
+$$
+\mathcal{Q}(\mathcal{s}, \mathcal{a}) \leftarrow (1 - \alpha) \mathcal{Q}(\mathcal{s}, \mathcal{a}) + \alpha \cdot \text{sample}
+$$
+
+### Approximate Q-Learning
+Q-learning typically uses a Q-table to store Q-values for each state-action pair. However, maintaining it becomes impractical in our setting. For example, even the textual objective for an agent can not be easily stored in Q-table. Instead, we can use function approximation techniques to estimate the Q-values.
+- **Feature-Based Representations**: Generalize across states.
+1. Learn about some small number of training states from experience. 
+2. Generalize that experience to new, similar situations.
+3. Features are functions from states to real numbers (often 0/1) that capture important properties of the state.
+4. Checkout [this page](https://inst.eecs.berkeley.edu/~cs188/fa25/assets/lectures/cs188-fa25-lec11.pdf#page=20) for more insight. In our system, that state $\mathcal{S_t}$ can be represented by a set of features:
+    - Objective Complexity
+    - Objective Fullfillment (0: not completed, 1: completed)
+    - Current Budget
+    - Task Queue Length
+    - Task Fullfillment Queue (For each task: 0: not completed, 1: completed)
+    - Accessed File System State (number of files, types of files, recent changes, etc.)
+    - Sub-Agent State Metrics (average budget gain, complain rate, completion rate, etc.)
+    - etc.
+5. We define the i-th feature function as
+$$
+\begin{aligned}
+f_i &: (\mathcal{S}, \mathcal{A}) \rightarrow \mathbb{R}\\
+& \implies \text{at state } \mathcal{s} \text{ taking action } \mathcal{a}, \text{we produce feature value to change Q-value.}
+\end{aligned}
+$$
+6. We approximate Q-value as a linear combination of features with weights $\mathcal{w_i}$:
+$$
+\mathcal{Q}(\mathcal{s}, \mathcal{a}) = \sum_{i} \mathcal{w_i} f_i(\mathcal{s}, \mathcal{a})
+$$
+7. Update Rule:
+Adjust weights of active features. If something unexpectedly bad happens, blame the features that were on:
+disprefer all states with that state’s features.
+$$
+\begin{aligned}
+\text{transition} &= (\mathcal{s}, \mathcal{a}, \mathcal{r}, \mathcal{s'},) \\
+\text{difference} &= \left[\mathcal{r} + \gamma \max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'}, \mathcal{a'})\right] - \mathcal{Q}(\mathcal{s}, \mathcal{a}) \\
+\mathcal{Q}(\mathcal{s}, \mathcal{a}) &\leftarrow \mathcal{Q}(\mathcal{s}, \mathcal{a}) + \alpha \cdot \text{difference} \\
+\mathcal{w_i} &\leftarrow \mathcal{w_i} + \alpha \cdot \text{difference} \cdot f_i(\mathcal{s}, \mathcal{a}) \\
+\end{aligned}
+$$
+
+- **Example In Our System**:
+1. Suppose an agent is in state $\mathcal{s}$ with the following features:
+    - Objective Complexity: High (1)
+    - Objective Fullfillment: 0
+    - Current Budget: 50
+    - Task Queue Length: 3
+    - Task Fullfillment Queue: 0, 0, 0
+2. The agent takes action $\mathcal{a}$ (e.g., spawning a new sub-agent for a sub-task).
+3. Agent takes an action based on a policy that maximize the current state Q-value. For example, check if one reported back task is aligned with the objective. 
+3. After executing the action, the agent receives a reward $\mathcal{r}$ because one task is completed in accordance with the objective and transitions to a new state $\mathcal{s'}$ with updated features of task queue: 0, 1, 0.
