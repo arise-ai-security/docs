@@ -219,6 +219,7 @@ Q-learning typically uses a Q-table to store Q-values for each state-action pair
     - Current Budget
     - Task Queue Length
     - Task Fullfillment Queue (For each task: 0: not completed, 1: completed)
+    - Task Budget Queue (For each task: allocated budget)
     - Accessed File System State (number of files, types of files, recent changes, etc.)
     - Sub-Agent State Metrics (average budget gain, complain rate, completion rate, etc.)
     - etc.
@@ -238,7 +239,7 @@ Adjust weights of active features. If something unexpectedly bad happens, blame 
 disprefer all states with that state’s features.
 $$
 \begin{aligned}
-\text{transition} &= (\mathcal{s}, \mathcal{a}, \mathcal{r}, \mathcal{s'},) \\
+\text{transition} &= (\mathcal{s}, \mathcal{a}, \mathcal{r}, \mathcal{s'}) \\
 \text{difference} &= \left[\mathcal{r} + \gamma \max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'}, \mathcal{a'})\right] - \mathcal{Q}(\mathcal{s}, \mathcal{a}) \\
 \mathcal{Q}(\mathcal{s}, \mathcal{a}) &\leftarrow \mathcal{Q}(\mathcal{s}, \mathcal{a}) + \alpha \cdot \text{difference} \\
 \mathcal{w_i} &\leftarrow \mathcal{w_i} + \alpha \cdot \text{difference} \cdot f_i(\mathcal{s}, \mathcal{a}) \\
