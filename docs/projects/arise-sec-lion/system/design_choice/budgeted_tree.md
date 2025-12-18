@@ -11,6 +11,8 @@ import BudgetedTreeCatastrophicBreakdown from '@site/src/components/budgeted_tre
 ## Budgeted Tree-Structured Agentic System 
 This system is building on top of the naive tree-structured agentic system by adding budget management, but with only rudimentary task assignment and reward allocation systems to make it work. This system is designed to test if the budget management alone can restrain the tree growth and improve the overall performance.
 
+**Note**: This system has no [budget update system](/docs/projects/arise-sec-lion/system/reinforcement_learning/budget_update.md) enabled yet. This tree only restricts the excessuve growth of the tree by checking the budget allowance before spawning new agents.
+
 ## Case Study Task
 ### Task Objective
 Write C code with only one file that counts all files recursively in the current directory.
