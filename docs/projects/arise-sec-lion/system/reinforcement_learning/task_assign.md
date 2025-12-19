@@ -73,7 +73,7 @@ As illustrated in [Approximate Q-Learning Framework](./intro.md#approximate-q-le
 ### Workflow Chart
 The following interactive diagram illustrates the [Approximate Q-Learning](./intro.md#approximate-q-learning) process for task assignment. It shows the complete decision cycle: how the agent observes the current state, evaluates Q-values for all candidate actions, selects an action via stochastic policy, executes the action, transitions to a new state, receives a reward, and updates weights for the next iteration.
 
-**Interactive Features:** Scroll to zoom • Drag to pan • Click nodes for detailed information
+**Interactive Diagram:** Scroll to zoom • Drag to pan • Click nodes for detailed information
 
 <ApproxQLearningWorkflow />
 

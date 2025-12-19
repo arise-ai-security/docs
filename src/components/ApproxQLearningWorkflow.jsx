@@ -164,8 +164,8 @@ const NODE_DETAILS = {
         heading: 'Example Q-Value Calculation',
         content: 'With learned weights w = [0.3, 0.8, -0.1, 0.5, 0.4, -0.2, 0.1]:',
         equations: [
-          ['\\mathcal{Q}(\\mathcal{s}, \\text{verify}) =', '0.3(1) + 0.8(0) + (-0.1)(2) + 0.5(1) + 0.4(1) + (-0.2)(10) + 0.1(35)'],
-          ['=', '0.3 + 0 - 0.2 + 0.5 + 0.4 - 2.0 + 3.5 = 2.5'],
+          ['\\mathcal{Q}(\\mathcal{s}, \\text{verify}) =', '0.3(1) + 0.8(0) + (-0.1)(2) + 0.5(1) + 0.4(1) + (-0.2)(10) + 0.1(35)='],
+          ['', '0.3 + 0 - 0.2 + 0.5 + 0.4 - 2.0 + 3.5 = 2.5'],
         ],
       },
     ],
