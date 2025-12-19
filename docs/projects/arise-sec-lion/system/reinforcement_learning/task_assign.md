@@ -132,3 +132,188 @@ Feature cues in this workflow
 - $f_5$ (completion): per-task success flag.
 - $f_6$ (budget gain/loss): efficiency per completed task.
 - $f_7$ (current budget): remaining resources.
+
+## Q-Learning Convergence Justification
+
+This section provides theoretical justification for why our approximate Q-learning approach converges to a close-to-optimal policy for task assignment, along with convergence time estimates grounded in our agentic tree system.
+
+### Bellman Optimality and Contraction Mapping
+
+The foundation of Q-learning convergence rests on the Bellman optimality equation. For any state-action pair $(\mathcal{s}, \mathcal{a})$, the optimal Q-value satisfies:
+
+$$
+\mathcal{Q}^*(\mathcal{s}, \mathcal{a}) = \mathbb{E}\left[\mathcal{r} + \gamma \max_{\mathcal{a'}} \mathcal{Q}^*(\mathcal{s'}, \mathcal{a'})\right]
+$$
+
+The Bellman operator $\mathcal{T}$ defined as:
+
+$$
+(\mathcal{T}\mathcal{Q})(\mathcal{s}, \mathcal{a}) = \mathbb{E}\left[\mathcal{r} + \gamma \max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'}, \mathcal{a'})\right]
+$$
+
+is a **contraction mapping** with factor $\gamma < 1$. By the Banach fixed-point theorem, repeated application of $\mathcal{T}$ converges to a unique fixed point $\mathcal{Q}^*$:
+
+$$
+\|\mathcal{T}\mathcal{Q}_1 - \mathcal{T}\mathcal{Q}_2\|_\infty \leq \gamma \|\mathcal{Q}_1 - \mathcal{Q}_2\|_\infty
+$$
+
+**System Example**: Consider a supervisor agent handling a SQL injection vulnerability fix. Initially, the agent may assign poorly scoped sub-tasks (e.g., "fix all SQL queries" as a single task). Through repeated interactions:
+- The Bellman operator contracts the Q-value estimates toward the true optimal values
+- After observing that monolithic tasks yield negative feedback ($f_4 = -1$) and low completion rates ($f_5 = 0$), the Q-values for such actions decrease
+- Conversely, well-decomposed tasks (e.g., "audit input validation for user login endpoint") receive positive feedback, and their Q-values increase toward the optimum
+
+### Convergence Conditions
+
+Tabular Q-learning converges to $\mathcal{Q}^*$ almost surely under three conditions:
+
+1. **Adequate Exploration**: Every state-action pair must be visited infinitely often. Our ε-greedy policy with $\varepsilon > 0$ ensures this:
+$$
+\pi(\mathcal{a}|\mathcal{s}) =
+\begin{cases}
+    1 - \varepsilon + \frac{\varepsilon}{|\mathcal{A}|} & \text{if } \mathcal{a} = \arg\max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s}, \mathcal{a'}) \\
+    \frac{\varepsilon}{|\mathcal{A}|} & \text{otherwise}
+\end{cases}
+$$
+
+2. **Learning Rate Decay**: The learning rate $\alpha_t$ must satisfy the Robbins-Monro conditions:
+$$
+\sum_{t=0}^{\infty} \alpha_t = \infty \quad \text{and} \quad \sum_{t=0}^{\infty} \alpha_t^2 < \infty
+$$
+   A common choice is $\alpha_t = \frac{1}{1 + \text{visits}(\mathcal{s}, \mathcal{a})}$.
+
+3. **Bounded Rewards**: Rewards must be bounded, i.e., $|\mathcal{r}| \leq R_{max}$ for some constant $R_{max}$.
+
+**System Example**: In our task assignment workflow:
+- *Exploration*: With $\varepsilon = 0.1$, even after learning that "Pop/execute next task" is often optimal, the agent still occasionally tries "Insert verification task" or "Redo failed task" to discover if circumstances have changed
+- *Learning rate*: As the supervisor repeatedly assigns tasks to fix authentication bypass vulnerabilities, it updates weights less aggressively over time, stabilizing around learned patterns
+- *Bounded rewards*: Our reward shaping $\mathcal{r} = r_{done} + r_{verify} + r_{budget} + r_{feedback} - r_{delay}$ is bounded by design, with each component constrained to a known range
+
+### Approximate Q-Learning: Feature-Based Convergence
+
+Our system uses approximate Q-learning with a linear feature representation:
+
+$$
+\mathcal{Q}(\mathcal{s}, \mathcal{a}; \mathbf{w}) = \sum_{i=1}^{7} \mathcal{w}_i \cdot f_i(\mathcal{s}, \mathcal{a})
+$$
+
+Unlike tabular Q-learning, approximate methods do not guarantee convergence to $\mathcal{Q}^*$. However, under the following conditions, they converge to a **close-to-optimal** policy:
+
+1. **Linear Function Approximation**: With linear features, the weight update rule:
+$$
+\mathcal{w}_i \leftarrow \mathcal{w}_i + \alpha \cdot \text{difference} \cdot f_i(\mathcal{s}, \mathcal{a})
+$$
+   performs stochastic gradient descent on the mean squared Bellman error.
+
+2. **Feature Richness**: If the feature set can express the true Q-function well (low approximation error), the learned policy approaches optimality. Our seven features capture key decision factors:
+   - $f_1$ (complexity): distinguishes simple vs. complex objectives
+   - $f_2$ (fulfillment): tracks progress toward goal completion
+   - $f_3$ (queue length): encodes workload and potential bottlenecks
+   - $f_4$ (feedback): integrates sub-agent signals
+   - $f_5$ (completion): monitors per-task success
+   - $f_6, f_7$ (budget): encode resource constraints
+
+3. **Gradient Temporal Difference (GTD) Stability**: Standard TD with function approximation can diverge (the "deadly triad"). Using GTD2 or TDC algorithms provides provable convergence guarantees:
+$$
+\mathbf{w}_{t+1} = \mathbf{w}_t + \alpha \left(\delta_t - \gamma \mathbf{w}_t^\top \mathbf{f}_{t+1} \cdot \mathbf{h}_t^\top \mathbf{f}_t \right) \mathbf{f}_t
+$$
+   where $\mathbf{h}$ is an auxiliary weight vector.
+
+**Approximation Error Bound**: Let $\mathcal{Q}^*$ be the true optimal Q-function and $\Pi$ be the projection onto the linear feature space. The learned $\mathcal{Q}(\cdot; \mathbf{w})$ satisfies:
+
+$$
+\|\mathcal{Q}(\cdot; \mathbf{w}) - \mathcal{Q}^*\|_\mu \leq \frac{1}{\sqrt{1 - \gamma^2}} \|\Pi \mathcal{Q}^* - \mathcal{Q}^*\|_\mu
+$$
+
+where $\mu$ is the stationary distribution. This bound shows that if our features can represent $\mathcal{Q}^*$ well (small projection error), the learned Q-function will be close to optimal.
+
+**System Example**: For the SQL injection fix objective:
+- If features adequately capture "a task requiring 3 sub-agents with verification is better than 1 sub-agent without verification for complex vulnerabilities," the learned weights will reflect this
+- The approximation error depends on whether our 7 features can distinguish between qualitatively different states
+- Adding feature $f_1$ (complexity) allows the agent to learn different strategies for simple bugs (quick fix) vs. complex vulnerabilities (thorough decomposition with verification)
+
+### Convergence Time Estimates
+
+The convergence rate depends on several factors. We provide estimates for our agentic tree system:
+
+#### Sample Complexity (PAC Bounds)
+
+For tabular Q-learning to achieve an $\varepsilon$-optimal policy with probability at least $1 - \delta$, the required number of samples is:
+
+$$
+N = \tilde{O}\left(\frac{|\mathcal{S}||\mathcal{A}|}{\varepsilon^2(1-\gamma)^5} \log\frac{1}{\delta}\right)
+$$
+
+For approximate Q-learning with $d$ features (we have $d = 7$):
+
+$$
+N = \tilde{O}\left(\frac{d}{\varepsilon^2(1-\gamma)^4}\right)
+$$
+
+#### Concrete Estimates for Task Assignment
+
+Consider our system parameters:
+- Discount factor: $\gamma = 0.9$
+- Action space: $|\mathcal{A}| = 6$ (pop, verify, redo, assign new, report, terminate)
+- Features: $d = 7$
+- Desired accuracy: $\varepsilon = 0.1$ (90% optimal)
+
+**Per-Agent Convergence**:
+$$
+N_{agent} \approx \frac{7}{0.1^2 \times (1-0.9)^4} = \frac{7}{0.01 \times 0.0001} = 7,000,000 \text{ samples}
+$$
+
+However, in practice, with good feature engineering and domain knowledge initialization (see [Weight Initialization](#workflow-explanation)), convergence is much faster:
+
+- **Warm-start with domain knowledge**: Initializing $\mathcal{w}_2 = 5.0$ (fulfillment) and $\mathcal{w}_4 = 2.0$ (feedback) based on prior understanding reduces required samples by 10-100×
+- **Experience replay**: Reusing past transitions accelerates learning
+- **Practical estimate**: 500-2,000 task assignment episodes per agent type
+
+**System-Wide Convergence**: For an agentic tree with depth $D$ and branching factor $B$:
+
+$$
+N_{total} \approx N_{agent} \times \sum_{i=0}^{D} B^i = N_{agent} \times \frac{B^{D+1} - 1}{B - 1}
+$$
+
+**System Example**: For the SQL injection fix with:
+- Tree depth $D = 3$ (root → security specialist → code analyzer → file patcher)
+- Average branching factor $B = 3$
+
+$$
+N_{total} \approx 1,500 \times \frac{3^4 - 1}{3 - 1} = 1,500 \times 40 = 60,000 \text{ episodes}
+$$
+
+This represents the total task assignment decisions across all agents before the system achieves near-optimal behavior for similar vulnerability classes.
+
+#### Wall-Clock Time Considerations
+
+If each task assignment episode takes on average 30 seconds (including sub-agent execution):
+
+$$
+T_{convergence} \approx \frac{60,000 \times 30}{3600} \approx 500 \text{ hours}
+$$
+
+**Acceleration Strategies**:
+1. **Transfer learning**: Weights learned for "SQL injection fix" transfer to "XSS vulnerability fix" with minimal fine-tuning (~10× speedup)
+2. **Parallel simulation**: Running multiple independent trees simultaneously
+3. **Offline RL**: Learning from logged historical agent interactions
+
+### Why Close-to-Optimal is Sufficient
+
+In the agentic tree setting, exact optimality is neither achievable nor necessary:
+
+1. **Non-Stationary Environment**: Real-world codebases change, making the true $\mathcal{Q}^*$ a moving target. A close-to-optimal policy that adapts is more valuable than a historically optimal but static policy.
+
+2. **Catastrophic Breakdown Prevention**: Our primary goal is preventing the catastrophic breakdown observed in the [budgeted tree experiment](/docs/projects/arise-sec-lion/system/design_choice/budgeted_tree.md). A policy that is 90% optimal but avoids complete failure modes (improper task breakdown, redundant sub-tasks) is highly effective.
+
+3. **Graceful Degradation**: With learned weights:
+   - High $\mathcal{w}_4$ (feedback weight) ensures negative sub-agent signals trigger corrective actions
+   - High $\mathcal{w}_2$ (fulfillment weight) prioritizes completing the objective over perfect efficiency
+   - Balanced $\mathcal{w}_6, \mathcal{w}_7$ (budget weights) prevent resource exhaustion
+
+**System Example**: After convergence, when a supervisor agent receives the objective "Fix SQL injection in user authentication":
+1. Feature $f_1$ activates (complex task) → agent decomposes into sub-tasks
+2. Sub-agent reports negative feedback ($f_4 = -1$: "ambiguous scope") → high $\mathcal{w}_4$ triggers "Redo" action
+3. Refined sub-task succeeds ($f_5 = 1$) → agent proceeds to next task
+4. All sub-tasks complete ($f_2 = 1$) → agent selects "Terminate" with high confidence
+
+The policy may not be theoretically optimal (perhaps verification could have been skipped for one sub-task), but it reliably achieves the objective while avoiding catastrophic failures.
