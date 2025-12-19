@@ -113,7 +113,7 @@ $$
 6) Update weights (blame-on-features)
     - Compute a *difference* signal using the same form as in the Approximate Q-Learning section:
 $$
-	ext{difference} = \left[\mathcal{r} + \gamma\max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'},\mathcal{a'})\right] - \mathcal{Q}(\mathcal{s},\mathcal{a})
+	\text{difference} = \left[\mathcal{r} + \gamma\max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'},\mathcal{a'})\right] - \mathcal{Q}(\mathcal{s},\mathcal{a})
 $$
     - Update weights for features that were active for $(\mathcal{s},\mathcal{a})$:
 $$
