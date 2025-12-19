@@ -75,40 +75,60 @@ The following interactive diagram illustrates the [Approximate Q-Learning](./int
 
 **Interactive Diagram:** Scroll to zoom • Drag to pan • Click nodes for detailed information
 
-<ApproxQLearningWorkflow />
+<ApproxQLearningWorkflow/>
 
 ### Workflow Explanation
 
-The diagram above follows the [Approximate Q-Learning](./intro.md#approximate-q-learning) loop with feature-based Q-value estimation:
+This explanation maps the interactive `ApproxQLearningWorkflow` to the equations in [Approximate Q-Learning](./intro.md#approximate-q-learning), but stays focused on *task-assignment semantics* (assign / verify / redo) and *weight updates*.
 
-1. **State Observation**: The agent observes its current state $\mathcal{s}$, defined as:
+1) Observe state and enumerate candidate actions
+    - The supervisor observes its current state $\mathcal{s}$ (objective + progress signals such as budget, task queue, feedback, etc.).
+    - It enumerates candidate task-assignment actions $\mathcal{A}(\mathcal{s})$ such as:
+      - Pop/execute next task
+      - Insert verification task
+      - Redo (revise and re-insert) a failed task
+      - Terminate / stop spawning (when warranted)
+
+2) Compute feature values and estimate $Q(\mathcal{s},\mathcal{a})$
+    - For each candidate action $\mathcal{a}$, compute feature values $f_i(\mathcal{s},\mathcal{a})$ (see [Feature Functions](#feature-functions)).
+    - Approximate the action value by a linear function of features:
 $$
-\mathcal{S_t} = (\text{objective}, \text{budget}, \text{task queue}, \text{file system snapshot with access}, \text{sub-agents' states})
+\mathcal{Q}(\mathcal{s},\mathcal{a}) = \sum_i \mathcal{w_i}\, f_i(\mathcal{s},\mathcal{a})
 $$
 
-2. **Action Space**: The agent considers all possible actions in its action space $\mathcal{A}$. Each action type corresponds to a specific task assignment operation.
+3) Select an action (policy)
+    - Use a stochastic policy (typically ε-greedy): explore with probability $\varepsilon$, otherwise choose the action with the largest estimated $\mathcal{Q}(\mathcal{s},\mathcal{a})$.
 
-3. **Q-Value Computation**: For **each** candidate action $\mathcal{a}_i$, the agent extracts [feature values](#feature-functions) and computes the Q-value using the linear approximation:
+4) Execute the task-assignment action
+    - Execute the selected action in the workflow (task queue update, optional verification insertion, redo decision).
+    - The system transitions to a new state $\mathcal{s'}$.
+
+5) Observe reward and record the transition
+    - The agent receives a scalar reward $\mathcal{r}$ and records $(\mathcal{s},\mathcal{a},\mathcal{r},\mathcal{s'})$.
+    - Reward should reflect what task assignment is trying to optimize (e.g., correctness + alignment + efficiency). One simple shaping pattern:
 $$
-\mathcal{Q}(\mathcal{s}, \mathcal{a}_i) = \sum_{j} \mathcal{w_j} f_j(\mathcal{s}, \mathcal{a}_i)
+\mathcal{r} = r_{done} + r_{verify} + r_{budget} + r_{feedback} - r_{delay}
 $$
 
-4. **Action Selection**: Using a [stochastic policy](./intro.md#policy) $\pi(\mathcal{a}|\mathcal{s})$, typically ε-greedy:
-   - With probability $\varepsilon$: select a random action (exploration)
-   - With probability $1-\varepsilon$: select $\mathcal{a}^* = \arg\max_{\mathcal{a}} \mathcal{Q}(\mathcal{s}, \mathcal{a})$ (exploitation)
-
-5. **Action Execution**: The chosen action $\mathcal{a}^*$ is executed, producing observable effects (e.g., tasks added to queue, sub-agents spawned, budget consumed).
-
-6. **State Transition & Reward**: The environment transitions to new state $\mathcal{s'}$ and the agent receives reward $\mathcal{r}$ based on the outcome. The transition tuple $(\mathcal{s}, \mathcal{a}^*, \mathcal{r}, \mathcal{s'})$ is recorded.
-
-7. **Weight Update**: Following [Approximate Q-Learning update rules](./intro.md#approximate-q-learning), the agent computes the TD difference and updates weights:
+6) Update weights (blame-on-features)
+    - Compute a *difference* signal using the same form as in the Approximate Q-Learning section:
 $$
-\begin{aligned}
-\text{difference} &= \left[\mathcal{r} + \gamma \max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'}, \mathcal{a'})\right] - \mathcal{Q}(\mathcal{s}, \mathcal{a}^*) \\
-\mathcal{Q}(\mathcal{s}, \mathcal{a}^*) &\leftarrow \mathcal{Q}(\mathcal{s}, \mathcal{a}^*) + \alpha \cdot \text{difference} \\
-\mathcal{w_i} &\leftarrow \mathcal{w_i} + \alpha \cdot \text{difference} \cdot f_i(\mathcal{s}, \mathcal{a}^*)
-\end{aligned}
+	\text{difference} = \left[\mathcal{r} + \gamma\max_{\mathcal{a'}} \mathcal{Q}(\mathcal{s'},\mathcal{a'})\right] - \mathcal{Q}(\mathcal{s},\mathcal{a})
 $$
-   The key insight: **blame on-features**. If something unexpectedly bad happens (difference < 0), the weights of active features decrease, causing the agent to disprefer all states with similar features.
+    - Update weights for features that were active for $(\mathcal{s},\mathcal{a})$:
+$$
+\mathcal{w_i} \leftarrow \mathcal{w_i} + \alpha \cdot \text{difference} \cdot f_i(\mathcal{s},\mathcal{a})
+$$
+    - Intuition: if an outcome is worse than expected, the active features get “blamed” and their weights move to reduce the chance of repeating that decision in similar states.
 
-8. **Next Iteration**: If not in a terminal state, the agent sets $\mathcal{s} \leftarrow \mathcal{s'}$ and repeats from step 1.
+7) Iterate
+    - Set $\mathcal{s} \leftarrow \mathcal{s'}$ and repeat until termination.
+
+Feature cues in this workflow
+- $f_1$ (complexity): triggers on hard objectives (more likely to verify/branch).
+- $f_2$ (fulfillment): turns on when aggregated sub-results satisfy the objective.
+- $f_3$ (queue length): discourages bloat; affects $r_{delay}$.
+- $f_4$ (feedback): positive/neutral/negative sub-agent signals.
+- $f_5$ (completion): per-task success flag.
+- $f_6$ (budget gain/loss): efficiency per completed task.
+- $f_7$ (current budget): remaining resources.
