@@ -15,3 +15,6 @@ This overview covers all variants of the tree-structured agentic systems.
 
 ### Design Choice 2: Budgeted Tree-Structured Agentic System
 - **[Budgeted Tree](./budgeted_tree.md)** - This design builds upon the naive tree-structured agentic system by introducing budget management. This strategy limits the growth of the agent tree and aims to enhance the overall focus to achive better performance. However, the budget management is not yet complemented with reward allocation mechanisms to fine-tune agent behaviors.
+
+### Design Choice 3: Budgeted Plus Tree-Structured Agentic System
+- **[Budgeted Plus Tree](./budgeted_tree_plus.md)**
