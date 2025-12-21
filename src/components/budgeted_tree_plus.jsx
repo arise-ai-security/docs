@@ -39,6 +39,26 @@ const COMPLEXITY_COLORS = {
   complex: { bg: '#fee2e2', text: '#991b1b' },
 };
 
+// Worker assignment reason detection
+const WORKER_REASONS = {
+  low_budget: { label: 'Low Budget', bg: '#fef3c7', text: '#92400e', icon: '💰' },
+  random: { label: 'Random Shortcut', bg: '#e0e7ff', text: '#3730a3', icon: '🎲' },
+  llm_evaluation: { label: 'LLM Evaluation', bg: '#d1fae5', text: '#065f46', icon: '🤖' },
+};
+
+function getWorkerReason(complexityReasoning) {
+  if (!complexityReasoning) return null;
+  const lower = complexityReasoning.toLowerCase();
+  if (lower.includes('shortcut') && lower.includes('budget')) {
+    return 'low_budget';
+  }
+  if (lower.includes('shortcut') && lower.includes('random')) {
+    return 'random';
+  }
+  // If it has reasoning but not a shortcut, it's from LLM evaluation
+  return 'llm_evaluation';
+}
+
 // Section component for the modal
 function Section({ title, children }) {
   if (!children) return null;
@@ -59,6 +79,10 @@ function AgentModal({ agent, onClose }) {
   const roleColor = ROLE_COLORS[agent.role] || '#6b7280';
   const statusStyle = STATUS_BADGES[agent.status] || { bg: '#e5e7eb', text: '#374151' };
   const complexityStyle = agent.complexity ? (COMPLEXITY_COLORS[agent.complexity] || { bg: '#e5e7eb', text: '#374151' }) : null;
+
+  // For WORKER agents, determine why they became a worker
+  const workerReasonKey = agent.role === 'worker' ? getWorkerReason(agent.complexityReasoning) : null;
+  const workerReason = workerReasonKey ? WORKER_REASONS[workerReasonKey] : null;
 
   const hasConfig = agent.configStrategy || agent.workerTool || (agent.configDetails && Object.keys(agent.configDetails).length > 0);
 
@@ -133,6 +157,20 @@ function AgentModal({ agent, onClose }) {
                 {agent.complexity}
               </span>
             )}
+            {workerReason && (
+              <span
+                style={{
+                  backgroundColor: workerReason.bg,
+                  color: workerReason.text,
+                  padding: '4px 12px',
+                  borderRadius: '9999px',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                }}
+              >
+                {workerReason.icon} {workerReason.label}
+              </span>
+            )}
           </div>
           <button
             onClick={onClose}
@@ -164,6 +202,33 @@ function AgentModal({ agent, onClose }) {
               <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6', margin: 0 }}>
                 {agent.complexityReasoning}
               </p>
+            </div>
+          </Section>
+        )}
+
+        {/* Budget */}
+        {agent.budget && (
+          <Section title="Budget">
+            <div style={{ backgroundColor: '#f0fdf4', borderRadius: '8px', padding: '12px', border: '1px solid #bbf7d0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '2px' }}>Allocated</div>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#16a34a' }}>${agent.budget.initial_budget?.toFixed(2) || '0.00'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '2px' }}>Spent</div>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#dc2626' }}>${agent.budget.spent?.toFixed(2) || '0.00'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '2px' }}>Remaining</div>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#2563eb' }}>${agent.budget.current_budget?.toFixed(2) || '0.00'}</div>
+                </div>
+              </div>
+              {agent.budget.source && (
+                <div style={{ marginTop: '8px', fontSize: '11px', color: '#6b7280' }}>
+                  Source: <span style={{ fontWeight: '500' }}>{agent.budget.source}</span>
+                </div>
+              )}
             </div>
           </Section>
         )}
@@ -213,24 +278,41 @@ function AgentModal({ agent, onClose }) {
                       border: '1px solid #e5e7eb',
                     }}
                   >
-                    {/* Header with description and status */}
+                    {/* Header with description, budget weight, and status */}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: hasJustification ? '10px' : 0 }}>
                       <span style={{ fontSize: '14px', color: '#1f2937', fontWeight: '500', flex: 1 }}>{subtask.description}</span>
-                      {subtask.child_status && (
-                        <span
-                          style={{
-                            backgroundColor: (STATUS_BADGES[subtask.child_status] || { bg: '#e5e7eb' }).bg,
-                            color: (STATUS_BADGES[subtask.child_status] || { text: '#374151' }).text,
-                            padding: '2px 8px',
-                            borderRadius: '9999px',
-                            fontSize: '11px',
-                            fontWeight: '500',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {subtask.child_status}
-                        </span>
-                      )}
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+                        {subtask.budget_weight != null && subtask.budget_weight !== 1.0 && (
+                          <span
+                            style={{
+                              backgroundColor: '#dbeafe',
+                              color: '#1e40af',
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
+                              fontSize: '11px',
+                              fontWeight: '500',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {(subtask.budget_weight * 100).toFixed(0)}% budget
+                          </span>
+                        )}
+                        {subtask.child_status && (
+                          <span
+                            style={{
+                              backgroundColor: (STATUS_BADGES[subtask.child_status] || { bg: '#e5e7eb' }).bg,
+                              color: (STATUS_BADGES[subtask.child_status] || { text: '#374151' }).text,
+                              padding: '2px 8px',
+                              borderRadius: '9999px',
+                              fontSize: '11px',
+                              fontWeight: '500',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {subtask.child_status}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {/* Supervisor Justification */}
                     {hasJustification && (
@@ -318,6 +400,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 99.73404255319147,
+        "initial_budget": 99.73404255319147,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 2
     },
@@ -358,6 +446,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 26.59574468085106,
+        "initial_budget": 26.59574468085106,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -398,6 +492,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 10.036130068245683,
+        "initial_budget": 10.036130068245683,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -438,6 +538,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 13.381506757660912,
+        "initial_budget": 13.381506757660912,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -478,6 +584,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 12.04335608189482,
+        "initial_budget": 12.04335608189482,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -561,6 +673,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 35.46099290780141,
+        "initial_budget": 35.46099290780141,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 3
     },
@@ -601,6 +719,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 17.730496453900706,
+        "initial_budget": 17.730496453900706,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -684,6 +808,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 79.78723404255318,
+        "initial_budget": 79.78723404255318,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 2
     },
@@ -724,6 +854,12 @@ const initialNodes = [
       "result": null,
       "errorMessage": "Failed to parse subtasks: LLM response is not valid JSON: Unterminated string starting at: line 48 column 23 (char 2968)",
       "subtasks": [],
+      "budget": {
+        "current_budget": 33.24468085106383,
+        "initial_budget": 33.24468085106383,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -764,6 +900,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 13.851950354609931,
+        "initial_budget": 13.851950354609931,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -810,6 +952,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 18.469267139479907,
+        "initial_budget": 18.469267139479907,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -855,6 +1003,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 23.086583924349885,
+        "initial_budget": 23.086583924349885,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -944,6 +1098,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 55.407801418439725,
+        "initial_budget": 55.407801418439725,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 3
     },
@@ -984,6 +1144,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 12.545162585307105,
+        "initial_budget": 12.545162585307105,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1024,6 +1190,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 16.726883447076144,
+        "initial_budget": 16.726883447076144,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1064,6 +1236,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 15.05419510236853,
+        "initial_budget": 15.05419510236853,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1147,6 +1325,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 44.326241134751776,
+        "initial_budget": 44.326241134751776,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 3
     },
@@ -1236,6 +1420,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 132.97872340425533,
+        "initial_budget": 132.97872340425533,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 2
     },
@@ -1324,6 +1514,12 @@ const initialNodes = [
           "child_status": "failed"
         }
       ],
+      "budget": {
+        "current_budget": 312.5,
+        "initial_budget": 312.5,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 1
     },
@@ -1364,6 +1560,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 37.5,
+        "initial_budget": 37.5,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -1404,6 +1606,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 20.0,
+        "initial_budget": 20.0,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1450,6 +1658,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 25.0,
+        "initial_budget": 25.0,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1490,6 +1704,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 30.0,
+        "initial_budget": 30.0,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1579,6 +1799,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 75.0,
+        "initial_budget": 75.0,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 3
     },
@@ -1619,6 +1845,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 19.230769230769234,
+        "initial_budget": 19.230769230769234,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1659,6 +1891,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 28.846153846153847,
+        "initial_budget": 28.846153846153847,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1699,6 +1937,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 14.423076923076923,
+        "initial_budget": 14.423076923076923,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -1782,6 +2026,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 62.5,
+        "initial_budget": 62.5,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 3
     },
@@ -1865,6 +2115,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 175.0,
+        "initial_budget": 175.0,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 2
     },
@@ -1905,6 +2161,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 26.923076923076927,
+        "initial_budget": 26.923076923076927,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -1945,6 +2207,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 53.846153846153854,
+        "initial_budget": 53.846153846153854,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -1985,6 +2253,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 35.8974358974359,
+        "initial_budget": 35.8974358974359,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -2068,6 +2342,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 116.66666666666667,
+        "initial_budget": 116.66666666666667,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 2
     },
@@ -2108,6 +2388,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 145.83333333333331,
+        "initial_budget": 145.83333333333331,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 2
     },
@@ -2197,6 +2483,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 437.5,
+        "initial_budget": 437.5,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 1
     },
@@ -2237,6 +2529,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 30.991735537190078,
+        "initial_budget": 30.991735537190078,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -2283,6 +2581,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 51.652892561983464,
+        "initial_budget": 51.652892561983464,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -2323,6 +2627,12 @@ const initialNodes = [
       "result": null,
       "errorMessage": "Task timed out after 300 seconds",
       "subtasks": [],
+      "budget": {
+        "current_budget": 30.991735537190078,
+        "initial_budget": 30.991735537190078,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -2406,6 +2716,12 @@ const initialNodes = [
           "child_status": "failed"
         }
       ],
+      "budget": {
+        "current_budget": 113.63636363636363,
+        "initial_budget": 113.63636363636363,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 2
     },
@@ -2446,6 +2762,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 60.606060606060595,
+        "initial_budget": 60.606060606060595,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 3
     },
@@ -2486,6 +2808,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 24.050024050024046,
+        "initial_budget": 24.050024050024046,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -2526,6 +2854,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 12.883941455370026,
+        "initial_budget": 12.883941455370026,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 5
     },
@@ -2572,6 +2906,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 17.178588607160034,
+        "initial_budget": 17.178588607160034,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 5
     },
@@ -2641,6 +2981,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 30.06253006253006,
+        "initial_budget": 30.06253006253006,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 2,
       "depth": 4
     },
@@ -2681,6 +3027,12 @@ const initialNodes = [
       "result": "Task completed successfully in workspace: /app/output/d3305fbc-6d16-4c41-9e97-d4c385900c93",
       "errorMessage": null,
       "subtasks": [],
+      "budget": {
+        "current_budget": 21.645021645021647,
+        "initial_budget": 21.645021645021647,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 0,
       "depth": 4
     },
@@ -2764,6 +3116,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 75.75757575757575,
+        "initial_budget": 75.75757575757575,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 3,
       "depth": 3
     },
@@ -2833,6 +3191,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 136.36363636363635,
+        "initial_budget": 136.36363636363635,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 2,
       "depth": 2
     },
@@ -2902,6 +3266,12 @@ const initialNodes = [
           "child_status": "completed"
         }
       ],
+      "budget": {
+        "current_budget": 250.0,
+        "initial_budget": 250.0,
+        "spent": 0.0,
+        "source": "parent"
+      },
       "childrenCount": 2,
       "depth": 1
     },
@@ -2985,6 +3355,12 @@ const initialNodes = [
           "child_status": "failed"
         }
       ],
+      "budget": {
+        "current_budget": 1000.0,
+        "initial_budget": 1000.0,
+        "spent": 0.0,
+        "source": "initial"
+      },
       "childrenCount": 3,
       "depth": 0
     },
