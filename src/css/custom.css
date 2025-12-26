@@ -49,3 +49,10 @@
 code {
   font-weight: 600;
 }
+
+/* Make long Markdown code blocks vertically scrollable */
+.theme-code-block > pre {
+  max-height: 60vh;
+  overflow-x: auto;
+  overflow-y: auto;
+}

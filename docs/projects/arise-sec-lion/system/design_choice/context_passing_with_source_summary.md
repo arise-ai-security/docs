@@ -74,6 +74,401 @@ output/8a46c6f9-1da4-40c2-966a-097e6922384b
 1. **Higher Success Rate With Better Context for Workers**: This design achieved the most optimal tree structure among all design choices so far. The workers were able to inherit key information context from the boss node to learn from their completed work. Multiple workers finishes their work more effectively without redoing the work. With the key information summary from the boss node, workers are able to reduce the hallucination and focus on how to actually complete the work assigned to them. For example, the exploiter agent branch is supposed to use the given PoC to verify if the system can be exploited as reported. Previously, workers sometimes misunderstood the task and tried to create their own PoC instead of using the provided one.
 2. **Branch Pruning**: As we can see that some workers have already finished the user's anticipated work submitted to the boss node. More specically, the builder agent can build the vulnerable code base successfully, exploiter is able to reproduce the crash with the provided PoC, and fixer can generate the patch (from the provided candidate fixes) to verify that the vulnerability is indeed fixed. However, the tree also contains redundant branches more specifically to research/ documentation work to resolve the underlying root cause of the vulnerablity. In theory, they are important to provide additional context to other workers to understand the vulnerability better. However, in practice, they are not necessary to complete the task successfully, and normally it takes too much time to wait for their answer. Therefore, we can consider pruning those branches in future designs to save computation resources.
 3. **Need Better Work Report**: Currently, work report submitted by workers are mostly same as their supervisor's guidance via their sub-task justification prompt. However, the work observations from workers are not included. Key context on how their work was done in practice is missing. In addition, the work deliverables are vaguely described, and only working directories are reported back. Specic changes to files should be clearly indicated in the report to help other workers understand what has been done.
+4. **Undeterministic Behaviors**: This is a common issue in agentic system desgisn. Currently, it is hard to predict how our system can consistently solve CVE tasks, i.e building, exploiting, and fixing the vulnerability. Sometimes, the system can successfully complete all three steps, while other times it fails/ gets stuck at one step. This is mainly due to the stochastic nature of LLMs. More robust mechanisms are needed to ensure consistent performance. More specifically, it is not predictable to see why worker agents OpenHands File Editing tool gets stuck in a loop when an error occured. The following illustrates such an example.
+<div style={{maxHeight: '100vh', overflow: 'auto'}}>
+```bash
+🤔 Thinking: The repeated failures in applying the patch suggest that the exact string matching is not working due to potential differences in
+whitespace or other minor discrepancies.
+
+To address this, I will:
+1. Manually edit the file by viewing the relevant sections and making the necessary changes directly.
+2. Ensure that the changes are applied correctly by verifying the file content after each edit.
+
+This approach will allow for more precise control over the changes and ensure that the patch is applied correctly.
+
+Tokens: ↑ input 3.05M • cache hit 98.86% • ↓ output 18.9K • $ 4.0415
+
+03:31:41 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:42 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: LOW
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "view"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  view_range: [4108, 4128]
+
+Tokens: ↑ input 3.1M • cache hit 98.88% • ↓ output 18.96K • $ 4.1073
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+Here's the result of running `cat -n` on /app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c:
+  4108          for (i=0; i<f->num_output_pids; i++) {
+  4109                  GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+  4110                  stats->nb_out_pck += pid->nb_pck_sent;
+  4111                  if (pid->has_seen_eos) stats->in_eos = GF_TRUE;
+  4112
+  4113                  if (pid->last_ts_sent.num * stats->last_ts_sent.den >= stats->last_ts_sent.num * pid->last_ts_sent.den)
+  4114                          stats->last_ts_sent = pid->last_ts_sent;
+  4115
+  4116                  if (f->num_output_pids!=1) continue;
+  4117
+  4118                  if (!stats->codecid)
+  4119                          stats->codecid = pid->codecid;
+  4120                  if (!stats->stream_type)
+  4121                          stats->stream_type = pid->stream_type;
+  4122
+  4123                  //set name if PID name is not a default generated one
+  4124                  if (set_name && strncmp(pid->name, "PID", 3)) {
+  4125                          stats->name = pid->name;
+  4126                          set_name = GF_FALSE;
+  4127                  }
+  4128          }
+
+
+03:31:42 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:44 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: MEDIUM
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "str_replace"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  old_str:
+    for (i=0; i<f->num_output_pids; i++) {
+                        GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+                        stats->nb_out_pck += pid->nb_pck_sent;
+                        if (pid->has_seen_eos) stats->in_eos = GF_TRUE;
+
+  new_str:
+    for (i=0; i<f->num_output_pids && i < gf_list_count(f->output_pids); i++) {
+                        GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+                        if (!pid) continue;
+                        stats->nb_out_pck += pid->nb_pck_sent;
+                        if (pid->has_seen_eos) stats->in_eos = GF_TRUE;
+
+
+Tokens: ↑ input 3.15M • cache hit 98.88% • ↓ output 19.21K • $ 4.1757
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+❌ [An error occurred during execution.]
+[An error occurred during execution.]
+No replacement was performed, old_str `for (i=0; i<f->num_output_pids; i++) {
+                        GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+                        stats->nb_out_pck += pid->nb_pck_sent;
+                        if (pid->has_seen_eos) stats->in_eos = GF_TRUE;` did not appear verbatim in
+/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c.
+
+03:31:44 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:45 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: LOW
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "view"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  view_range: [4131, 4151]
+
+Tokens: ↑ input 3.2M • cache hit 98.89% • ↓ output 19.27K • $ 4.2427
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+Here's the result of running `cat -n` on /app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c:
+  4131          for (i=0; i<f->num_input_pids; i++) {
+  4132                  GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+  4133                  stats->nb_in_pck += pidi->nb_processed;
+  4134                  if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;
+  4135
+  4136                  if (pidi->is_decoder_input) stats->type = GF_FS_STATS_FILTER_DECODE;
+  4137                  else if (pidi->is_encoder_input) stats->type = GF_FS_STATS_FILTER_ENCODE;
+  4138
+  4139                  if (pidi->pid && (pidi->pid->stream_type==GF_STREAM_FILE))
+  4140                          stats->type = GF_FS_STATS_FILTER_DEMUX;
+  4141
+  4142                  if (pidi->last_ts_drop.num * stats->last_ts_drop.den >= stats->last_ts_drop.num * pidi->last_ts_drop.den)
+  4143                          stats->last_ts_drop = pidi->last_ts_drop;
+  4144
+  4145                  if ((f->num_input_pids!=1) && f->num_output_pids)
+  4146                          continue;
+  4147
+  4148                  if (!stats->codecid)
+  4149                          stats->codecid = pidi->pid->codecid;
+  4150                  if (!stats->stream_type)
+  4151                          stats->stream_type = pidi->pid->stream_type;
+
+
+03:31:45 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:47 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: MEDIUM
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "str_replace"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  old_str:
+    for (i=0; i<f->num_input_pids; i++) {
+                        GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+                        stats->nb_in_pck += pidi->nb_processed;
+                        if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;
+
+  new_str:
+    for (i=0; i<f->num_input_pids && i < gf_list_count(f->input_pids); i++) {
+                        GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+                        if (!pidi) continue;
+                        stats->nb_in_pck += pidi->nb_processed;
+                        if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;
+
+
+Tokens: ↑ input 3.26M • cache hit 98.90% • ↓ output 19.52K • $ 4.3124
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+❌ [An error occurred during execution.]
+[An error occurred during execution.]
+No replacement was performed, old_str `for (i=0; i<f->num_input_pids; i++) {
+                        GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+                        stats->nb_in_pck += pidi->nb_processed;
+                        if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;` did not appear verbatim in
+/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c.
+
+03:31:47 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:49 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+🤔 Thinking: The repeated failures in applying the patch suggest that the exact string matching is not working due to potential differences in
+whitespace or other minor discrepancies.
+
+To address this, I will:
+1. Manually edit the file by viewing the relevant sections and making the necessary changes directly.
+2. Ensure that the changes are applied correctly by verifying the file content after each edit.
+
+This approach will allow for more precise control over the changes and ensure that the patch is applied correctly.
+
+Tokens: ↑ input 3.31M • cache hit 98.91% • ↓ output 19.63K • $ 4.3809
+
+03:31:49 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:51 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: LOW
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "view"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  view_range: [4108, 4128]
+
+Tokens: ↑ input 3.37M • cache hit 98.93% • ↓ output 19.7K • $ 4.4489
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+Here's the result of running `cat -n` on /app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c:
+  4108          for (i=0; i<f->num_output_pids; i++) {
+  4109                  GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+  4110                  stats->nb_out_pck += pid->nb_pck_sent;
+  4111                  if (pid->has_seen_eos) stats->in_eos = GF_TRUE;
+  4112
+  4113                  if (pid->last_ts_sent.num * stats->last_ts_sent.den >= stats->last_ts_sent.num * pid->last_ts_sent.den)
+  4114                          stats->last_ts_sent = pid->last_ts_sent;
+  4115
+  4116                  if (f->num_output_pids!=1) continue;
+  4117
+  4118                  if (!stats->codecid)
+  4119                          stats->codecid = pid->codecid;
+  4120                  if (!stats->stream_type)
+  4121                          stats->stream_type = pid->stream_type;
+  4122
+  4123                  //set name if PID name is not a default generated one
+  4124                  if (set_name && strncmp(pid->name, "PID", 3)) {
+  4125                          stats->name = pid->name;
+  4126                          set_name = GF_FALSE;
+  4127                  }
+  4128          }
+
+
+03:31:52 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:54 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: MEDIUM
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "str_replace"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  old_str:
+    for (i=0; i<f->num_output_pids; i++) {
+                        GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+                        stats->nb_out_pck += pid->nb_pck_sent;
+                        if (pid->has_seen_eos) stats->in_eos = GF_TRUE;
+
+  new_str:
+    for (i=0; i<f->num_output_pids && i < gf_list_count(f->output_pids); i++) {
+                        GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+                        if (!pid) continue;
+                        stats->nb_out_pck += pid->nb_pck_sent;
+                        if (pid->has_seen_eos) stats->in_eos = GF_TRUE;
+
+
+Tokens: ↑ input 3.42M • cache hit 98.93% • ↓ output 19.94K • $ 4.5196
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+❌ [An error occurred during execution.]
+[An error occurred during execution.]
+No replacement was performed, old_str `for (i=0; i<f->num_output_pids; i++) {
+                        GF_FilterPid *pid = gf_list_get(f->output_pids, i);
+                        stats->nb_out_pck += pid->nb_pck_sent;
+                        if (pid->has_seen_eos) stats->in_eos = GF_TRUE;` did not appear verbatim in
+/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c.
+
+03:31:54 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:55 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: LOW
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "view"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  view_range: [4131, 4151]
+
+Tokens: ↑ input 3.47M • cache hit 98.94% • ↓ output 20.01K • $ 4.5889
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+Here's the result of running `cat -n` on /app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c:
+  4131          for (i=0; i<f->num_input_pids; i++) {
+  4132                  GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+  4133                  stats->nb_in_pck += pidi->nb_processed;
+  4134                  if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;
+  4135
+  4136                  if (pidi->is_decoder_input) stats->type = GF_FS_STATS_FILTER_DECODE;
+  4137                  else if (pidi->is_encoder_input) stats->type = GF_FS_STATS_FILTER_ENCODE;
+  4138
+  4139                  if (pidi->pid && (pidi->pid->stream_type==GF_STREAM_FILE))
+  4140                          stats->type = GF_FS_STATS_FILTER_DEMUX;
+  4141
+  4142                  if (pidi->last_ts_drop.num * stats->last_ts_drop.den >= stats->last_ts_drop.num * pidi->last_ts_drop.den)
+  4143                          stats->last_ts_drop = pidi->last_ts_drop;
+  4144
+  4145                  if ((f->num_input_pids!=1) && f->num_output_pids)
+  4146                          continue;
+  4147
+  4148                  if (!stats->codecid)
+  4149                          stats->codecid = pidi->pid->codecid;
+  4150                  if (!stats->stream_type)
+  4151                          stats->stream_type = pidi->pid->stream_type;
+
+
+03:31:55 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:31:57 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: MEDIUM
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "str_replace"
+  path: "/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c"
+  old_str:
+    for (i=0; i<f->num_input_pids; i++) {
+                        GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+                        stats->nb_in_pck += pidi->nb_processed;
+                        if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;
+
+  new_str:
+    for (i=0; i<f->num_input_pids && i < gf_list_count(f->input_pids); i++) {
+                        GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+                        if (!pidi) continue;
+                        stats->nb_in_pck += pidi->nb_processed;
+                        if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;
+
+
+Tokens: ↑ input 3.53M • cache hit 98.95% • ↓ output 20.26K • $ 4.6608
+
+Observation ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+❌ [An error occurred during execution.]
+[An error occurred during execution.]
+No replacement was performed, old_str `for (i=0; i<f->num_input_pids; i++) {
+                        GF_FilterPidInst *pidi = gf_list_get(f->input_pids, i);
+                        stats->nb_in_pck += pidi->nb_processed;
+                        if (pidi->is_end_of_stream) stats->in_eos = GF_TRUE;` did not appear verbatim in
+/app/output/034acbb9-10b5-4779-a34b-09b072a53ed0/gpac/src/filter_core/filter_session.c.
+
+03:31:57 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:32:00 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+🤔 Thinking: The repeated failures in applying the patch suggest that the exact string matching is not working due to potential differences in
+whitespace or other minor discrepancies.
+
+To address this, I will:
+1. Manually edit the file by viewing the relevant sections and making the necessary changes directly.
+2. Ensure that the changes are applied correctly by verifying the file content after each edit.
+
+This approach will allow for more precise control over the changes and ensure that the patch is applied correctly.
+
+Tokens: ↑ input 3.58M • cache hit 98.96% • ↓ output 20.37K • $ 4.7315
+
+03:32:00 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+03:32:01 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+```
+</div>
 4. **Next Steps**:
     1. Incorporate other Non-GPT models.
     2. Branch Pruning.
