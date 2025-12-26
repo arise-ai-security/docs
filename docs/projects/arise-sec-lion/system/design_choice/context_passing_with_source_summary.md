@@ -73,8 +73,9 @@ output/8a46c6f9-1da4-40c2-966a-097e6922384b
 ### Analysis
 1. **Higher Success Rate With Better Context for Workers**: This design achieved the most optimal tree structure among all design choices so far. The workers were able to inherit key information context from the boss node to learn from their completed work. Multiple workers finishes their work more effectively without redoing the work. With the key information summary from the boss node, workers are able to reduce the hallucination and focus on how to actually complete the work assigned to them. For example, the exploiter agent branch is supposed to use the given PoC to verify if the system can be exploited as reported. Previously, workers sometimes misunderstood the task and tried to create their own PoC instead of using the provided one.
 2. **Branch Pruning**: As we can see that some workers have already finished the user's anticipated work submitted to the boss node. More specically, the builder agent can build the vulnerable code base successfully, exploiter is able to reproduce the crash with the provided PoC, and fixer can generate the patch (from the provided candidate fixes) to verify that the vulnerability is indeed fixed. However, the tree also contains redundant branches more specifically to research/ documentation work to resolve the underlying root cause of the vulnerablity. In theory, they are important to provide additional context to other workers to understand the vulnerability better. However, in practice, they are not necessary to complete the task successfully, and normally it takes too much time to wait for their answer. Therefore, we can consider pruning those branches in future designs to save computation resources.
-7. **Next Steps**:
-  1. Incorporate other Non-GPT models.
-  2. Branch Pruning.
-  3. More diverse case studies.
-  4. Remove PoC, candidate fixes from the boss node to test the system's capability to discover them by itself.
+3. **Need Better Work Report**: Currently, work report submitted by workers are mostly same as their supervisor's guidance via their sub-task justification prompt. However, the work observations from workers are not included. Key context on how their work was done in practice is missing. In addition, the work deliverables are vaguely described, and only working directories are reported back. Specic changes to files should be clearly indicated in the report to help other workers understand what has been done.
+4. **Next Steps**:
+    1. Incorporate other Non-GPT models.
+    2. Branch Pruning.
+    3. More diverse case studies.
+    4. Remove PoC, candidate fixes from the boss node to test the system's capability to discover them by itself.
