@@ -473,4 +473,5 @@ LiteLLM completion() model= gpt-4o; provider = openai
     1. Incorporate other Non-GPT models.
     2. Branch Pruning.
     3. More diverse case studies.
-    4. Remove PoC, candidate fixes from the boss node to test the system's capability to discover them by itself.
+    4. Work Redo. Currently, we allow workers to use other successful workers' deliverables. We should further allow them to redo their work based on other workers' deliverables to improve the overall quality.
+    5. Remove PoC, candidate fixes from the boss node to test the system's capability to discover them by itself.
