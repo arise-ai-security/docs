@@ -473,5 +473,51 @@ LiteLLM completion() model= gpt-4o; provider = openai
     1. Incorporate other Non-GPT models.
     2. Branch Pruning.
     3. More diverse case studies.
-    4. Work Redo. Currently, we allow workers to use other successful workers' deliverables. We should further allow them to redo their work based on other workers' deliverables to improve the overall quality.
+    4. Work Redo. Currently, we allow workers to use other successful workers' deliverables. We should further allow them to redo their work after they can have better contexts from other workers' deliverables to improve the overall quality.
     5. Remove PoC, candidate fixes from the boss node to test the system's capability to discover them by itself.
+    6. To reduce the amount undeterministic behaviors, better system prompt should be able to tell pending agents to transition to a worker with specific examples: git clone, fetch, checkout, file editing, docker build, test running, etc.
+5. **OpenHands SDK Stability Issue**: In most cases, the OpenHands can get stuck in a loop. The following is an example log snippet showing such an issue.
+<div style={{maxHeight: '100vh', overflow: 'auto'}}>
+```bash
+Observation ──────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+❌ [An error occurred during execution.]
+[An error occurred during execution.]
+No replacement was performed. Multiple occurrences of old_str `CUdeviceptr map_mem =
+0;` in lines [1008, 1300]. Please ensure it is unique.
+
+01:51:23 - LiteLLM:INFO: utils.py:3419 -
+LiteLLM completion() model= gpt-4o; provider = openai
+01:51:25 - LiteLLM:INFO: utils.py:1308 - Wrapper: Completed Call, calling success_handler
+Agent Action ─────────────────────────────────────────────────────────────────────────
+
+Predicted Security Risk: LOW
+
+Action: FileEditorAction
+
+Arguments:
+  kind: "FileEditorAction"
+  command: "str_replace"
+  path:
+"/app/output/61d790b8-5fee-4fec-90a7-3eb1b5865546/gpac/src/filters/dec_nvdec.c"
+  old_str: "CUdeviceptr map_mem = 0;"
+  new_str: "unsigned int map_mem = 0;"
+
+Tokens: ↑ input 810.91K • cache hit 96.25% • ↓ output 2.46K • $ 1.0762
+
+Observation ──────────────────────────────────────────────────────────────────────────
+
+Tool: file_editor
+Result:
+❌ [An error occurred during execution.]
+[An error occurred during execution.]
+No replacement was performed. Multiple occurrences of old_str `CUdeviceptr map_mem =
+0;` in lines [1008, 1300]. Please ensure it is unique.
+
+[12/28/25 01:51:25] WARNING  Action, Observation loop detected   stuck_detector.py:124
+[12/28/25 01:51:25] WARNING  Stuck pattern detected.         local_conversation.py:305
+Observation ──────────────────────────────────────────────────────────────────────────
+```
+</div>
