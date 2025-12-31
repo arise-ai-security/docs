@@ -451,6 +451,53 @@ if (len <= dst_size) {
 
     This strategy ensures that more complex and significant subtasks receive a larger share of the parent's complexity budget, allowing them to be addressed with appropriate resources. For example, if a supervisor agent has a complexity budget of 1000 and creates 3 subtasks with weights 1.0, 3.0, and 1.5, the complexity budgets allocated to each subtask will be 182, 545, and 273 respectively. This approach helps to optimize resource allocation within the agentic system, improving overall efficiency and effectiveness in task completion. In addition, the complexity budget allocation also manage the amount of the children to be spawned.
 
+    **Reasoning**: one important aspect is that we need to ensure that finishing all subtasks is equivalent to finishing the parent objective. This strategy guarantees that the sum of complexity budgets of all child agents equals the parent's complexity budget. Further more, the sum of workers' complexity budgets can is equal to their common ancestor thinker's complexity budget. This property ensures that no workers are dealing with more complex tasks than their ancestors. If they do, it is likely that workers' subtasks are not properly decomposed or unnecessarily complicated.
+
+    **Calculations**: When a thinker (BOSS/MANAGER) decomposes a task into subtasks, it splits its budget proportionally based on each subtask's budget_weight (ranging 0.1-10.0). The LLM assigns weights considering task complexity, importance, and estimated time.
+
+    Allocation formula: 
+    $$
+    \text{child budget} = \text{parent budget} × \left(\frac{\text{subtask weight}}{\text{total weights}}\right)
+    $$
+
+    For example, if a supervisor has 1000 and creates 3 subtasks with weights 1.0, 3.0, and 1.5:
+    - Subtask 1 gets: $1000 × (1.0/5.5) = 182$
+    - Subtask 2 gets: $1000 × (3.0/5.5) = 545$
+    - Subtask 3 gets: $1000 × (1.5/5.5) = 273$
+
+    Higher weights mean more resources for complex/critical tasks.
+
+    Budget weights are assigned by the LLM during task decomposition based on three factors:
+
+    1. Complexity (primary factor)
+    - Simple tasks: 0.5-1.0 weight
+    - Moderate tasks: 1.0-2.0 weight
+    - Complex tasks: 2.0-3.0 weight
+
+    2. Importance (critical path consideration)
+    - Normal tasks: 1.0 weight
+    - Important tasks: 1.5-2.0 weight
+    - Critical path tasks: 2.0-4.0 weight
+
+    3. Estimated Time (relative duration)
+    - Quick tasks: 0.5-1.0 weight
+    - Average tasks: 1.0 weight
+    - Long tasks: proportional (2x time ≈ 2x weight)
+
+    Examples from the prompt template:
+    | Task Type               | Weight  | Rationale                          |
+    |-------------------------|---------|------------------------------------|
+    | Research/documentation  | 0.8-1.0 | Quick, low complexity              |
+    | Standard implementation | 1.0-1.5 | Normal baseline                    |
+    | Core feature with tests | 2.5-3.0 | Complex + important                |
+    | Security-critical code  | 3.0-4.0 | High stakes, needs extra resources |
+
+    Constraints:
+    - Minimum weight: 0.1
+    - Maximum weight: 10.0
+    - Default (if unspecified): 1.0
+
+    The weights are relative—what matters is the ratio between subtasks, not absolute values. A subtask with weight 2.0 receives twice the budget of one with weight 1.0.
 
 ### Design Choice 4: Supervisor Justification Context Passing 
 - **[Context Passing Tree](./context_passing_tree.md)**
