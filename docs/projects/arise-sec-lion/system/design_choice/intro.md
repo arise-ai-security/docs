@@ -20,7 +20,7 @@ This section illustrates how each feature is incorporated into our tree-structur
 7. **Complexity Budget**: numeric function that maps a task to a real number, which reflects on task complexity/ significance/ neccessity. A task with high complexity budget may not be complicated to implement but it is critical for the entire project. Note: this term is also known as _budget_ in the design doc/ GitHub Experiment Branch. To avoid confusion, the term _budget_ is not encouraged to be used. 
 8. **Complexity Budget Allocation**: A manager will allocate its assigned complexity budget and split it among its child agents based on thier sub-task complexity, significance, and necessity. The sum of all child agents' complexity budget is the same as the parent's budget, to reflect that the achieving all sub-tasks is equivalent to achieving the parent objective.
 9. **Token Budget**: the amount of input/output tokens and API costs used by one agent during its lifetime. Note: this term is also known as _budget_ in the GitHub Develop Branch. To avoid confusion, the term _budget_ is not encouraged to be used.
-10. **Context**: system prompt + customized prompt. This is the entire textual information passed to an agent in the working space.
+10. **Context**: system prompt + customized prompt + auxiliary prompt (optional). This is the entire textual information passed to an agent in the working space.
 11. **Working Space**: the entire containerized directory where all agents can operate on. All agents share the same working space.
 12. **System Prompt**: the prompt used to tell the agents their roles, restrictions, problem solving strategies, etc. This is pre-defined and not changed during runtime, every single run of the system uses the same system prompt. This prompt ensures that the AI agents to focus on coding work. For example, our system prompt can include the following:
 <div style={{maxHeight: '50vh', overflow: 'auto'}}>
@@ -247,7 +247,9 @@ making any changes.", "properties": {"thought": {"type": "string", "description"
 thought to log."}}, "required": ["thou...
 ```
 </div>
-8. **Cutomized Prompt**: the prompt used to provide specific instructions relevant to the current task. This is dynamically generated during runtime based on the current task context. Prompt can be customized by adding more context information, guidances, key informations, etc. For example, our customized prompt can include the following:
+
+13. **Cutomized Prompt**: the required prompt used to provide specific instructions relevant to the current task. This is dynamically generated during runtime based on the current task context. Prompt can be customized by adding more context information, guidances, key informations, etc. For example, our customized prompt can include the following:
+
 <div style={{maxHeight: '50vh', overflow: 'auto'}}>
 ```xml
 <WORKER_INSTRUCTIONS>
@@ -365,7 +367,26 @@ Linux, C++
 ## Key Facts & Requirements
 - Must apply a patch to fix the vulnerability.
 - Vulnerability can lead to remote code execution.
+---
 
+------------------------------------------------------------
+
+
+============================================================
+END OF CONTEXT
+============================================================
+
+Use the above context to:
+- Reference key information from the original task
+- Make informed decisions based on the full context
+
+</RELEVANT_CONTEXT>
+```
+</div>
+
+14. **Auxiliary Prompt**: additional optional prompt information generated during runtime. This prompt is optional, because without this, agents should still perform the core functionalities: how to analyze their objective, process tasks, and work with other agents, etc. This part can include: identified CWE fix pattern (typically used by the boss agent), typical bug fixes pattern of gpac/ imagemagick. For example,
+<div style={{maxHeight: '50vh', overflow: 'auto'}}>
+```xml
 ## ⚠️ INFERRED CWE PATTERNS
 The following CWE patterns were identified from the bug report:
 
@@ -397,32 +418,15 @@ if (len <= dst_size) {
 - Validate `len` against destination buffer size
 - Check for integer overflow in size calculations
 - Use safe string functions (strlcpy, snprintf)
-
-
----
-
-------------------------------------------------------------
-
-
-============================================================
-END OF CONTEXT
-============================================================
-
-Use the above context to:
-- Reference key information from the original task
-- Make informed decisions based on the full context
-
-</RELEVANT_CONTEXT>
 ```
 </div>
 
-12. **Objective**: The core instruction we want an agent to achieve.
-13. **Subtask**: A smaller objective broken down from the current agent's objective. This will be passed down to its child agents.
-14. **Thinker Justification**: The reasoning provided by the thinker agent to explain why a specific subtask is assigned to a worker agent. This part can include: why this subtask is relevant to the objective, how to finish the subtask, the percentage of complexity/ token budget assigned to a subtask, and what deliverables are expected, etc.
-15. **Worker Report**: The completed work report generated by a worker agent after finishing its subtask. The reasoning provided by the worker agent to explain their work. This part can include: how my work is aligned with the thinker justification, what files I changed, and challenges I encountered, etc. This report will be submitted back to its parent thinker agent so that the thinker can have a more comprehensive understanding of the overall progress.
-16. **Context Share**: the context information can be shared between agents. This ensures that later agents can have access to knowledge generated by earlier agents in the runtie. For example, one worker has already located the line number in a specific file, then later workers can directly use this information instead of re-discovering it again.
-16. **Source Context**: Context of boss agent. This is the only point our users can input their prompt, such as the CVE instance details, buggy files, bug reports, docker file. This one normally contain key information that has to be used verbatim by later agents. **Note**: We should summarize the source context and pass it to the shared context dashboard. In this step, we also let the boss agent to identify CWE patterns to enrich the source context.
-17. **Shared Context Dashboard**: A dictionary-like data structure that stores key (what is accomplished) and value (detailed information on how is finished) pairs. This dashboard is shared among all agents in the system, so that later agents should query through the keys to check if something accomplished is related to their work, so that they can add the value to their own context. This avoids repeating redundant work, common mistakes, and improves inter-agent collaboration efficiency.
+15. **Objective**: The core instruction we want an agent to achieve.
+16. **Subtask**: A smaller objective broken down from the current agent's objective. This will be passed down to its child agents.
+17. **Thinker Justification**: The reasoning provided by the thinker agent to explain why a specific subtask is assigned to a worker agent. This part can include: why this subtask is relevant to the objective, how to finish the subtask, the percentage of complexity/ token budget assigned to a subtask, and what deliverables are expected, etc.
+18. **Worker Report**: The completed work report generated by a worker agent after finishing its subtask. The reasoning provided by the worker agent to explain their work. This part can include: how my work is aligned with the thinker justification, what files I changed, and challenges I encountered, etc. This report will be submitted back to its parent thinker agent so that the thinker can have a more comprehensive understanding of the overall progress.
+19. **Context Share**: the context information can be shared between agents. This ensures that later agents can have access to knowledge generated by earlier agents in the runtie. For example, one worker has already located the line number in a specific file, then later workers can directly use this information instead of re-discovering it again.
+20. **Shared Context**: A dictionary-like data structure that stores key (what is accomplished) and value (detailed information on how is finished) pairs. This dashboard is shared among all agents in the system, so that later agents should query through the keys to check if something accomplished is related to their work, so that they can add the value to their own context. This avoids repeating redundant work, common mistakes, and improves inter-agent collaboration efficiency. **Note**: **Shared Context Dashboard** described in the design doc is equivalent to this term.
 
 ## Design Choice Checkpoints
 
