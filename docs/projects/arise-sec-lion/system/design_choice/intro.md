@@ -10,7 +10,7 @@ import Tree from '@site/src/components/gpac.cve-2024-50665';
 # Design Path Overview
 This section illustrates how each feature is incorporated into our tree-structured agentic system through a series of design choices. Each design choice builds upon the previous one, progressively enhancing the system's capabilities and addressing specific challenges.
 
-## Agentic System Terminologies:
+## Agentic System Terminologies
 1. **Agent**: same as tree node.
 2. **Boss**: Root node.
 3. **Thinker**: supervisor agents and boss agents.
@@ -434,10 +434,23 @@ if (len <= dst_size) {
 - **[Naive Tree](./naive_tree.md)** -  We analyzes the direct approach to implement the tree-structure without additional restraints. This design enables agents with full autonomy to decide whether to become worker agent nodes or spawn more subordinate agent nodes at their internal LLM's discretion.
 
 ### Design Choice 2: Budgeted Tree
-- **[Budgeted Tree](./budgeted_tree.md)** - This design builds upon the naive tree-structured agentic system by introducing budget management. This strategy limits the growth of the agent tree and aims to enhance the overall focus to achive better performance. However, the budget management is not yet complemented with reward allocation mechanisms to fine-tune agent behaviors.
+- **[Budgeted Tree](./budgeted_tree.md)** - This design builds upon the naive tree-structured agentic system by introducing budget management. 
+
+    **Need**: restrain the tree growth. Naive tree generates huge amount of agents.
+
+    **Strategy**: set a complexity budget threshold to restrict the spawning of new agents.
+
+    This strategy limits the growth of the agent tree and aims to enhance the overall focus to achive better performance. For example, if the entire complexity budget given to the boss agent is 1000, we set the complexity budget thresold to be 5% (can be changed) of 10000, then there will be around 20 (1 / 5%) workers in this entire tree. This complexity budget is ever-decreasing upon splitting among child agents. Once the budget is too low, the pending agents have to become worker agents to finish the current work. This is equavelent to enforce max child worker count, but we can have more flexibility by adjusting the complexity budget threshold and complexity budget splitting.
 
 ### Design Choice 3: Complexity/ Significance Computation
-- **[Budgeted Plus Tree](./budgeted_tree_plus.md)**
+- **[Budgeted Plus Tree](./budgeted_tree_plus.md)** - this design builds on top of budgeted tree by introducing better complexity budget allocation. 
+
+    **Need**: fair complexity budget allocation among child agents. So that the complex/critical subagents can grow deeper in the tree. Non-essential agents with task such as logging, documentation will have limited amount of complexity budget, because their work does not contribute too much to overall project and they should finish quickly.
+
+    **Strategy**: compute each subtask's complexity and significance to determine the budget weight, then split the parent's complexity budget proportionally based on each subtask's budget weight.
+
+    This strategy ensures that more complex and significant subtasks receive a larger share of the parent's complexity budget, allowing them to be addressed with appropriate resources. For example, if a supervisor agent has a complexity budget of 1000 and creates 3 subtasks with weights 1.0, 3.0, and 1.5, the complexity budgets allocated to each subtask will be 182, 545, and 273 respectively. This approach helps to optimize resource allocation within the agentic system, improving overall efficiency and effectiveness in task completion. In addition, the complexity budget allocation also manage the amount of the children to be spawned.
+
 
 ### Design Choice 4: Supervisor Justification Context Passing 
 - **[Context Passing Tree](./context_passing_tree.md)**
@@ -462,4 +475,5 @@ Below is an interactive React Flow diagram that captures a snapshot of the high-
 4. Used shared context by workers as "Inherited Knowledge from Dashboard" can be displayed by clicking on worker nodes.
 5. Complexity Budget as "Budget" can be displayed by clicking on any node.
 6. Shared context created by completed workers and their parent as "Context Published to Dashboard" can be displayed by clicking on any thinker node with completed workers under it.
-<Tree />
+
+<Tree/>
