@@ -5,6 +5,8 @@ sidebar_position: 1
 hide_title: true
 ---
 
+import Tree from '@site/src/components/gpac.cve-2024-50665';
+
 # Design Path Overview
 This section illustrates how each feature is incorporated into our tree-structured agentic system through a series of design choices. Each design choice builds upon the previous one, progressively enhancing the system's capabilities and addressing specific challenges.
 
@@ -433,4 +435,27 @@ Use the above context to:
 ### Design Choice 3: Complexity/ Significance Computation
 - **[Budgeted Plus Tree](./budgeted_tree_plus.md)**
 
-### Design Choice 4: Supervisor Justification Passing 
+### Design Choice 4: Supervisor Justification Context Passing 
+- **[Context Passing Tree](./context_passing_tree.md)**
+
+### Design Choice 5: Worker Report Context Passing 
+- **[Context Passing Plus Tree](./context_passing_plus_tree.md)**
+
+### Design Choice 6: Source Key Context Passing 
+- **[Source Key Context Passing Tree](./context_passing_with_source_summary.md)**
+
+### Design Choice 7: Inferred Context Passing 
+- **[CWE Context Passing Tree](./context_passing_with_CWE_tree.md)**
+
+### Feature Addition Workflow
+
+### Tree Final Form
+Below is an interactive React Flow diagram that captures a snapshot of the high-level structure. You can pan, zoom, and explore relationships between agents. **Click on the nodes to see their details**.
+
+1. Source context as "Context Published to Dashboard" can be displayed by clicking on boss node.
+2. Thinker Justifications can be displayed by clicking on manager nodes.
+3. Worker Reports as "Work Summary" can be displayed by clicking on manager nodes.
+4. Used shared context by workers as "Inherited Knowledge from Dashboard" can be displayed by clicking on worker nodes.
+5. Complexity Budget as "Budget" can be displayed by clicking on any node.
+6. Shared context created by completed workers and their parent as "Context Published to Dashboard" can be displayed by clicking on any thinker node with completed workers under it.
+<Tree />
