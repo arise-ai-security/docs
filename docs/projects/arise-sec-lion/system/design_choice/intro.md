@@ -501,8 +501,8 @@ if (len <= dst_size) {
 
     The weights are relative—what matters is the ratio between subtasks, not absolute values. A subtask with weight 2.0 receives twice the budget of one with weight 1.0.
 
-### Design Choice 4: Supervisor Justification Context Passing 
-- **[Context Passing Tree](./context_passing_tree.md)** builds on top design choice 3 by introducing context passing between thinker agents and their child agents. 
+### Design Choice 4: Thinker Justification Context Passing 
+- **[Thinker JustificationContext Passing Tree](./context_passing_tree.md)** builds on top design choice 3 by introducing context passing between thinker agents and their child agents. 
 
     **Need**: better inter-agent communication and collaboration. Basesd on our [observations](./budgeted_tree_plus.md#interactive-diagram), we find that thinkers and workers narrowly focus on their own subtasks without fully understanding the bigger picture. This can lead to misalignment and inefficiencies, as workers may not grasp the rationale behind their assignments. 
 
