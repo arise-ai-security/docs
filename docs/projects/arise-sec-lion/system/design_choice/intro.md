@@ -597,6 +597,68 @@ if (len <= dst_size) {
 
     **Reasoning**: Our agents' collaboration is not limited to top-down instructions. By enable peer workers' knowledge sharing, we can ensure the real life run-time work/ challenges can be shared to other workers. This feedback loop enhances the overall efficiency and effectiveness of the agentic system, as workers can learn from each other's experiences and avoid redundant efforts. For example, one agent has already located the line number in a specific file, then later workers can directly use this information instead of re-discovering it again.
 
+    The following is an example of inheritted kowledge from earlier workers:
+    <div
+      style={{
+        background: 'white',
+        padding: 12,
+        borderRadius: 6,
+        border: '1px solid rgb(165, 243, 252)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
+        <span style={{ color: 'rgb(6, 182, 212)', fontSize: 14 }}>🔑</span>
+        <div style={{ flex: '1 1 0%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(31, 41, 55)' }}>
+              Map out the MP4 box structure that leads to the vulnerable code path.
+            </span>
+          </div>
+        </div>
+      </div>
+      <div style={{ marginLeft: 22 }}>
+        <div style={{ marginBottom: 6 }}>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'rgb(107, 114, 128)' }}>Objective: </span>
+          <span style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+            Map out the MP4 box structure that leads to the vulnerable code path.
+          </span>
+        </div>
+        <div style={{ marginBottom: 6 }}>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Why This Is Relevant: </span>
+          <span style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+            This task requires understanding the structural path to the vulnerable code path, which is distinct from setting specific byte values.
+          </span>
+        </div>
+        <div style={{ marginBottom: 6 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(22, 163, 74)', marginBottom: 2 }}>How It Was Accomplished:</div>
+          <div
+            style={{
+              fontSize: 12,
+              color: 'rgb(55, 65, 81)',
+              whiteSpace: 'pre-wrap',
+              backgroundColor: 'rgb(240, 253, 244)',
+              padding: 8,
+              borderRadius: 4,
+              maxHeight: 120,
+              overflow: 'auto',
+            }}
+          >
+            **Approach:** Executed task using available tools
+
+            **Reasoning:** Task executed using standard approach with successful completion
+
+            **Deliverables:** Task completed successfully in workspace: /app/output/83a8e878-24fe-4a14-88dc-19de7148d899
+
+            **Challenges:** No significant challenges encountered
+
+            **Observations:** Task completed successfully in workspace: /app/output/83a8e878-24fe-4a14-88dc-19de7148d899
+
+            **Fulfillment Evidence:** Objective 'Map out the MP4 box structure that leads to the vu...' addressed; Task completed without critical errors
+          </div>
+        </div>
+      </div>
+    </div>
+
 ### Design Choice 6: Boss Key Context Passing 
 - **[Boss Key Context Passing Tree](./context_passing_with_source_summary.md)** builds on top of design choice 5 by introducing source key context passing. 
 
