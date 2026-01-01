@@ -440,7 +440,9 @@ if (len <= dst_size) {
 
     **Strategy**: set a complexity budget threshold to restrict the spawning of new agents.
 
-    This strategy limits the growth of the agent tree and aims to enhance the overall focus to achive better performance. For example, if the entire complexity budget given to the boss agent is 1000, we set the complexity budget thresold to be 5% (can be changed) of 10000, then there will be around 20 (1 / 5%) workers in this entire tree. This complexity budget is ever-decreasing upon splitting among child agents. Once the budget is too low, the pending agents have to become worker agents to finish the current work. This is equavelent to enforce max child worker count, but we can have more flexibility by adjusting the complexity budget threshold and complexity budget splitting.
+    This strategy limits the growth of the agent tree and aims to enhance the overall focus to achive better performance. For example, if the entire complexity budget given to the boss agent is 1000, we set the complexity budget thresold to be 5% (can be changed) of 1000, then there will be around 20 (1 / 5%) workers in this entire tree. This complexity budget is ever-decreasing upon splitting among child agents. Once the budget is too low, the pending agents have to become worker agents to finish the current work. This is equavelent to enforce max child worker count, but we can have more flexibility by adjusting the complexity budget threshold and complexity budget splitting.
+
+    **Reasoning**: `max_child_worker_count` and `max_tree_depth` still exist and serve as system-level hard-limit. This Complexity budget threshould is a softer limit, and the hyper-parameter percentage of initial allocated budget can be adjusted based on the project size. This strategy is easier for calculation of expected amount of workers (1 / percentage) in the entire tree.
 
 ### Design Choice 3: Complexity/ Significance Computation
 - **[Budgeted Plus Tree](./budgeted_tree_plus.md)** - this design builds on top of budgeted tree by introducing better complexity budget allocation. 
@@ -451,7 +453,7 @@ if (len <= dst_size) {
 
     This strategy ensures that more complex and significant subtasks receive a larger share of the parent's complexity budget, allowing them to be addressed with appropriate resources. For example, if a supervisor agent has a complexity budget of 1000 and creates 3 subtasks with weights 1.0, 3.0, and 1.5, the complexity budgets allocated to each subtask will be 182, 545, and 273 respectively. This approach helps to optimize resource allocation within the agentic system, improving overall efficiency and effectiveness in task completion. In addition, the complexity budget allocation also manage the amount of the children to be spawned.
 
-    **Reasoning**: one important aspect is that we need to ensure that finishing all subtasks is equivalent to finishing the parent objective. This strategy guarantees that the sum of complexity budgets of all child agents equals the parent's complexity budget. Further more, the sum of workers' complexity budgets can is equal to their common ancestor thinker's complexity budget. This property ensures that no workers are dealing with more complex tasks than their ancestors. If they do, it is likely that workers' subtasks are not properly decomposed or unnecessarily complicated.
+    **Reasoning**: one important aspect is that we need to ensure that finishing all subtasks is equivalent to finishing the parent objective. This strategy guarantees that the sum of complexity budgets of all child agents equals the parent's complexity budget. Further more, the sum of workers' complexity budgets can is equal to their common ancestor thinker's complexity budget. This property ensures that no workers are dealing with more complex tasks than their ancestors. If they do, it is likely that workers' subtasks are not properly decomposed or unnecessarily complicated. In addition, this strategy allows for dynamic adjustment of complexity budgets based on run-time need, and it is easier to inspect how our system allocate complexity budgets among workers. For example, it is expected the builder worker agents should have higher total amount of complexity budget than documenter worker agents.
 
     **Calculations**: When a thinker (BOSS/MANAGER) decomposes a task into subtasks, it splits its budget proportionally based on each subtask's budget_weight (ranging 0.1-10.0). The LLM assigns weights considering task complexity, importance, and estimated time.
 
@@ -500,18 +502,114 @@ if (len <= dst_size) {
     The weights are relative—what matters is the ratio between subtasks, not absolute values. A subtask with weight 2.0 receives twice the budget of one with weight 1.0.
 
 ### Design Choice 4: Supervisor Justification Context Passing 
-- **[Context Passing Tree](./context_passing_tree.md)**
+- **[Context Passing Tree](./context_passing_tree.md)** builds on top design choice 3 by introducing context passing between thinker agents and their child agents. 
+
+    **Need**: better inter-agent communication and collaboration. Basesd on our [observations](./budgeted_tree_plus.md#interactive-diagram), we find that thinkers and workers narrowly focus on their own subtasks without fully understanding the bigger picture. This can lead to misalignment and inefficiencies, as workers may not grasp the rationale behind their assignments. 
+
+    **Strategy**: pass down the thinker additional reasoning to their child agents. This justification includes the reasoning behind supervisor's original objective, objective for assigned sub-task, why it is assigned to a sub-agent, suggetest approach, why it would work, and expected deliverable. In addition, we pass down complexity budget allocation context in this section also to help the child agent understand their role in the larger objective. The following is one example:
+
+    ```xml
+    <SUPERVISOR_EXPECTATIONS>
+    Your supervisor assigned this task with the following context and expectations:
+
+    **Supervisor's Original Task**: BuilderAgent for CVE-gpac.cve-2023-0770: Build gpac
+    environment using provided Dockerfile, build.sh, and work directory /src/gpac.
+
+    **Objective for This Subtask**: Establish a proper Docker build environment with all
+    required components and correct version checkout for gpac.
+
+    **Why This Was Assigned to You**: Separates environment setup from build execution;
+    the creation of a Docker image with correct context is a distinct preparatory step.
+
+    **Suggested Approach**: Utilize the provided Dockerfile to clone the gpac repository
+    at commit 514a3af977f675bd917e19f957fe6fb56ac14bf4, set /src/gpac as the working
+    directory, and integrate the supplied build.sh script.
+
+    **Why This Should Work**: Direct use of provided Dockerfile and build.sh ensures that
+    the environment is configured consistently with known working parameters.
+
+    **Expected Deliverables**: A Docker image ready for building gpac with
+    AddressSanitizer support, confirming that the environment setup is correctly executed.
+
+    ## Budget Allocation Context
+    Your supervisor has allocated resources for this task with the following reasoning:
+
+    **Budget Allocation**: 40% of total project budget (weight 1.6 of total 4.0 across 2
+    subtasks)
+
+    **Complexity Assessment**: MODERATE: Involves integrating provided build context and
+    verifying correct Docker configuration.
+
+    **Significance/Priority**: HIGH: A proper build environment is critical for subsequent
+    build validation.
+
+    **Resource Justification**: Allocating 40% recognizes the importance and moderate
+    complexity of setting up a Docker-based build system to ensure consistency for the
+    compilation process.
+
+    Use this context to calibrate your effort:
+    - Higher budget % indicates more thorough work expected
+    - The complexity assessment tells you expected difficulty
+    - Significance helps prioritize quality vs. speed
+    </SUPERVISOR_EXPECTATIONS>
+    ```
+
+    This strategy first reduces the chances of redundant work because sub-agents assigned task would always be justified by their parent thinker's reasoning. Second, it improves the pending state to worker transition rate because of richer context provided to the child agents. Third, it enhances the overall work alignment between agents, because sibling agents at the same level knows how their work is asscoiated with other's work.
+
+    **Reasoning**: This is the first step to improve inter-agent communication. By providing more context from parent agents to their direct child agents. Our tree system ensures that the justification is cascaded down the tree, so that justifications from lower-level thinkers are always relevant to all of their high-level ancestors. We pass down complexity budget allocation context to further ensure the child agents understand their role in the larger objective with numeric weights.
 
 ### Design Choice 5: Worker Report Context Passing 
-- **[Context Passing Plus Tree](./context_passing_plus_tree.md)**
+- **[Context Passing Plus Tree](./context_passing_plus_tree.md)** builds on top of design choice 4 by introducing context passing from worker agents back to their parent thinker agents. 
 
-### Design Choice 6: Source Key Context Passing 
-- **[Source Key Context Passing Tree](./context_passing_with_source_summary.md)**
+    **Need**: We already have top-bottom context shares, but we need a feedback from wokers to their parents. Based on our [observations](./context_passing_tree.md#interactive-diagram), we find some workers are repeating other worker's work. Once workers start executing, all thinkers have finished their planning work, the later workers should be able to learn from earlier workers' experience as online learning.
+
+    **Strategy**: pass back the worker's completed work report to their parent thinker agent. This report includes how the work is aligned with the thinker justification, what files were changed, challenges encountered, and any additional insights gained during task execution. The thinker should be able to submit the result along with their "approval" to the shared context. The following is one example:
+
+    ```xml
+    <WORKER_REPORT>
+    I have completed the task of setting up the gpac build environment for
+    CVE-gpac.cve-2023-0770 using the provided Dockerfile and build.sh script.
+
+    **Alignment with Justification**:
+    My work directly addresses the objective of establishing a proper Docker build
+    environment as outlined in your justification. By following the suggested approach,
+    I ensured that the environment is configured correctly to facilitate the subsequent
+    build process.
+
+    **Files Changed**:
+    - Created a Docker image based on the provided Dockerfile.
+    - Integrated the build.sh script into the Docker image to automate the build
+    process.
+
+    **Challenges Encountered**:
+    - Ensuring all necessary dependencies were included in the Docker image required
+    careful review of the Dockerfile and additional research on gpac's build
+    requirements.
+    - Verifying that the correct version of gpac was checked out involved troubleshooting
+    git commands within the Docker context.
+
+    Overall, I believe my work effectively sets up the required build environment,
+    aligning well with your expectations and facilitating further development steps.
+    </WORKER_REPORT>
+    ```
+
+    This strategy allows worker's direct parent thinker to gauge the progress and quality of the work being done. We disallow workers to directly submit their work to shared context, because we want their direct supervisors to have the chance to review. This creates a possiblity of implementing rework mechanism in the future.
+
+    **Reasoning**: Our agents' collaboration is not limited to top-down instructions. By enable peer workers' knowledge sharing, we can ensure the real life run-time work/ challenges can be shared to other workers. This feedback loop enhances the overall efficiency and effectiveness of the agentic system, as workers can learn from each other's experiences and avoid redundant efforts. For example, one agent has already located the line number in a specific file, then later workers can directly use this information instead of re-discovering it again.
+
+### Design Choice 6: Boss Key Context Passing 
+- **[Boss Key Context Passing Tree](./context_passing_with_source_summary.md)** builds on top of design choice 5 by introducing source key context passing. 
+
+    **Need**: better utilization of Boss key context. Based on our [observations](./context_passing_plus_tree.md#interactive-diagram), we find that boss agent always contain the most important context such as bug report, docker file, build scripts, relevant files etc. Those context should be used vertatim by all agents, so that they create their own build script. In addition, this is only place where users can input their prompt to the entire system. Therefore, we need to ensure user's specific requests are honored by all agents.
+
+    **Strategy**: We extract key information from boss context (normally messy user input) into sections such as bug/ issue summary, error messages, reproduction steps, referenced files, version/ commit references, related URLs, environment, dependencies, key facts & requirements. This key context is submited to shared context so that other workers can append the relevant context to their own context.
 
 ### Design Choice 7: Inferred Context Passing 
-- **[CWE Context Passing Tree](./context_passing_with_CWE_tree.md)**
+- **[CWE Context Passing Tree](./context_passing_with_CWE_tree.md)** builds on top of design choice 6 by introducing inferred CWE fix pattern context passing. 
 
-### Feature Addition Workflow
+    **Need**: better utilization of security knowledge base. Based on our [observations](./context_passing_with_source_summary.md#interactive-diagram), we find that many bug fixes follow common CWE fix patterns. If we can identify the CWE patterns from the bug report, we can provide targeted fix strategies to workers to help them finish their work more efficiently. This is auxiliary prompt information that can be used by all agents to improve their work quality.
+
+    **Strategy**: We infer the possible CWE patterns from the boss context (normally messy user input) into sections such as inferred CWE patterns, recommended fix patterns, recommended sanitizers for verification, and CWE-specific fix patterns from security knowledge base. This inferred CWE context is submited to shared context so that other workers can append the relevant context to their own context.
 
 ### Tree Final Form
 Below is an interactive React Flow diagram that captures a snapshot of the high-level structure. You can pan, zoom, and explore relationships between agents. **Click on the nodes to see their details**.
