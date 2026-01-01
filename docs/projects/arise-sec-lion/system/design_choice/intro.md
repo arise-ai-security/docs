@@ -558,7 +558,7 @@ if (len <= dst_size) {
 
     **Reasoning**: This is the first step to improve inter-agent communication. By providing more context from parent agents to their direct child agents. Our tree system ensures that the justification is cascaded down the tree, so that justifications from lower-level thinkers are always relevant to all of their high-level ancestors. We pass down complexity budget allocation context to further ensure the child agents understand their role in the larger objective with numeric weights.
 
-### Design Choice 5: Worker Report Context Passing 
+### Design Choice 5: Global Shared Context and Worker Report Context Passing 
 - **[Context Passing Plus Tree](./context_passing_plus_tree.md)** builds on top of design choice 4 by introducing context passing from worker agents back to their parent thinker agents. 
 
     **Need**: We already have top-bottom context shares, but we need a feedback from wokers to their parents. Based on our [observations](./context_passing_tree.md#interactive-diagram), we find some workers are repeating other worker's work. Once workers start executing, all thinkers have finished their planning work, the later workers should be able to learn from earlier workers' experience as online learning.
@@ -610,6 +610,457 @@ if (len <= dst_size) {
     **Need**: better utilization of security knowledge base. Based on our [observations](./context_passing_with_source_summary.md#interactive-diagram), we find that many bug fixes follow common CWE fix patterns. If we can identify the CWE patterns from the bug report, we can provide targeted fix strategies to workers to help them finish their work more efficiently. This is auxiliary prompt information that can be used by all agents to improve their work quality.
 
     **Strategy**: We infer the possible CWE patterns from the boss context (normally messy user input) into sections such as inferred CWE patterns, recommended fix patterns, recommended sanitizers for verification, and CWE-specific fix patterns from security knowledge base. This inferred CWE context is submited to shared context so that other workers can append the relevant context to their own context.
+
+    The following is the example of key information extracted from boss context after design choice 5, 6, and 7.
+
+<div style={{ marginBottom: 20, maxHeight: '50vh', overflow: 'auto' }}>
+  <h3
+    style={{
+      fontSize: 13,
+      fontWeight: 600,
+      color: 'rgb(107, 114, 128)',
+      marginBottom: 8,
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+    }}
+  >
+    📤 Context Published to Dashboard
+  </h3>
+  <div style={{ marginBottom: 8 }}>
+    <p style={{ fontSize: 12, color: 'rgb(107, 114, 128)', margin: 0 }}>
+      This supervisor published 1 context to the global knowledge dashboard for cross-session learning.
+    </p>
+  </div>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div
+      style={{
+        backgroundColor: 'rgb(236, 254, 255)',
+        borderRadius: 8,
+        padding: 12,
+        borderLeft: '4px solid rgb(6, 182, 212)',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10 }}>
+        <span style={{ color: 'rgb(6, 182, 212)', fontSize: 14 }}>📋</span>
+        <div style={{ flex: '1 1 0%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div
+              style={{
+                fontSize: 11,
+                color: 'rgb(8, 145, 178)',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                marginBottom: 2,
+              }}
+            >
+              Source Context
+            </div>
+            <span
+              style={{
+                backgroundColor: 'rgb(207, 250, 254)',
+                color: 'rgb(8, 145, 178)',
+                padding: '2px 6px',
+                borderRadius: 4,
+                fontSize: 10,
+              }}
+            >
+              From Original Prompt
+            </span>
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 500, color: 'rgb(31, 41, 55)' }}>
+            [Source Context] CVE-2024-50665, [CWE-476], Build Context, PoC Command, Bug Report, Error Details...
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          marginLeft: 22,
+          borderTop: '1px solid rgb(165, 243, 252)',
+          paddingTop: 10,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 11,
+            color: 'rgb(8, 145, 178)',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            marginBottom: 8,
+          }}
+        >
+          Extracted Key Information
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(220, 38, 38)', marginBottom: 2 }}>
+            🐛 Bug/Issue Summary:
+          </div>
+          <div
+            style={{
+              fontSize: 12,
+              color: 'rgb(55, 65, 81)',
+              backgroundColor: 'rgb(254, 242, 242)',
+              padding: 8,
+              borderRadius: 4,
+            }}
+          >
+            Segmentation violation (SEGV) in gpac 2.4 at src/isomedia/drm_sample.c:1562:96 in isom_cenc_get_sai_by_saiz_saio in MP4Box.
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(234, 88, 12)', marginBottom: 2 }}>
+            ⚠️ Error Messages:
+          </div>
+          <ul
+            style={{
+              fontSize: 12,
+              color: 'rgb(55, 65, 81)',
+              backgroundColor: 'rgb(255, 247, 237)',
+              padding: '8px 8px 8px 20px',
+              borderRadius: 4,
+              margin: 0,
+              fontFamily: 'monospace',
+            }}
+          >
+            <li>==1963314==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x7f4f7ad3f484 bp 0x7ffd649eed20 sp 0x7ffd649eebc0 T0)</li>
+            <li>==1963314==The signal is caused by a READ memory access.</li>
+            <li>==1963314==Hint: address points to the zero page.</li>
+            <li>#0 0x7f4f7ad3f484 in isom_cenc_get_sai_by_saiz_saio /gpac/src/isomedia/drm_sample.c:1562:96</li>
+            <li>#1 0x7f4f7ad3f484 in gf_isom_cenc_get_sample_aux_info /gpac/src/isomedia/drm_sample.c:1672:10</li>
+            <li>#2 0x7f4f7b8707ed in isor_update_cenc_info /gpac/src/filters/isoffin_read_ch.c:242:7</li>
+            <li>#3 0x7f4f7b873f00 in isor_reader_get_sample /gpac/src/filters/isoffin_read_ch.c:655:4</li>
+            <li>#4 0x7f4f7b8662a5 in isoffin_process /gpac/src/filters/isoffin_read.c:1486:5</li>
+            <li>#5 0x7f4f7b5c57b1 in gf_filter_process_task /gpac/src/filter_core/filter.c:3143:7</li>
+            <li>#6 0x7f4f7b592191 in gf_fs_thread_proc /gpac/src/filter_core/filter_session.c:2144:3</li>
+            <li>#7 0x7f4f7b59020d in gf_fs_run /gpac/src/filter_core/filter_session.c:2451:3</li>
+            <li>#8 0x7f4f7af30bca in gf_dasher_process /gpac/src/media_tools/dash_segmenter.c:1255:6</li>
+            <li>#9 0x55bd003cea1c in do_dash /gpac/applications/mp4box/mp4box.c:4832:15</li>
+            <li>#10 0x55bd003bfedf in mp4box_main /gpac/applications/mp4box/mp4box.c:6256:7</li>
+            <li>#11 0x7f4f79faed8f  (/lib/x86_64-linux-gnu/libc.so.6+0x29d8f) (BuildId: a43bfc8428df6623cd498c9c0caeb91aec9be4f9)</li>
+            <li>#12 0x7f4f79faee3f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29e3f) (BuildId: a43bfc8428df6623cd498c9c0caeb91aec9be4f9)</li>
+            <li>#13 0x55bd002e7fe4 in _start (/gpac/bin/gcc/MP4Box+0x85fe4) (BuildId: d351b6e65d0a70b69e40b457b1491e27ba84c191)</li>
+          </ul>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(37, 99, 235)', marginBottom: 2 }}>
+            🔄 Reproduction Steps:
+          </div>
+          <div
+            style={{
+              fontSize: 12,
+              color: 'rgb(55, 65, 81)',
+              whiteSpace: 'pre-wrap',
+              backgroundColor: 'rgb(239, 246, 255)',
+              padding: 8,
+              borderRadius: 4,
+            }}
+          >
+            1. Clone the repository: git clone https://github.com/gpac/gpac.git
+            2. Change directory: cd gpac
+            3. Checkout the specific commit: git checkout 5d70253
+            4. Configure with sanitizer: ./configure --enable-sanitizer
+            5. Build the project: make -j24
+            6. Run the command to trigger the vulnerability: ./bin/gcc/MP4Box -dash 1000 -mvex-after-traks -daisy-chain -out /dev/null poc7gpac
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(22, 163, 74)', marginBottom: 2 }}>
+            📁 Referenced Files:
+          </div>
+          <ul
+            style={{
+              fontSize: 12,
+              color: 'rgb(55, 65, 81)',
+              backgroundColor: 'rgb(240, 253, 244)',
+              padding: '8px 8px 8px 20px',
+              borderRadius: 4,
+              margin: 0,
+              fontFamily: 'monospace',
+            }}
+          >
+            <li>src/filters/isoffin_read_ch.c</li>
+            <li>applications/mp4box/mp4box.c</li>
+            <li>/src/gpac</li>
+            <li>src/isomedia/drm_sample.c</li>
+            <li>src/media_tools/dash_segmenter.c</li>
+            <li>testcase/poc7gpac</li>
+            <li>testcase/model_patch.diff</li>
+            <li>src/filter_core/filter.c</li>
+          </ul>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(124, 58, 237)', marginBottom: 2 }}>
+            🔖 Commit/Version References:
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <span
+              style={{
+                backgroundColor: 'rgb(243, 232, 255)',
+                color: 'rgb(124, 58, 237)',
+                padding: '2px 8px',
+                borderRadius: 4,
+                fontSize: 11,
+                fontFamily: 'monospace',
+              }}
+            >
+              5d70253ac94e5840be7b86054131dd753af63cc7
+            </span>
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(79, 70, 229)', marginBottom: 2 }}>
+            🔗 Related URLs:
+          </div>
+          <ul
+            style={{
+              fontSize: 12,
+              color: 'rgb(55, 65, 81)',
+              backgroundColor: 'rgb(238, 242, 255)',
+              padding: '8px 8px 8px 20px',
+              borderRadius: 4,
+              margin: 0,
+              fontFamily: 'monospace',
+            }}
+          >
+            <li style={{ wordBreak: 'break-all' }}>https://github.com/Frank-Z7/z-vulnerabilitys/blob/main/poc7gpac</li>
+            <li style={{ wordBreak: 'break-all' }}>https://github.com/gpac/gpac/issues/2987</li>
+            <li style={{ wordBreak: 'break-all' }}>https://github.com/gpac/gpac</li>
+          </ul>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(107, 114, 128)', marginBottom: 2 }}>
+            💻 Environment:
+          </div>
+          <div style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+            ubuntu:20.04, gcc version 9.4.0, clang version 10.0.0-4ubuntu1, afl-cc++4.09
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(107, 114, 128)', marginBottom: 2 }}>
+            📦 Dependencies:
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            <span
+              style={{
+                backgroundColor: 'rgb(243, 244, 246)',
+                color: 'rgb(55, 65, 81)',
+                padding: '2px 8px',
+                borderRadius: 4,
+                fontSize: 11,
+                fontFamily: 'monospace',
+              }}
+            >
+              build-essential
+            </span>
+            <span
+              style={{
+                backgroundColor: 'rgb(243, 244, 246)',
+                color: 'rgb(55, 65, 81)',
+                padding: '2px 8px',
+                borderRadius: 4,
+                fontSize: 11,
+                fontFamily: 'monospace',
+              }}
+            >
+              pkg-config
+            </span>
+            <span
+              style={{
+                backgroundColor: 'rgb(243, 244, 246)',
+                color: 'rgb(55, 65, 81)',
+                padding: '2px 8px',
+                borderRadius: 4,
+                fontSize: 11,
+                fontFamily: 'monospace',
+              }}
+            >
+              libz-dev
+            </span>
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(202, 138, 4)', marginBottom: 2 }}>
+            ⭐ Key Facts &amp; Requirements:
+          </div>
+          <ul
+            style={{
+              fontSize: 12,
+              color: 'rgb(55, 65, 81)',
+              backgroundColor: 'rgb(254, 252, 232)',
+              padding: '8px 8px 8px 20px',
+              borderRadius: 4,
+              margin: 0,
+            }}
+          >
+            <li>Language: c++</li>
+            <li>The bug is present in both the latest master branch and version 2.4.</li>
+            <li>Project: gpac</li>
+            <li>The issue is caused by dereferencing a null pointer.</li>
+          </ul>
+        </div>
+
+        <div
+          style={{
+            marginBottom: 8,
+            backgroundColor: 'rgb(254, 242, 242)',
+            padding: 12,
+            borderRadius: 6,
+            border: '1px solid rgb(254, 202, 202)',
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: 'rgb(220, 38, 38)',
+              marginBottom: 8,
+              textTransform: 'uppercase',
+            }}
+          >
+            🛡️ CWE Pattern Analysis
+          </div>
+
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(153, 27, 27)', marginBottom: 4 }}>
+              Inferred CWEs:
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <span
+                style={{
+                  backgroundColor: 'rgb(254, 226, 226)',
+                  color: 'rgb(153, 27, 27)',
+                  padding: '4px 10px',
+                  borderRadius: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  fontFamily: 'monospace',
+                }}
+              >
+                CWE-476
+              </span>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(153, 27, 27)', marginBottom: 4 }}>
+              Analysis Reasoning:
+            </div>
+            <div style={{ backgroundColor: 'white', padding: 8, borderRadius: 4, fontSize: 12 }}>
+              <div style={{ marginBottom: 0 }}>
+                <span style={{ fontWeight: 600, color: 'rgb(220, 38, 38)' }}>CWE-476:</span>
+                <span style={{ color: 'rgb(55, 65, 81)', marginLeft: 6 }}>
+                  The bug report mentions a segmentation violation caused by dereferencing a null pointer, which is corroborated by the AddressSanitizer output indicating a SEGV on address 0x0.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(153, 27, 27)', marginBottom: 4 }}>
+              Confidence Levels:
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              <span style={{ backgroundColor: 'rgb(249, 250, 251)', padding: '3px 8px', borderRadius: 4, fontSize: 11 }}>
+                <span style={{ fontFamily: 'monospace', fontWeight: 500 }}>CWE-476</span>
+                <span style={{ marginLeft: 4, color: 'rgb(22, 163, 74)', fontWeight: 600 }}>high</span>
+              </span>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(22, 163, 74)', marginBottom: 4 }}>
+              🔧 Recommended Fix Patterns:
+            </div>
+            <div style={{ backgroundColor: 'rgb(240, 253, 244)', padding: 8, borderRadius: 4, fontSize: 12 }}>
+              <div style={{ marginBottom: 0 }}>
+                <span style={{ fontWeight: 600, color: 'rgb(21, 128, 61)', fontFamily: 'monospace' }}>CWE-476:</span>
+                <span style={{ color: 'rgb(55, 65, 81)', marginLeft: 6 }}>
+                  Add NULL check before dereferencing pointers to ensure they are not null.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(124, 58, 237)', marginBottom: 4 }}>
+              🧪 Recommended Sanitizers:
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              <span
+                style={{
+                  backgroundColor: 'rgb(243, 232, 255)',
+                  color: 'rgb(124, 58, 237)',
+                  padding: '2px 8px',
+                  borderRadius: 4,
+                  fontSize: 11,
+                  fontFamily: 'monospace',
+                }}
+              >
+                -fsanitize=address
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
+          <span
+            style={{
+              backgroundColor: 'rgb(207, 250, 254)',
+              color: 'rgb(8, 145, 178)',
+              padding: '2px 8px',
+              borderRadius: 9999,
+              fontSize: 11,
+            }}
+          >
+            test
+          </span>
+          <span
+            style={{
+              backgroundColor: 'rgb(207, 250, 254)',
+              color: 'rgb(8, 145, 178)',
+              padding: '2px 8px',
+              borderRadius: 9999,
+              fontSize: 11,
+            }}
+          >
+            docker
+          </span>
+          <span
+            style={{
+              backgroundColor: 'rgb(207, 250, 254)',
+              color: 'rgb(8, 145, 178)',
+              padding: '2px 8px',
+              borderRadius: 9999,
+              fontSize: 11,
+            }}
+          >
+            config
+          </span>
+        </div>
+
+        <div
+          style={{
+            paddingTop: 8,
+            borderTop: '1px solid rgb(165, 243, 252)',
+            fontSize: 11,
+            color: 'rgb(156, 163, 175)',
+          }}
+        >
+          Extracted at: 12/30/2025, 11:18:50 PM
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 ### Tree Final Form
 Below is an interactive React Flow diagram that captures a snapshot of the high-level structure. You can pan, zoom, and explore relationships between agents. **Click on the nodes to see their details**.
