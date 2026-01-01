@@ -558,6 +558,119 @@ if (len <= dst_size) {
 
     **Reasoning**: This is the first step to improve inter-agent communication. By providing more context from parent agents to their direct child agents. Our tree system ensures that the justification is cascaded down the tree, so that justifications from lower-level thinkers are always relevant to all of their high-level ancestors. We pass down complexity budget allocation context to further ensure the child agents understand their role in the larger objective with numeric weights.
 
+    The following is an example of passed down justification from a thinker to its child agent:
+
+    <div
+      style={{
+        backgroundColor: 'rgb(249, 250, 251)',
+        borderRadius: 8,
+        padding: 12,
+        border: '1px solid rgb(229, 231, 235)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: 12,
+          marginBottom: 10,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 14,
+            color: 'rgb(31, 41, 55)',
+            fontWeight: 500,
+            flex: '1 1 0%',
+          }}
+        >
+          [PathAnalyzerWorker] For CVE-2024-50665 in gpac, examine src/isomedia/drm_sample.c around line 1562 plus related commit diffs and public advisories to fully map the execution flow and variable states that lead to the NULL-pointer dereference, and list every MP4 box/field the code references or influences along this path.
+        </span>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+          <span
+            style={{
+              backgroundColor: 'rgb(219, 234, 254)',
+              color: 'rgb(30, 64, 175)',
+              padding: '2px 8px',
+              borderRadius: 9999,
+              fontSize: 11,
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            40% budget
+          </span>
+          <span
+            style={{
+              backgroundColor: 'rgb(209, 250, 229)',
+              color: 'rgb(6, 95, 70)',
+              padding: '2px 8px',
+              borderRadius: 9999,
+              fontSize: 11,
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            completed
+          </span>
+        </div>
+      </div>
+      <div
+        style={{
+          fontSize: 12,
+          color: 'rgb(107, 114, 128)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+          borderTop: '1px solid rgb(229, 231, 235)',
+          paddingTop: 10,
+        }}
+      >
+        <div>
+          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Objective:</span>{' '}
+          Deliver an exhaustive list of code conditions, variable states, and MP4 input fields/boxes that govern the vulnerable branch, with clear mapping from input bytes to code decisions.
+        </div>
+        <div style={{ whiteSpace: 'pre-wrap' }}>
+          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Plan:</span>{' '}
+          {'1) Load drm_sample.c and scroll ±200 lines around 1562.\n'}
+          {'2) Trace call stack and data flow for the dereferenced pointer.\n'}
+          {'3) Review git history and patch notes for any checks added/removed.\n'}
+          {'4) Consult CVE/advisories for hinted trigger states.\n'}
+          {'5) Create table: {code location, input field, expected value, effect}.\n'}
+          {"6) Output ‘path_map.md’ outlining these relationships."}
+        </div>
+        <div>
+          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Split Reason:</span>{' '}
+          Thorough static/diff analysis requires concentrated reverse-engineering skills distinct from authoring a byte-level MP4 spec; isolating this step ensures clean, factual path data before creative spec design begins.
+        </div>
+        <div>
+          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Why It May Work:</span>{' '}
+          gpac’s parser is open-source and well-commented; commit diffs and advisories usually highlight the same variables, making correlation feasible through standard static analysis techniques.
+        </div>
+        <div>
+          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Expected Results:</span>{' '}
+          File ‘path_map.md’ containing: • stack trace to NULL deref • all relevant MP4 boxes/flags • required value ranges • rationale for each mapping.
+        </div>
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgb(233, 213, 255)' }}>
+          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Budget Allocation:</span>{' '}
+          20% of total project budget (weight 0.4 of total 2.0 across all project subtasks)
+        </div>
+        <div>
+          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Complexity:</span>{' '}
+          MODERATE: Requires multi-file code tracing and diff comparison but no build or runtime work.
+        </div>
+        <div>
+          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Significance:</span>{' '}
+          CRITICAL PATH: Subsequent spec drafting depends entirely on this factual mapping.
+        </div>
+        <div>
+          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Resource Justification:</span>{' '}
+          Static analysis with diff review demands careful line-by-line reasoning; 20% ensures adequate tokens and iterations to avoid missed conditions.
+        </div>
+      </div>
+    </div>
+
 ### Design Choice 5: Global Shared Context and Worker Report Context Passing 
 - **[Context Passing Plus Tree](./context_passing_plus_tree.md)** builds on top of design choice 4 by introducing context passing from worker agents back to their parent thinker agents. 
 
@@ -597,7 +710,134 @@ if (len <= dst_size) {
 
     **Reasoning**: Our agents' collaboration is not limited to top-down instructions. By enable peer workers' knowledge sharing, we can ensure the real life run-time work/ challenges can be shared to other workers. This feedback loop enhances the overall efficiency and effectiveness of the agentic system, as workers can learn from each other's experiences and avoid redundant efforts. For example, one agent has already located the line number in a specific file, then later workers can directly use this information instead of re-discovering it again.
 
-    The following is an example of inheritted kowledge from earlier workers:
+    The following is an example of an thinker's published knowledge of an completed worker to shared context:
+
+    <div style={{ marginBottom: 20 }}>
+      <h3
+        style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: 'rgb(107, 114, 128)',
+          marginBottom: 8,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+        }}
+      >
+        📤 Context Published to Dashboard
+      </h3>
+
+      <div style={{ marginBottom: 8 }}>
+        <p style={{ fontSize: 12, color: 'rgb(107, 114, 128)', margin: 0 }}>
+          This supervisor published 1 context to the global knowledge dashboard for cross-session learning.
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div
+          style={{
+            backgroundColor: 'rgb(250, 245, 255)',
+            borderRadius: 8,
+            padding: 12,
+            borderLeft: '4px solid rgb(168, 85, 247)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10 }}>
+            <span style={{ color: 'rgb(168, 85, 247)', fontSize: 14 }}>🔑</span>
+            <div style={{ flex: '1 1 0%' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'rgb(124, 58, 237)',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    marginBottom: 2,
+                  }}
+                >
+                  Key
+                </div>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'rgb(31, 41, 55)' }}>
+                Deliver an exhaustive list of code conditions, variable states, and MP4 input...
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginLeft: 22, borderTop: '1px solid rgb(233, 213, 255)', paddingTop: 10 }}>
+            <div
+              style={{
+                fontSize: 11,
+                color: 'rgb(124, 58, 237)',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                marginBottom: 8,
+              }}
+            >
+              Value
+            </div>
+
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(75, 85, 99)', marginBottom: 2 }}>Objective:</div>
+              <div style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+                Deliver an exhaustive list of code conditions, variable states, and MP4 input fields/boxes that govern the vulnerable branch, with clear mapping from input bytes to code decisions.
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(75, 85, 99)', marginBottom: 2 }}>Why Assigned:</div>
+              <div style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+                Thorough static/diff analysis requires concentrated reverse-engineering skills distinct from authoring a byte-level MP4 spec; isolating this step ensures clean, factual path data before creative spec design begins.
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(75, 85, 99)', marginBottom: 2 }}>How It Was Accomplished:</div>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: 'rgb(55, 65, 81)',
+                  whiteSpace: 'pre-wrap',
+                  backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                  padding: 8,
+                  borderRadius: 4,
+                  maxHeight: 150,
+                  overflow: 'auto',
+                }}
+              >
+                **Approach:** Executed task using available tools
+
+                **Reasoning:** Task executed using standard approach with successful completion
+
+                **Deliverables:** Task completed successfully in workspace: /app/output/83a8e878-24fe-4a14-88dc-19de7148d899
+
+                **Challenges:** No significant challenges encountered
+
+                **Observations:** Task completed successfully in workspace: /app/output/83a8e878-24fe-4a14-88dc-19de7148d899
+
+                **Fulfillment Evidence:** Objective 'Deliver an exhaustive list of code conditions, var...' addressed; Task completed without critical errors
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: 12,
+                paddingTop: 8,
+                borderTop: '1px solid rgb(243, 232, 255)',
+                fontSize: 11,
+                color: 'rgb(156, 163, 175)',
+              }}
+            >
+              <span>Worker: e286dfa6...</span>
+              <span>12/30/2025, 11:39:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    The following is an example of an worker's inherited knowledge from earlier workers:
     <div
       style={{
         background: 'white',
@@ -673,7 +913,7 @@ if (len <= dst_size) {
 
     **Strategy**: We infer the possible CWE patterns from the boss context (normally messy user input) into sections such as inferred CWE patterns, recommended fix patterns, recommended sanitizers for verification, and CWE-specific fix patterns from security knowledge base. This inferred CWE context is submited to shared context so that other workers can append the relevant context to their own context.
 
-    The following is the example of key information extracted from boss context after design choice 5, 6, and 7.
+    The following is the example of key information extracted from boss context after design choice 6 and 7.
 
 <div style={{ marginBottom: 20, maxHeight: '50vh', overflow: 'auto' }}>
   <h3
