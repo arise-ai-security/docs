@@ -434,7 +434,7 @@ if (len <= dst_size) {
 - **[Naive Tree](./naive_tree.md)** -  We analyzes the direct approach to implement the tree-structure without additional restraints. This design enables agents with full autonomy to decide whether to become worker agent nodes or spawn more subordinate agent nodes at their internal LLM's discretion.
 
 ### Design Choice 2: Complexity Budgeted Tree
-- **[Budgeted Tree](./budgeted_tree.md)** - This design builds upon the naive tree-structured agentic system by introducing complexity budget management. 
+- **[Complexity Budgeted Tree](./budgeted_tree.md)** - This design builds upon the naive tree-structured agentic system by introducing complexity budget management.
 
     **Need**: restrain the tree growth. Naive tree generates huge amount of agents.
 
@@ -445,7 +445,7 @@ if (len <= dst_size) {
     **Reasoning**: `max_child_worker_count` and `max_tree_depth` still exist and serve as system-level hard-limit. This Complexity budget threshould is a softer limit, and the hyper-parameter percentage of initial allocated budget can be adjusted based on the project size. This strategy is easier for calculation of expected amount of workers (1 / percentage) in the entire tree.
 
 ### Design Choice 3: Complexity/ Significance Computation
-- **[Budgeted Plus Tree](./budgeted_tree_plus.md)** - this design builds on top of budgeted tree by introducing better complexity budget allocation. 
+- **[Complexity Budgeted Plus Tree](./budgeted_tree_plus.md)** - this design builds on top of complexity budgeted tree by introducing better complexity budget allocation. 
 
     **Need**: fair complexity budget allocation among child agents. So that the complex/critical subagents can grow deeper in the tree. Non-essential agents with task such as logging, documentation will have limited amount of complexity budget, because their work does not contribute too much to overall project and they should finish quickly.
 
