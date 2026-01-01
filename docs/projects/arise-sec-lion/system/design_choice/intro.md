@@ -433,8 +433,8 @@ if (len <= dst_size) {
 ### Design Choice 1: Naive Tree
 - **[Naive Tree](./naive_tree.md)** -  We analyzes the direct approach to implement the tree-structure without additional restraints. This design enables agents with full autonomy to decide whether to become worker agent nodes or spawn more subordinate agent nodes at their internal LLM's discretion.
 
-### Design Choice 2: Budgeted Tree
-- **[Budgeted Tree](./budgeted_tree.md)** - This design builds upon the naive tree-structured agentic system by introducing budget management. 
+### Design Choice 2: Complexity Budgeted Tree
+- **[Budgeted Tree](./budgeted_tree.md)** - This design builds upon the naive tree-structured agentic system by introducing complexity budget management. 
 
     **Need**: restrain the tree growth. Naive tree generates huge amount of agents.
 
