@@ -18,7 +18,7 @@ Please click on each instance name to see the interactive tree of that evaluatio
 
 | Instance (CVE) | Builder (ARISE vs SecVerifier) | Exploiter (ARISE vs SecVerifier) | Fixer (ARISE vs SecVerifier) |
 | --- | --- | --- | --- |
-| [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree) | TBD / True | TBD / False | TBD / False |
+| [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree) | True / True | True / False | True / False |
 | [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree) | TBD / True | TBD / True | TBD / False |
@@ -49,3 +49,6 @@ Some helper agents failed, but they do not affect the final results in our syste
 
 The Following is Showing the Interactive Tree for <EvalInstanceLabel defaultInstance="gpac.cve-2023-0770" />:
 <EvalTreeFromLocation defaultInstance="gpac.cve-2023-0770" />
+
+## Analysis
+1. Our system is robust in terms of dealing with failed helper agents. In most of the evaluations, even some helper agents failed, essential workers with significant tasks can still succeed, leading to the overall higher success rates of the evaluation.
