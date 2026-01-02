@@ -4,6 +4,7 @@ sidebar_position: 9
 ---
 import EvalTreeFromLocation from '@site/src/components/arise-sec-lion-evals/EvalTreeFromLocation';
 import EvalInstanceLabel from '@site/src/components/arise-sec-lion-evals/EvalInstanceLabel';
+import EvalWorkspaceFromLocation from '@site/src/components/arise-sec-lion-evals/EvalWorkspaceFromLocation';
 
 # Evaluations on CVE Instances
 In this page, we present the real examples of evaluations on CVE instances. We selected 20 CVE instances and compare their results with baselines SecVerifier.
@@ -47,8 +48,13 @@ The following shows the visualization of a specific evaluation instances. You ca
 
 Some helper agents failed, but they do not affect the final results in our system. You can click on the nodes to see more details.
 
-The Following is Showing the Interactive Tree for <EvalInstanceLabel defaultInstance="gpac.cve-2023-0770" />:
+The following is showing the Interactive Tree for <EvalInstanceLabel defaultInstance="gpac.cve-2023-0770" />:
 <EvalTreeFromLocation defaultInstance="gpac.cve-2023-0770" />
+
+The following is the Working Space after the system finishes for <EvalInstanceLabel defaultInstance="gpac.cve-2023-0770" />. You can see all the generated artifacts here.
+
+<EvalWorkspaceFromLocation defaultInstance="gpac.cve-2023-0770" />
+
 
 ## Analysis
 1. Our system is robust in terms of dealing with failed helper agents. In most of the evaluations, even some helper agents failed, essential workers with significant tasks can still succeed, leading to the overall higher success rates of the evaluation.
