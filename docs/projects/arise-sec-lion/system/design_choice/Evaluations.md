@@ -15,12 +15,12 @@ Each cell records a side-by-side comparison: ARISE vs SecVerifier. Both system a
 
 SecVerifier's results are consistent with their paper results, and we use their best results (with the most of amount True's in 3 stages: Builder, Exploiter, Fixer) for comparison. These results are best performances using GPT-4o, GPT-4o-mini, or GPT-5 with 300 iterations.
 
-Please click on each instance name to see the interactive tree of that evaluation.
+Please **click on each instance name** to see the interactive tree of that evaluation.
 
 | Instance (CVE) | Builder (ARISE vs SecVerifier) | Exploiter (ARISE vs SecVerifier) | Fixer (ARISE vs SecVerifier) |
 | --- | --- | --- | --- |
 | [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree) | True / True | True / False | True / False |
-| [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree) | TBD / True | TBD / False | TBD / False |
+| [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree) | True / True | True / False | True / False |
 | [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree) | TBD / True | TBD / True | TBD / False |
 | [faad2.cve-2021-32276](?instance=faad2.cve-2021-32276#interactive-tree) | TBD / True | TBD / False | TBD / False |
@@ -44,7 +44,7 @@ Please click on each instance name to see the interactive tree of that evaluatio
 <a id="interactive-tree"></a>
 
 ## Interactive Tree
-The following shows the visualization of a specific evaluation instances. You can interact with the tree to explore the design choices made during the evaluation process. You can click on the nodes to expand or collapse them. 
+The following shows the visualization of a specific evaluation instances. You can interact with the tree to explore the design choices made during the evaluation process. You can **click on the nodes to expand or collapse them** to check their context and work. 
 
 Some helper agents failed, but they do not affect the final results in our system. You can click on the nodes to see more details.
 
@@ -53,7 +53,7 @@ The following is showing the Interactive Tree for <EvalInstanceLabel defaultInst
 
 The following is the Working Space after the system finishes for <EvalInstanceLabel defaultInstance="gpac.cve-2023-0770" />. You can see all the generated artifacts here.
 
-<EvalWorkspaceFromLocation defaultInstance="gpac.cve-2023-0770" />
+<EvalWorkspaceFromLocation defaultInstance="gpac.cve-2023-0770"/>
 
 
 ## Analysis
