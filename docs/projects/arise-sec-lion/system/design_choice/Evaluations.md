@@ -27,7 +27,7 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [flac.cve-2020-22219](?instance=flac.cve-2020-22219#interactive-tree) | True / False | True / False | True / False |
 | [gpac.cve-2023-0770](?instance=gpac.cve-2023-0770#interactive-tree) | True / True | True / True | True / False |
 | [gpac.cve-2023-2838](?instance=gpac.cve-2023-2838#interactive-tree) | True / True | True / False | True / False |
-| [imagemagick.cve-2017-11754](?instance=imagemagick.cve-2017-11754#interactive-tree) | TBD / True | TBD / True | TBD / False |
+| [imagemagick.cve-2017-11754](?instance=imagemagick.cve-2017-11754#interactive-tree) | True / True | True / True | True / False |
 | [imagemagick.cve-2017-12641](?instance=imagemagick.cve-2017-12641#interactive-tree) | TBD / True | TBD / True | TBD / False |
 | [libarchive.cve-2016-10209](?instance=libarchive.cve-2016-10209#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [libarchive.cve-2017-14501](?instance=libarchive.cve-2017-14501#interactive-tree) | TBD / True | TBD / False | TBD / False |
