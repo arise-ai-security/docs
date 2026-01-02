@@ -24,7 +24,7 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree) | True / True | True / False | True / False |
 | [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree) | True / True | True / True | True / False |
 | [faad2.cve-2021-32276](?instance=faad2.cve-2021-32276#interactive-tree) | True / True | True / False | True / False |
-| [flac.cve-2020-22219](?instance=flac.cve-2020-22219#interactive-tree) | TBD / False | TBD / False | TBD / False |
+| [flac.cve-2020-22219](?instance=flac.cve-2020-22219#interactive-tree) | True / False | True / False | True / False |
 | [gpac.cve-2023-0770](?instance=gpac.cve-2023-0770#interactive-tree) | True / True | True / True | True / False |
 | [gpac.cve-2023-2838](?instance=gpac.cve-2023-2838#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [imagemagick.cve-2017-11754](?instance=imagemagick.cve-2017-11754#interactive-tree) | TBD / True | TBD / True | TBD / False |
