@@ -21,7 +21,7 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | --- | --- | --- | --- |
 | [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree) | True / True | True / False | True / False |
 | [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree) | True / True | True / False | True / False |
-| [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree) | TBD / True | TBD / False | TBD / False |
+| [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree) | True / True | True / False | True / False |
 | [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree) | TBD / True | TBD / True | TBD / False |
 | [faad2.cve-2021-32276](?instance=faad2.cve-2021-32276#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [flac.cve-2020-22219](?instance=flac.cve-2020-22219#interactive-tree) | TBD / False | TBD / False | TBD / False |
