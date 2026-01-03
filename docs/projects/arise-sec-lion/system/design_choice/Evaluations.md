@@ -19,20 +19,20 @@ Please **click on each instance name** to see the interactive tree of that evalu
 
 | Instance (CVE) | Builder (ARISE vs SecVerifier) | Exploiter (ARISE vs SecVerifier) | Fixer (ARISE vs SecVerifier) |
 | --- | --- | --- | --- |
-| [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree) | True / True | True / False | True / False |
-| [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree) | True / True | True / False | True / False |
+| [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree) | True / True | True / False | False / False |
+| [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree) | True / True | True / False | False / False |
 | [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree) | True / True | True / False | True / False |
-| [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree) | True / True | True / True | True / False |
+| [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree) | True / True | False / True | True / False |
 | [faad2.cve-2021-32276](?instance=faad2.cve-2021-32276#interactive-tree) | True / True | True / False | True / False |
 | [flac.cve-2020-22219](?instance=flac.cve-2020-22219#interactive-tree) | True / False | True / False | True / False |
-| [gpac.cve-2023-0770](?instance=gpac.cve-2023-0770#interactive-tree) | True / True | True / True | True / False |
+| [gpac.cve-2023-0770](?instance=gpac.cve-2023-0770#interactive-tree) | True / True | True / True | False / False |
 | [gpac.cve-2023-2838](?instance=gpac.cve-2023-2838#interactive-tree) | True / True | True / False | True / False |
-| [imagemagick.cve-2017-11754](?instance=imagemagick.cve-2017-11754#interactive-tree) | True / True | True / True | True / False |
-| [imagemagick.cve-2017-12641](?instance=imagemagick.cve-2017-12641#interactive-tree) | True / True | False / True | True / False |
+| [imagemagick.cve-2017-11754](?instance=imagemagick.cve-2017-11754#interactive-tree) | False / True | True / True | True / False |
+| [imagemagick.cve-2017-12641](?instance=imagemagick.cve-2017-12641#interactive-tree) | False / True | False / True | True / False |
 | [libarchive.cve-2016-10209](?instance=libarchive.cve-2016-10209#interactive-tree) | True / True | True / False | True / False |
 | [libarchive.cve-2017-14501](?instance=libarchive.cve-2017-14501#interactive-tree) | True / True | True / False | True / False |
 | [libiec61850.cve-2018-19122](?instance=libiec61850.cve-2018-19122#interactive-tree) | True / True | True / False | True / False |
-| [libjpeg-turbo.cve-2020-17541](?instance=libjpeg-turbo.cve-2020-17541#interactive-tree) | TBD / True | TBD / False | TBD / False |
+| [libjpeg-turbo.cve-2020-17541](?instance=libjpeg-turbo.cve-2020-17541#interactive-tree) | True / True | True / False | True / False |
 | [libsass.cve-2018-20822](?instance=libsass.cve-2018-20822#interactive-tree) | TBD / True | TBD / True | TBD / False |
 | [libtorrent.cve-2016-7164](?instance=libtorrent.cve-2016-7164#interactive-tree) | TBD / False | TBD / False | TBD / False |
 | [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree) | TBD / True | TBD / True | TBD / False |
