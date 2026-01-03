@@ -30,7 +30,7 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [imagemagick.cve-2017-11754](?instance=imagemagick.cve-2017-11754#interactive-tree) | True / True | True / True | True / False |
 | [imagemagick.cve-2017-12641](?instance=imagemagick.cve-2017-12641#interactive-tree) | True / True | False / True | True / False |
 | [libarchive.cve-2016-10209](?instance=libarchive.cve-2016-10209#interactive-tree) | True / True | True / False | True / False |
-| [libarchive.cve-2017-14501](?instance=libarchive.cve-2017-14501#interactive-tree) | TBD / True | TBD / False | TBD / False |
+| [libarchive.cve-2017-14501](?instance=libarchive.cve-2017-14501#interactive-tree) | True / True | True / False | True / False |
 | [libiec61850.cve-2018-19122](?instance=libiec61850.cve-2018-19122#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [libjpeg-turbo.cve-2020-17541](?instance=libjpeg-turbo.cve-2020-17541#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [libsass.cve-2018-20822](?instance=libsass.cve-2018-20822#interactive-tree) | TBD / True | TBD / True | TBD / False |
