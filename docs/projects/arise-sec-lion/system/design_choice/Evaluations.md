@@ -38,7 +38,7 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree) | True / True | True / True | False / False |
 | [mruby.cve-2022-1071](?instance=mruby.cve-2022-1071#interactive-tree) | True / True | False / False | True / False |
 | [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree) | False / False | True / False | True / False |
-| [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree) | TBD / True | TBD / False | TBD / False |
+| [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree) | True / True | True / False | True / False |
 | [openjpeg.cve-2017-14164](?instance=openjpeg.cve-2017-14164#interactive-tree) | TBD / True | TBD / True | TBD / False |
 
 <a id="interactive-tree"></a>
