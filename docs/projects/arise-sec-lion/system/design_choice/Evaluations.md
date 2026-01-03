@@ -37,9 +37,14 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [libtorrent.cve-2016-7164](?instance=libtorrent.cve-2016-7164#interactive-tree) | True / False | True / False | True / False |
 | [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree) | True / True | True / True | False / False |
 | [mruby.cve-2022-1071](?instance=mruby.cve-2022-1071#interactive-tree) | True / True | False / False | True / False |
-| [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree) | False / False | True / False | True / False |
+| [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree) | True / False | True / False | True / False |
 | [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree) | True / True | True / False | True / False |
 | [openjpeg.cve-2017-14164](?instance=openjpeg.cve-2017-14164#interactive-tree) | True / True | True / True | True / False |
+
+Our system clearly outperforms SecVerifier in all 3 stages. 
+| Builder Success Rate (ARISE vs SecVerifier) | Exploiter Success Rate (ARISE vs SecVerifier) | Fixer Success Rate (ARISE vs SecVerifier) |
+| --- | --- | --- |
+| 90.48% (19/21) vs 85.71% (18/21) | 80.95% (17/21) vs 33.33% (7/21) | 80.95% (17/21) vs 0% (0/21) |
 
 <a id="interactive-tree"></a>
 
