@@ -112,8 +112,6 @@ docker run hello-world
 
 #### Docker Context Configuration
 
-[//]: # TODO: Add `colima` setup()
-
 For Docker Desktop users:
 ```bash
 # Set Docker Desktop context
@@ -157,6 +155,33 @@ docker ps  # Should not show permission errors
 # Verify data download
 ls -la $CYBERGYM_ROOT/oss-fuzz-data/  # Should contain dataset files
 ```
+
+## Troubleshooting
+
+### Colima Users
+
+If you're using `colima` instead of Docker Desktop, you may need additional configuration:
+
+1. Ensure colima is started with appropriate resources:
+   ```bash
+   colima start --cpu 4 --memory 8
+   ```
+
+2. Set the Docker context to use colima:
+   ```bash
+   docker context use colima
+   ```
+
+3. Verify the Docker socket is accessible:
+   ```bash
+   docker info
+   ```
+
+### Common Issues
+
+- **Docker permission errors**: Ensure Docker Desktop is running and you have the correct permissions.
+- **Python version mismatch**: Verify you're using Python ≥3.12 within the conda environment.
+- **Missing 7z**: Install 7z from [7-zip.org](https://www.7-zip.org/download.html) or via your package manager.
 
 ## Next Steps
 

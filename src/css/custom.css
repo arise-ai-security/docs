@@ -14,6 +14,12 @@
   --ifm-color-primary-lightest: #3cad6e;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  /* Theme-aware tokens for embedded MDX/HTML example blocks */
+  --arise-embed-surface: var(--ifm-background-surface-color);
+  --arise-embed-border: var(--ifm-color-emphasis-200);
+  --arise-embed-muted: var(--ifm-color-emphasis-700);
+  --arise-embed-strong: var(--ifm-color-emphasis-800);
 }
 
 [data-theme='dark'] {
@@ -25,6 +31,180 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* ReactFlow MiniMap dark mode (CSS-only) */
+[data-theme='dark'] .react-flow__minimap,
+[data-theme='dark'] .reactflow__minimap {
+  background-color: var(--ifm-background-surface-color) !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+}
+
+[data-theme='dark'] .react-flow__minimap svg,
+[data-theme='dark'] .reactflow__minimap svg {
+  background: transparent !important;
+}
+
+/* Viewport mask/overlay inside minimap */
+[data-theme='dark'] .react-flow__minimap .react-flow__minimap-mask,
+[data-theme='dark'] .reactflow__minimap .react-flow__minimap-mask {
+  fill: color-mix(in srgb, var(--ifm-font-color-base) 10%, transparent) !important;
+  stroke: var(--ifm-color-emphasis-300) !important;
+}
+
+/* Node outlines inside minimap */
+[data-theme='dark'] .react-flow__minimap .react-flow__minimap-node,
+[data-theme='dark'] .reactflow__minimap .react-flow__minimap-node {
+  stroke: var(--ifm-color-emphasis-300) !important;
+}
+
+/*
+ * ReactFlow node-click modal dark mode
+ * The modal in our ReactFlow demos uses inline styles with light colors.
+ * We override them in dark mode (with !important) without touching JSX.
+ */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] > div {
+  background-color: var(--ifm-background-surface-color) !important;
+  color: var(--ifm-font-color-base) !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+  box-shadow: var(--ifm-global-shadow-md) !important;
+}
+
+/* Common inline "white" backgrounds */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(255, 255, 255)'] {
+  background-color: var(--ifm-color-emphasis-100) !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+}
+
+/* Some inline styles use the CSS keyword `white` (e.g., Work Summary panels) */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: white'] {
+  background-color: var(--ifm-color-emphasis-100) !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+}
+
+/* Some inline styles use `background: ...` (e.g., Inherited Knowledge cards) */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background: white'] {
+  background: var(--ifm-color-emphasis-100) !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+}
+
+/* Inherited Knowledge "source" cards use a cyan->blue gradient background */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='linear-gradient(to right, #ecfeff, #eff6ff)'] {
+  background: color-mix(in srgb, var(--ifm-color-info) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Same gradient often appears serialized as rgb(...) */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000']
+  [style*='linear-gradient(to right'][style*='236, 254, 255'][style*='239, 246, 255'] {
+  background: color-mix(in srgb, var(--ifm-color-info) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Generic safeguard: gradients in this modal should not stay light */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='linear-gradient(to right'] {
+  background: color-mix(in srgb, var(--ifm-color-info) 12%, transparent) !important;
+}
+
+/* Normalize cyan-ish borders used in inherited context cards */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid #67e8f9'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid #a5f3fc'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(103, 232, 249)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(165, 243, 252)'] {
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Learning Reminders banner in Inherited Knowledge */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(254, 243, 199)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: #fef3c7'] {
+  background-color: color-mix(in srgb, var(--ifm-color-warning) 14%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(252, 211, 77)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid #fcd34d'] {
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Metadata gray used in inherited cards */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='color: rgb(156, 163, 175)'] {
+  color: var(--ifm-color-emphasis-600) !important;
+}
+
+/* Very light purple dividers in inherited cards */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border-top: 1px solid #f3e8ff'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border-top: 1px solid rgb(243, 232, 255)'] {
+  border-top-color: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Common light gray surfaces (#f9fafb) */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(249, 250, 251)'] {
+  background-color: var(--ifm-color-emphasis-100) !important;
+  border: 1px solid var(--ifm-color-emphasis-200) !important;
+}
+
+/* Section cards in modal (budget/work report/context published/inherited knowledge) */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(240, 253, 244)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-success) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(239, 246, 255)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-primary) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(250, 245, 255)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-primary) 10%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(236, 254, 255)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-info) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(207, 250, 254)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-info) 16%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(254, 242, 242)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-danger) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(254, 226, 226)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-danger) 16%, transparent) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(255, 247, 237)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-warning) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='background-color: rgb(254, 252, 232)'] {
+  background-color: color-mix(in srgb, var(--ifm-color-warning) 12%, transparent) !important;
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Normalize common pastel borders used by inline styles */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(187, 247, 208)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(191, 219, 254)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(233, 213, 255)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(165, 243, 252)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(254, 202, 202)'],
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='border: 1px solid rgb(252, 211, 77)'] {
+  border-color: var(--ifm-color-emphasis-200) !important;
+}
+
+/* Common muted text (#6b7280/#374151/#1f2937) */
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='color: rgb(107, 114, 128)'] {
+  color: var(--ifm-color-emphasis-600) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='color: rgb(55, 65, 81)'] {
+  color: var(--ifm-color-emphasis-700) !important;
+}
+[data-theme='dark'] div[style*='position: fixed'][style*='z-index: 1000'] [style*='color: rgb(31, 41, 55)'] {
+  color: var(--ifm-font-color-base) !important;
+}
+
+/* Fallback if a browser doesn't support color-mix (keeps contrast acceptable) */
+@supports not (background-color: color-mix(in srgb, white 50%, black)) {
+  .markdown [style*="color-mix("] {
+    background-color: var(--ifm-color-emphasis-100) !important;
+  }
 }
 
 .hero__title {

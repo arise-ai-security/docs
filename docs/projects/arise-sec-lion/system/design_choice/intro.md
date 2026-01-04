@@ -562,10 +562,10 @@ if (len <= dst_size) {
 
     <div
       style={{
-        backgroundColor: 'rgb(249, 250, 251)',
+        backgroundColor: 'var(--ifm-background-surface-color)',
         borderRadius: 8,
         padding: 12,
-        border: '1px solid rgb(229, 231, 235)',
+        border: '1px solid var(--ifm-color-emphasis-200)',
       }}
     >
       <div
@@ -580,7 +580,7 @@ if (len <= dst_size) {
         <span
           style={{
             fontSize: 14,
-            color: 'rgb(31, 41, 55)',
+            color: 'var(--ifm-font-color-base)',
             fontWeight: 500,
             flex: '1 1 0%',
           }}
@@ -590,8 +590,8 @@ if (len <= dst_size) {
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
           <span
             style={{
-              backgroundColor: 'rgb(219, 234, 254)',
-              color: 'rgb(30, 64, 175)',
+              backgroundColor: 'color-mix(in srgb, var(--ifm-color-primary) 18%, transparent)',
+              color: 'var(--ifm-color-primary)',
               padding: '2px 8px',
               borderRadius: 9999,
               fontSize: 11,
@@ -603,8 +603,8 @@ if (len <= dst_size) {
           </span>
           <span
             style={{
-              backgroundColor: 'rgb(209, 250, 229)',
-              color: 'rgb(6, 95, 70)',
+              backgroundColor: 'color-mix(in srgb, var(--ifm-color-success) 18%, transparent)',
+              color: 'var(--ifm-color-success)',
               padding: '2px 8px',
               borderRadius: 9999,
               fontSize: 11,
@@ -619,20 +619,20 @@ if (len <= dst_size) {
       <div
         style={{
           fontSize: 12,
-          color: 'rgb(107, 114, 128)',
+          color: 'var(--ifm-color-emphasis-700)',
           display: 'flex',
           flexDirection: 'column',
           gap: 6,
-          borderTop: '1px solid rgb(229, 231, 235)',
+          borderTop: '1px solid var(--ifm-color-emphasis-200)',
           paddingTop: 10,
         }}
       >
         <div>
-          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Objective:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-font-color-base)' }}>Objective:</span>{' '}
           Deliver an exhaustive list of code conditions, variable states, and MP4 input fields/boxes that govern the vulnerable branch, with clear mapping from input bytes to code decisions.
         </div>
         <div style={{ whiteSpace: 'pre-wrap' }}>
-          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Plan:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-font-color-base)' }}>Plan:</span>{' '}
           {'1) Load drm_sample.c and scroll ±200 lines around 1562.\n'}
           {'2) Trace call stack and data flow for the dereferenced pointer.\n'}
           {'3) Review git history and patch notes for any checks added/removed.\n'}
@@ -641,31 +641,31 @@ if (len <= dst_size) {
           {"6) Output ‘path_map.md’ outlining these relationships."}
         </div>
         <div>
-          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Split Reason:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-font-color-base)' }}>Split Reason:</span>{' '}
           Thorough static/diff analysis requires concentrated reverse-engineering skills distinct from authoring a byte-level MP4 spec; isolating this step ensures clean, factual path data before creative spec design begins.
         </div>
         <div>
-          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Why It May Work:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-font-color-base)' }}>Why It May Work:</span>{' '}
           gpac’s parser is open-source and well-commented; commit diffs and advisories usually highlight the same variables, making correlation feasible through standard static analysis techniques.
         </div>
         <div>
-          <span style={{ fontWeight: 500, color: 'rgb(75, 85, 99)' }}>Expected Results:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-font-color-base)' }}>Expected Results:</span>{' '}
           File ‘path_map.md’ containing: • stack trace to NULL deref • all relevant MP4 boxes/flags • required value ranges • rationale for each mapping.
         </div>
-        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid rgb(233, 213, 255)' }}>
-          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Budget Allocation:</span>{' '}
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--ifm-color-emphasis-200)' }}>
+          <span style={{ fontWeight: 500, color: 'var(--ifm-color-primary)' }}>Budget Allocation:</span>{' '}
           20% of total project budget (weight 0.4 of total 2.0 across all project subtasks)
         </div>
         <div>
-          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Complexity:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-color-primary)' }}>Complexity:</span>{' '}
           MODERATE: Requires multi-file code tracing and diff comparison but no build or runtime work.
         </div>
         <div>
-          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Significance:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-color-primary)' }}>Significance:</span>{' '}
           CRITICAL PATH: Subsequent spec drafting depends entirely on this factual mapping.
         </div>
         <div>
-          <span style={{ fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Resource Justification:</span>{' '}
+          <span style={{ fontWeight: 500, color: 'var(--ifm-color-primary)' }}>Resource Justification:</span>{' '}
           Static analysis with diff review demands careful line-by-line reasoning; 20% ensures adequate tokens and iterations to avoid missed conditions.
         </div>
       </div>
@@ -727,7 +727,7 @@ if (len <= dst_size) {
       </h3>
 
       <div style={{ marginBottom: 8 }}>
-        <p style={{ fontSize: 12, color: 'rgb(107, 114, 128)', margin: 0 }}>
+        <p style={{ fontSize: 12, color: 'var(--ifm-color-emphasis-700)', margin: 0 }}>
           This supervisor published 1 context to the global knowledge dashboard for cross-session learning.
         </p>
       </div>
@@ -735,7 +735,7 @@ if (len <= dst_size) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div
           style={{
-            backgroundColor: 'rgb(250, 245, 255)',
+            backgroundColor: 'var(--ifm-background-surface-color)',
             borderRadius: 8,
             padding: 12,
             borderLeft: '4px solid rgb(168, 85, 247)',
@@ -748,7 +748,7 @@ if (len <= dst_size) {
                 <div
                   style={{
                     fontSize: 11,
-                    color: 'rgb(124, 58, 237)',
+                    color: 'var(--ifm-color-primary)',
                     fontWeight: 600,
                     textTransform: 'uppercase',
                     marginBottom: 2,
@@ -757,17 +757,17 @@ if (len <= dst_size) {
                   Key
                 </div>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: 'rgb(31, 41, 55)' }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ifm-font-color-base)' }}>
                 Deliver an exhaustive list of code conditions, variable states, and MP4 input...
               </div>
             </div>
           </div>
 
-          <div style={{ marginLeft: 22, borderTop: '1px solid rgb(233, 213, 255)', paddingTop: 10 }}>
+          <div style={{ marginLeft: 22, borderTop: '1px solid var(--ifm-color-emphasis-200)', paddingTop: 10 }}>
             <div
               style={{
                 fontSize: 11,
-                color: 'rgb(124, 58, 237)',
+                color: 'var(--ifm-color-primary)',
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 marginBottom: 8,
@@ -777,27 +777,27 @@ if (len <= dst_size) {
             </div>
 
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(75, 85, 99)', marginBottom: 2 }}>Objective:</div>
-              <div style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-font-color-base)', marginBottom: 2 }}>Objective:</div>
+              <div style={{ fontSize: 12, color: 'var(--ifm-color-emphasis-800)' }}>
                 Deliver an exhaustive list of code conditions, variable states, and MP4 input fields/boxes that govern the vulnerable branch, with clear mapping from input bytes to code decisions.
               </div>
             </div>
 
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(75, 85, 99)', marginBottom: 2 }}>Why Assigned:</div>
-              <div style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-font-color-base)', marginBottom: 2 }}>Why Assigned:</div>
+              <div style={{ fontSize: 12, color: 'var(--ifm-color-emphasis-800)' }}>
                 Thorough static/diff analysis requires concentrated reverse-engineering skills distinct from authoring a byte-level MP4 spec; isolating this step ensures clean, factual path data before creative spec design begins.
               </div>
             </div>
 
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(75, 85, 99)', marginBottom: 2 }}>How It Was Accomplished:</div>
+              <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-font-color-base)', marginBottom: 2 }}>How It Was Accomplished:</div>
               <div
                 style={{
                   fontSize: 12,
-                  color: 'rgb(55, 65, 81)',
+                  color: 'var(--ifm-color-emphasis-800)',
                   whiteSpace: 'pre-wrap',
-                  backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                  backgroundColor: 'var(--ifm-color-emphasis-100)',
                   padding: 8,
                   borderRadius: 4,
                   maxHeight: 150,
@@ -823,9 +823,9 @@ if (len <= dst_size) {
                 display: 'flex',
                 gap: 12,
                 paddingTop: 8,
-                borderTop: '1px solid rgb(243, 232, 255)',
+                borderTop: '1px solid var(--ifm-color-emphasis-200)',
                 fontSize: 11,
-                color: 'rgb(156, 163, 175)',
+                color: 'var(--ifm-color-emphasis-600)',
               }}
             >
               <span>Worker: e286dfa6...</span>
@@ -840,17 +840,17 @@ if (len <= dst_size) {
     The following is an example of an worker's inherited knowledge from earlier workers:
     <div
       style={{
-        background: 'white',
+        background: 'var(--ifm-background-surface-color)',
         padding: 12,
         borderRadius: 6,
-        border: '1px solid rgb(165, 243, 252)',
+        border: '1px solid var(--ifm-color-emphasis-200)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
-        <span style={{ color: 'rgb(6, 182, 212)', fontSize: 14 }}>🔑</span>
+        <span style={{ color: 'var(--ifm-color-info)', fontSize: 14 }}>🔑</span>
         <div style={{ flex: '1 1 0%' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(31, 41, 55)' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ifm-font-color-base)' }}>
               Map out the MP4 box structure that leads to the vulnerable code path.
             </span>
           </div>
@@ -858,25 +858,25 @@ if (len <= dst_size) {
       </div>
       <div style={{ marginLeft: 22 }}>
         <div style={{ marginBottom: 6 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'rgb(107, 114, 128)' }}>Objective: </span>
-          <span style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-emphasis-700)' }}>Objective: </span>
+          <span style={{ fontSize: 12, color: 'var(--ifm-color-emphasis-800)' }}>
             Map out the MP4 box structure that leads to the vulnerable code path.
           </span>
         </div>
         <div style={{ marginBottom: 6 }}>
-          <span style={{ fontSize: 11, fontWeight: 500, color: 'rgb(124, 58, 237)' }}>Why This Is Relevant: </span>
-          <span style={{ fontSize: 12, color: 'rgb(55, 65, 81)' }}>
+          <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-primary)' }}>Why This Is Relevant: </span>
+          <span style={{ fontSize: 12, color: 'var(--ifm-color-emphasis-800)' }}>
             This task requires understanding the structural path to the vulnerable code path, which is distinct from setting specific byte values.
           </span>
         </div>
         <div style={{ marginBottom: 6 }}>
-          <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(22, 163, 74)', marginBottom: 2 }}>How It Was Accomplished:</div>
+          <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-success)', marginBottom: 2 }}>How It Was Accomplished:</div>
           <div
             style={{
               fontSize: 12,
-              color: 'rgb(55, 65, 81)',
+              color: 'var(--ifm-color-emphasis-800)',
               whiteSpace: 'pre-wrap',
-              backgroundColor: 'rgb(240, 253, 244)',
+              backgroundColor: 'color-mix(in srgb, var(--ifm-color-success) 15%, transparent)',
               padding: 8,
               borderRadius: 4,
               maxHeight: 120,
@@ -1213,17 +1213,17 @@ if (len <= dst_size) {
         <div
           style={{
             marginBottom: 8,
-            backgroundColor: 'rgb(254, 242, 242)',
+            backgroundColor: 'color-mix(in srgb, var(--ifm-color-danger) 12%, transparent)',
             padding: 12,
             borderRadius: 6,
-            border: '1px solid rgb(254, 202, 202)',
+            border: '1px solid color-mix(in srgb, var(--ifm-color-danger) 30%, var(--ifm-color-emphasis-200))',
           }}
         >
           <div
             style={{
               fontSize: 11,
               fontWeight: 600,
-              color: 'rgb(220, 38, 38)',
+              color: 'var(--ifm-color-danger)',
               marginBottom: 8,
               textTransform: 'uppercase',
             }}
@@ -1232,14 +1232,14 @@ if (len <= dst_size) {
           </div>
 
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(153, 27, 27)', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-danger)', marginBottom: 4 }}>
               Inferred CWEs:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               <span
                 style={{
-                  backgroundColor: 'rgb(254, 226, 226)',
-                  color: 'rgb(153, 27, 27)',
+                  backgroundColor: 'color-mix(in srgb, var(--ifm-color-danger) 16%, transparent)',
+                  color: 'var(--ifm-color-danger)',
                   padding: '4px 10px',
                   borderRadius: 6,
                   fontSize: 12,
@@ -1253,13 +1253,21 @@ if (len <= dst_size) {
           </div>
 
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(153, 27, 27)', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-danger)', marginBottom: 4 }}>
               Analysis Reasoning:
             </div>
-            <div style={{ backgroundColor: 'white', padding: 8, borderRadius: 4, fontSize: 12 }}>
+            <div
+              style={{
+                backgroundColor: 'var(--ifm-background-surface-color)',
+                padding: 8,
+                borderRadius: 4,
+                fontSize: 12,
+                border: '1px solid var(--ifm-color-emphasis-200)',
+              }}
+            >
               <div style={{ marginBottom: 0 }}>
-                <span style={{ fontWeight: 600, color: 'rgb(220, 38, 38)' }}>CWE-476:</span>
-                <span style={{ color: 'rgb(55, 65, 81)', marginLeft: 6 }}>
+                <span style={{ fontWeight: 600, color: 'var(--ifm-color-danger)' }}>CWE-476:</span>
+                <span style={{ color: 'var(--ifm-color-emphasis-800)', marginLeft: 6 }}>
                   The bug report mentions a segmentation violation caused by dereferencing a null pointer, which is corroborated by the AddressSanitizer output indicating a SEGV on address 0x0.
                 </span>
               </div>
@@ -1267,25 +1275,41 @@ if (len <= dst_size) {
           </div>
 
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(153, 27, 27)', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-danger)', marginBottom: 4 }}>
               Confidence Levels:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              <span style={{ backgroundColor: 'rgb(249, 250, 251)', padding: '3px 8px', borderRadius: 4, fontSize: 11 }}>
+              <span
+                style={{
+                  backgroundColor: 'var(--ifm-color-emphasis-100)',
+                  padding: '3px 8px',
+                  borderRadius: 4,
+                  fontSize: 11,
+                  border: '1px solid var(--ifm-color-emphasis-200)',
+                }}
+              >
                 <span style={{ fontFamily: 'monospace', fontWeight: 500 }}>CWE-476</span>
-                <span style={{ marginLeft: 4, color: 'rgb(22, 163, 74)', fontWeight: 600 }}>high</span>
+                <span style={{ marginLeft: 4, color: 'var(--ifm-color-success)', fontWeight: 600 }}>high</span>
               </span>
             </div>
           </div>
 
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(22, 163, 74)', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-success)', marginBottom: 4 }}>
               🔧 Recommended Fix Patterns:
             </div>
-            <div style={{ backgroundColor: 'rgb(240, 253, 244)', padding: 8, borderRadius: 4, fontSize: 12 }}>
+            <div
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--ifm-color-success) 12%, transparent)',
+                padding: 8,
+                borderRadius: 4,
+                fontSize: 12,
+                border: '1px solid var(--ifm-color-emphasis-200)',
+              }}
+            >
               <div style={{ marginBottom: 0 }}>
-                <span style={{ fontWeight: 600, color: 'rgb(21, 128, 61)', fontFamily: 'monospace' }}>CWE-476:</span>
-                <span style={{ color: 'rgb(55, 65, 81)', marginLeft: 6 }}>
+                <span style={{ fontWeight: 600, color: 'var(--ifm-color-success)', fontFamily: 'monospace' }}>CWE-476:</span>
+                <span style={{ color: 'var(--ifm-color-emphasis-800)', marginLeft: 6 }}>
                   Add NULL check before dereferencing pointers to ensure they are not null.
                 </span>
               </div>
@@ -1293,18 +1317,19 @@ if (len <= dst_size) {
           </div>
 
           <div>
-            <div style={{ fontSize: 11, fontWeight: 500, color: 'rgb(124, 58, 237)', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ifm-color-primary)', marginBottom: 4 }}>
               🧪 Recommended Sanitizers:
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
               <span
                 style={{
-                  backgroundColor: 'rgb(243, 232, 255)',
-                  color: 'rgb(124, 58, 237)',
+                  backgroundColor: 'var(--ifm-color-emphasis-100)',
+                  color: 'var(--ifm-font-color-base)',
                   padding: '2px 8px',
                   borderRadius: 4,
                   fontSize: 11,
                   fontFamily: 'monospace',
+                  border: '1px solid var(--ifm-color-emphasis-200)',
                 }}
               >
                 -fsanitize=address
