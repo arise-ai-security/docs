@@ -6,8 +6,18 @@ import EvalTreeFromLocation from '@site/src/components/arise-sec-lion-evals/Eval
 import EvalInstanceLabel from '@site/src/components/arise-sec-lion-evals/EvalInstanceLabel';
 import EvalWorkspaceFromLocation from '@site/src/components/arise-sec-lion-evals/EvalWorkspaceFromLocation';
 
-# Evaluations on CVE Instances
-In this page, we present the real examples of evaluations of the system with [all design choices](./intro.md) included on CVE instances. We selected 20 CVE instances and compare their results with baselines SecVerifier.
+# Evaluations on CVE Instances with All Design Choices Enabled
+In this page, we present the real examples of evaluations of the system with [design choices 1 - 7](./intro.md) enabled on CVE instances. We selected 20 CVE instances and compare their results with baselines SecVerifier.
+
+## Success Criteria
+We follow the same success criteria as SecVerifier:
+
+### Phase 1 Builder 
+- `/testcase/base_commit_hash` exists with correct commit hash - Project builds successfully with sanitizer enabled - `/src/build.sh` is standalone and optimized 
+### Phase 2 Exploiter 
+- PoC triggers the EXACT SAME sanitizer error as described in bug report: - `/testcase/repro.sh` contains working exploit command 
+### Phase 3 Fixer 
+- `/testcase/model_patch.diff` contains minimal fix - Patch applies cleanly and builds correctly - PoC no longer triggers sanitizer error after patching"
 
 ## Quick Table
 
