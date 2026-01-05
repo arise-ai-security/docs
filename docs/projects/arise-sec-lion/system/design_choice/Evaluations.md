@@ -7,7 +7,7 @@ import EvalInstanceLabel from '@site/src/components/arise-sec-lion-evals/EvalIns
 import EvalWorkspaceFromLocation from '@site/src/components/arise-sec-lion-evals/EvalWorkspaceFromLocation';
 
 # Evaluations on CVE Instances
-In this page, we present the real examples of evaluations on CVE instances. We selected 20 CVE instances and compare their results with baselines SecVerifier.
+In this page, we present the real examples of evaluations of the system with [all design choices](./intro.md) included on CVE instances. We selected 20 CVE instances and compare their results with baselines SecVerifier.
 
 ## Quick Table
 

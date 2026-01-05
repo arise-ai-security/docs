@@ -1415,7 +1415,6 @@ if (len <= dst_size) {
 
     **Strategy**: We dynamically load the real CWE documentations (identifications, mitigations, and examples) from CWE database to enrich source context and submit the relevant context to shared context so that other workers can append the relevant context to their own context.
 
-
 ### Tree Final Form
 Below is an interactive React Flow diagram that captures a snapshot of the high-level structure. You can pan, zoom, and explore relationships between agents. **Click on the nodes to see their details**.
 
