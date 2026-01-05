@@ -45,7 +45,7 @@
 
 > **Builder phase succeeded (87.0%), but Exploiter/Fixer phases had mixed results (39.1% / 26.1%).**
 
-**1. PoC Filename Mismatch** — Workers correctly generated PoC artifacts, but SEC-bench's verification harness (`secb repro()`) expects hardcoded filenames that differ from what our system produced:
+**1. PoC Filename Mismatch (Setup Flaw)** — Workers correctly generated PoC artifacts, but SEC-bench's verification harness (`secb repro()`) expects hardcoded filenames that differ from what our system produced:
 
 | SEC-bench expects     | Arise generated          | Outcome        |
 |-----------------------|--------------------------|----------------|
@@ -54,6 +54,13 @@
 This impacted both Exploiter and Fixer rates.
 
 **2. Over-Decomposition** — Our system enforces a soft limit of `max_depth=4`. When reached, subsequent children are forced to become Workers. However, depth limits are hit too early, and too many vague subtasks are assigned to Workers—degrading performance and causing unproductive loops. This resulted in significant Worker execution time and cost increase. 
+
+**3. Worker Reliability** — 44.8% of agents never completed due to SIGKILL (-9), which means timeouts, or OOM errors. 
+
+**Solutions:**
+1. **Filename mismatch** → Generate `secb.sh` dynamically instead of using SEC-bench's hardcoded version
+2. **Over-decomposition** → Increase `max_depth`; let Thinkers handle tool calls (file analysis, reading) to fight ambiguity, while Workers focus solely on code execution
+3. **Worker reliability** → Increase container memory/timeout limits and implement rich logging for debugging
 
 ### 1.4 Root Causes Identified
 
@@ -64,7 +71,6 @@ This impacted both Exploiter and Fixer rates.
 | H3 | Worker reliability       | 44.8% incomplete agents        |
 | H4 | LLM parsing failures     | Cascade failures               |
 | H5 | CVE age correlation      | 2017-18 CVEs: 60-67% success   |
-| H6 | Project-specific factors | exiv2: 100%, openjpeg: 0%      |
 
 ### 1.5 Limitations
 
@@ -394,11 +400,7 @@ Total agents:     1,329
 
 ---
 
-### 4.4 New Hypotheses from Validation
-
-The validation process revealed additional patterns that suggest new hypotheses:
-
-#### H4: LLM Output Parsing Failures
+### H4: LLM Output Parsing Failures
 
 **Statement:**
 > Some orchestration failures are due to gpt-4o-mini producing malformed JSON output that the system cannot parse.
@@ -413,7 +415,7 @@ The validation process revealed additional patterns that suggest new hypotheses:
 
 ---
 
-#### H5: CVE Age Correlation
+### H5: CVE Age Correlation
 
 **Statement:**
 > Older CVEs (2017-2018) have higher success rates than newer ones (2021-2023).
