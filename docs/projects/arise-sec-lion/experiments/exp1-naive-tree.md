@@ -194,13 +194,13 @@ Success Rate        87.0%       39.1%      26.1%     26.1%
 
 ## 4. Failure Analysis
 
-| Hypothesis                | Key Finding                                                      |
-|---------------------------|------------------------------------------------------------------|
-| H1: PoC Filename Mismatch | Filename mismatch is a factor, but there are succeeded instances |
-| H2: Over-Decomposition    | 83.3% vague tasks at depth limit                                 |
-| H3: Worker Reliability    | 44.8% incomplete agents confirmed (timeout or OOM)               |
-| H4: LLM Parsing Failures  | 831 parse-related events found (need to be analyzed)             |
-| H5: CVE Age Correlation   | Older CVEs have high success rate (2017-2018: 60-67% success)    |
+| Hypothesis                | Key Finding                                                                            |
+|---------------------------|----------------------------------------------------------------------------------------|
+| H1: PoC Filename Mismatch | Filename mismatch is a factor, but there are instances that succeeded despite mismatch |
+| H2: Over-Decomposition    | 83.3% vague tasks at depth limit                                                       |
+| H3: Worker Reliability    | 44.8% incomplete agents confirmed (timeout or OOM)                                     |
+| H4: LLM Parsing Failures  | 831 parse-related events found (need to be analyzed)                                   |
+| H5: CVE Age Correlation   | Older CVEs have high success rate (2017-2018: 60-67% success)                          |
 
 ### 4.1 Hypothesis H1: PoC Filename Mismatch
 
