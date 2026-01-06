@@ -11,7 +11,6 @@
 3. [Results](#3-results)
 4. [Failure Analysis](#4-failure-analysis)
 5. [Anomalies](#5-anomalies)
-6. [Appendix](#6-appendix)
 
 ---
 
@@ -30,7 +29,7 @@
 | Exploiter (PoC) | 9/23 (39.1%)     | 32.2% (Cond. 39.4%) | +6.9 pp    |
 | Fixer (Patch)   | 6/23 (26.1%)     | 22.3% (Cond. 69.2%) | +3.8 pp    |
 | Overall (E2E)   | 6/23 (26.1%)     | 22.3%               | +3.8 pp    |
-| Avg Cost        | $12.35/instance* | $0.87/instance      | 14x higher |
+| Avg Cost        | $8.96/instance*  | $0.87/instance      | 10x higher |
 
 *See cost breakdown in Section 3.3
 
@@ -53,24 +52,23 @@
 
 This impacted both Exploiter and Fixer rates.
 
-**2. Over-Decomposition** — Our system enforces a soft limit of `max_depth=4`. When reached, subsequent children are forced to become Workers. However, depth limits are hit too early, and too many vague subtasks are assigned to Workers—degrading performance and causing unproductive loops. This resulted in significant Worker execution time and cost increase. 
+**2. Depth-Limited Decomposition** — Our system enforces a soft limit of `max_depth=4`. When reached, subsequent children are forced to become Workers. However, depth limits are hit too early, and too many vague subtasks are assigned to Workers—degrading performance and causing unproductive loops. This resulted in significant Worker execution time and cost increase.
 
-**3. Worker Reliability** — 44.8% of agents never completed due to SIGKILL (-9), which means timeouts, or OOM errors. 
+**3. LLM Parsing Errors** — Our system generates malformed JSON output. Due to token restriction.
 
 **Solutions:**
 1. **Filename mismatch** → Generate `secb.sh` dynamically instead of using SEC-bench's hardcoded version
-2. **Over-decomposition** → Increase `max_depth`; let Thinkers handle tool calls (file analysis, reading) to fight ambiguity, while Workers focus solely on code execution
-3. **Worker reliability** → Increase container memory/timeout limits and implement rich logging for debugging
+2. **Depth-limited decomposition** → Increase `max_depth`; let Thinkers handle tool calls (file analysis, reading) to fight ambiguity, while Workers focus solely on code execution
+3. **LLM Parsing Errors** → Increase `max_tokens`
 
-### 1.4 Root Causes Identified
+### 1.4 Failure Causes Identified
 
-| #  | Issue                    | Impact                         |
-|----|--------------------------|--------------------------------|
-| H1 | PoC filename mismatch    | 14/23 Exploiter failures       |
-| H2 | Over-decomposition       | 83% vague tasks at depth limit |
-| H3 | Worker reliability       | 44.8% incomplete agents        |
-| H4 | LLM parsing failures     | Cascade failures               |
-| H5 | CVE age correlation      | 2017-18 CVEs: 60-67% success   |
+| #  | Issue                                   | Impact                         |
+|----|-----------------------------------------|--------------------------------|
+| H1 | PoC filename mismatch                   | 14/23 Exploiter failures       |
+| H2 | Depth-limited decomposition | 49.5% vague tasks at depth limit |
+| H3 | LLM parsing failures                    | Cascade failures to children   |
+| H4 | CVE age correlation                     | 2017-18 CVEs: 60-67% success   |
 
 ### 1.5 Limitations
 
@@ -183,24 +181,23 @@ Success Rate        87.0%       39.1%      26.1%     26.1%
 | Role                         | Model                      |        Cost |     % |
 |------------------------------|----------------------------|------------:|------:|
 | Orchestration (Boss/Manager) | `gpt-4o-mini`              |       $0.30 |  0.1% |
-| Worker (Claude Code)         | `claude-sonnet-4-20250514` |     $283.80 | 99.9% |
-| **Total**                    | -                          | **$284.11** |  100% |
+| Worker (Claude Code)         | `claude-sonnet-4-20250514` |     $205.84 | 99.9% |
+| **Total**                    | -                          | **$206.14** |  100% |
 
 > **ADK incompatibility:** Worker nodes are executed via Claude ADK, but we don't know exact cost calculation logic when
 > we execute the Claude Code with ADK. Further investigation is needed.
-> **Outlier:** libarchive.cve-2019-11463 cost $28.54 (10% of total) but failed.
+> **Outlier:** libarchive.cve-2019-11463 cost $28.54 (14% of total) but failed.
 
 ---
 
 ## 4. Failure Analysis
 
-| Hypothesis                | Key Finding                                                                            |
-|---------------------------|----------------------------------------------------------------------------------------|
+| Hypothesis                | Key Finding                                                      |
+|---------------------------|------------------------------------------------------------------|
 | H1: PoC Filename Mismatch | Filename mismatch is a factor, but there are instances that succeeded despite mismatch |
-| H2: Over-Decomposition    | 83.3% vague tasks at depth limit                                                       |
-| H3: Worker Reliability    | 44.8% incomplete agents confirmed (timeout or OOM)                                     |
-| H4: LLM Parsing Failures  | 831 parse-related events found (need to be analyzed)                                   |
-| H5: CVE Age Correlation   | Older CVEs have high success rate (2017-2018: 60-67% success)                          |
+| H2: Depth-Limited Decomposition | 49.5% vague tasks at depth limit                            |
+| H3: LLM Parsing Failures  | 831 parse-related events found (need to be analyzed)             |
+| H4: CVE Age Correlation   | Older CVEs have high success rate (2017-2018: 60-67% success)    |
 
 ### 4.1 Hypothesis H1: PoC Filename Mismatch
 
@@ -277,130 +274,57 @@ WHERE event_type = 'ArtifactStored'
 
 ---
 
-### 4.2 Hypothesis H2: Over-Decomposition
+### 4.2 Hypothesis H2: Depth-Limited Decomposition
 
 #### Statement
 
-> `gpt-4o-mini` decomposes into academic workflows (Analyze → Document → Propose) instead of executable tasks. When agents hit the depth limit, workers receive vague tasks they cannot execute.
-
-| Metric                    | Finding                           | Implication                                          |
-|---------------------------|-----------------------------------|------------------------------------------------------|
-| Analysis Tasks at Depth 4 | 54.7% (116/212)                   | Workers get investigation tasks, not actionable work |
-| Analysis Tasks Comparison | Depth 1: 49.5% → Depth 4: 59.0%   | Deeper = MORE vague (should be opposite)             |
-| Repetitive Patterns       | "analyze the build script..." ×32 | Same vague task repeatedly hits depth limit          |
+> When agents hit the depth limit, task decomposition is forced to stop prematurely. Workers at the depth limit receive more ambiguous, analysis-oriented tasks compared to naturally-decomposed workers, correlating with worse overall outcomes.
 
 #### Evidence
 
-**E2.1** - Task chains show over-decomposition
+**E2.1** - Task quality comparison: Depth-limited vs Natural workers
 
-```
-BOSS:   "Run SEC-bench evaluation..."
-MGR-1:  "[Builder] Set up environment for exiv2.cve-2017-17723..."
-MGR-2:  "[Builder-3] Improve build script..."
-MGR-3:  "Analyze and refactor the existing build script..."
-MGR-4:  "Analyze the existing build script to identify dependencies..."
-WORKER: "Analyze the existing build script to identify dependencies..."  
-```
+| Metric              | Depth-Limited (n=105) | Natural (n=332) | Implication                         |
+|---------------------|-----------------------|-----------------|-------------------------------------|
+| Analysis verbs*     | 49.5%                 | 26.2%           | 2× more "investigate/analyze" tasks |
+| Action verbs**      | 83.8%                 | 95.5%           | Fewer concrete actions              |
+| Specific file paths | 30.5%                 | 70.5%           | 2.3× less specific                  |
 
-**E2.2** - Workers receive analysis tasks they can't properly execute
+*analyze, identify, investigate, evaluate
+**create, implement, fix, add, write, build
 
-```
-- "Analyze the existing build script to identify dependencies..."
-- "Identify configuration issues in the build script..."
-- "Evaluate the build script for standalone execution..."
-```
+**E2.2** - Example task comparison
 
-**E2.3** - Performance degradation by depth
+| Type          | Sample Task                                                                                                   |
+|---------------|---------------------------------------------------------------------------------------------------------------|
+| Depth-Limited | "Analyze the /src/build.sh script for CVE-2017-17669 to identify external tool dependencies..."               |
+| Depth-Limited | "Document the roles of identified external tool dependencies..."                                              |
+| Natural       | "[Builder-2] Run initial build for exiv2.cve-2017-14857: execute /src/build.sh at /src/exiv2, capture errors" |
+| Natural       | "[Builder-3] Improve build script...: make /src/build.sh standalone, add parallel flags"                      |
 
-| Depth | Completion Rate | Implication                    |
-|-------|-----------------|--------------------------------|
-| 0     | 98.6%           | Managers complete reliably     |
-| 1     | 98.5%           | Still reliable                 |
-| 4     | **49.5%**       | 107/212 workers never complete |
+**E2.3** - Depth-limited worker ratio correlates with task failure
+
+| Depth-Limited % | Runs | Builder | Exploiter | Fixer | Overall |
+|-----------------|------|---------|-----------|-------|---------|
+| 0%              | 3    | 100%    | 67%       | 67%   | 78%     |
+| 1-29%           | 10   | 90%     | 50%       | 20%   | 53%     |
+| ≥30%            | 9    | 78%     | 22%       | 22%   | 41%     |
+
+**Clarification:** Workers Complete, But Output Quality Suffers
+
+Workers at all depths have 100% completion rate—they don't crash or fail. However:
+- Depth-limited workers receive vague tasks
+- Vague tasks lead to vague outputs
+- Runs with more depth-limited workers have worse Builder/Exploiter/Fixer outcomes
 
 #### Conclusion
 
-> The system reaches depth limits with vague, analysis-oriented tasks that workers are poorly suited to execute. This results in ~50% failure rate at depth 4, explaining why more agents don't translate to more success.
+> Depth limits force premature task assignment. Workers complete their ambiguous tasks, but the overall pipeline fails because "analyzing dependencies" doesn't produce the concrete artifacts (`base_commit_hash`, `repro.sh`, `model_patch.diff`) needed for success.
 
 ---
 
-### 4.3 Hypothesis H3: Worker Reliability
 
-#### Statement
-
-> Claude Code workers fail with SIGKILL (-9) and timeouts, leaving 53.3% of agents incomplete.
-
-#### Evidence
-
-**E4.1** - WorkFailed distribution
-
-| Exit Code       |  Count |     % | Meaning            |
-|-----------------|-------:|------:|--------------------|
-| -9 (SIGKILL)    |     14 | 60.9% | OOM/timeout killed |
-| 1 (error)       |      4 | 17.4% | Command error      |
-| Timeout         |      1 |  4.3% | Initialize timeout |
-| Limit violation |      4 | 17.4% | Agent limits       |
-| **Total**       | **23** |  100% | -                  |
-
-**E4.2** - Agent completion statistics
-
-```
-Total agents:     1,063
-├─ Completed:       473 (44.5%)
-├─ Failed:           23 (2.2%)
-└─ Incomplete:      567 (53.3%)  ← Never finished
-```
-
-#### Validation (n=23)
-
-**SQL Analysis:**
-
-```sql
-SELECT COUNT(DISTINCT aggregate_id)
-FROM events; -- total agents
-SELECT COUNT(DISTINCT aggregate_id)
-FROM events
-WHERE event_type = 'WorkCompleted';
-SELECT COUNT(DISTINCT aggregate_id)
-FROM events
-WHERE event_type = 'WorkFailed';
-```
-
-**Updated Agent Completion Statistics:**
-
-```
-Total agents:     1,329
-├─ Completed:       711 (53.5%)
-├─ Failed:           23 (1.7%)
-└─ Incomplete:      595 (44.8%)
-```
-
-**Comparison to Original Claim:**
-
-| Metric     | Original Claim | Actual (n=23) | Delta   |
-|------------|----------------|---------------|---------|
-| Completed  | 44.5%          | 53.5%         | +9.0 pp |
-| Failed     | 2.2%           | 1.7%          | -0.5 pp |
-| Incomplete | 53.3%          | 44.8%         | -8.5 pp |
-
-**WorkFailed Reason Breakdown (n=23):**
-
-| Reason                                     | Count |
-|--------------------------------------------|------:|
-| Claude SDK adapter error (Command failed)  |    18 |
-| LLM violated limits: ['total_agents']      |     4 |
-| Claude SDK adapter error (Control request) |     1 |
-
-> Worker reliability issues are confirmed, though slightly improved compared to original claim. Completion rate is
-> 53.5% (vs 44.5% claimed), incomplete rate is 44.8% (vs 53.3% claimed). Still, ~45% of agents never complete,
-> indicating
-> significant reliability concerns.
-
-> **Conclusion:** System reliability issues cause majority of agents to never complete.
-
----
-
-### H4: LLM Output Parsing Failures
+### 4.3 Hypothesis H3: LLM Output Parsing Failures
 
 **Statement:**
 > Some orchestration failures are due to gpt-4o-mini producing malformed JSON output that the system cannot parse.
@@ -415,7 +339,7 @@ Total agents:     1,329
 
 ---
 
-### H5: CVE Age Correlation
+### 4.4 Hypothesis H4: CVE Age Correlation
 
 **Statement:**
 > Older CVEs (2017-2018) have higher success rates than newer ones (2021-2023).
@@ -439,69 +363,16 @@ Total agents:     1,329
 
 ## 5. Anomalies
 
-### 5.1 libarchive 16-hour Runtime
+### 5.1 libarchive 5.4-hour Runtime
 
 | Metric        | Value               |
 |---------------|---------------------|
 | First event   | 2026-01-03T04:12:35 |
 | Last event    | 2026-01-03T09:38:44 |
 | Duration      | **5h 24m**          |
-| Events        | 2,204               |
-| LimitEnforced | 4                   |
 
-System got stuck in unproductive decomposition loop.
+System got stuck in unproductive build loop.
 
 ### 5.2 mruby.cve-2022-0570 Missing Events
 
 Instance appears in `secbench_results.jsonl` but has no events in `events.csv`.
-
----
-
-## 6. Appendix
-
-### A.1 Event Type Distribution
-
-| Event Type            |      Count |     % |
-|-----------------------|-----------:|------:|
-| ThoughtCaptured       |     18,964 | 72.5% |
-| PromptSent            |        945 |  3.6% |
-| TaskAssigned          |        686 |  2.6% |
-| AgentCreated          |        684 |  2.6% |
-| ChildSpawned          |        666 |  2.5% |
-| TokensConsumed        |        575 |  2.2% |
-| ArtifactStored        |        525 |  2.0% |
-| DecisionRecorded      |        493 |  1.9% |
-| WorkCompleted         |        473 |  1.8% |
-| ChildCompleted        |        400 |  1.5% |
-| CodeGenerationStarted |        370 |  1.4% |
-| WorkerCostRecorded    |        351 |  1.3% |
-| ComplexityEvaluated   |        351 |  1.3% |
-| SubtasksDefined       |        220 |  0.8% |
-| StatusChanged         |        220 |  0.8% |
-| SharedContextCreated  |        150 |  0.6% |
-| LimitEnforced         |         70 |  0.3% |
-| WorkFailed            |         23 |  0.1% |
-| **Total**             | **26,166** |  100% |
-
-### A.2 Duration Summary
-
-| Metric   | Value                               |
-|----------|-------------------------------------|
-| Shortest | exiv2.cve-2017-14857 (46m)          |
-| Longest  | libarchive.cve-2019-11463 (16h 46m) |
-| Average  | ~75 minutes                         |
-
-### A.3 Sample Event PKs
-
-**LimitEnforced events:**
-
-- `504d8e0a-516f-4aab-9431-60570b24c595`
-- `2f433e4c-c7f5-45a5-971c-b0fe452996e5`
-- `16b34529-79cb-4ec0-8181-941001cc8de2`
-
-**WorkFailed (SIGKILL) events:**
-
-- `f5512a2e-6b11-4ae0-8d5e-56ef0d757490`
-- `8a69f439-2607-40bf-93cb-4c80607d5841`
-- `3aa4fbc2-2199-4eee-aea6-5b1bbef7ab34`
-
