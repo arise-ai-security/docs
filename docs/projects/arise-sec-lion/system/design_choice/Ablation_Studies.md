@@ -24,7 +24,7 @@ We follow the same success criteria as SecVerifier:
 - `/testcase/model_patch.diff` contains minimal fix - Patch applies cleanly and builds correctly - PoC no longer triggers sanitizer error after patching"
 
 ## Ablation 1: Removal of Worker's Retrieval of Relevant Context
-In this ablation study, we disable the ability of workers to retrieve relevant context from the workspace We perform this ablation by directly preventing the relevant context (boss key information, other workers' reports) injection into the worker's prompt.
+In this ablation study, we disable the ability of workers to retrieve relevant context from the workspace We perform this ablation by directly preventing the relevant context (structured boss key information, other workers' reports, and CWE fix patterns) injection into the worker's prompt. This study aims to evaluate how much the retrieval of relevant context contributes to the overall system performance.
 
 ### Quick Table
 
@@ -48,13 +48,13 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [imagemagick.cve-2017-12641](?instance=imagemagick.cve-2017-12641#interactive-tree) | True / True | True / True | True / False |
 | [libarchive.cve-2016-10209](?instance=libarchive.cve-2016-10209#interactive-tree) | True / True | False / False | True / False |
 | [libarchive.cve-2017-14501](?instance=libarchive.cve-2017-14501#interactive-tree) | True / True | True / False | True / False |
-| [libiec61850.cve-2018-19122](?instance=libiec61850.cve-2018-19122#interactive-tree) | TBD / True | TBD / False | TBD / False |
-| [libjpeg-turbo.cve-2020-17541](?instance=libjpeg-turbo.cve-2020-17541#interactive-tree) | TBD / True | TBD / False | TBD / False |
-| [libsass.cve-2018-20822](?instance=libsass.cve-2018-20822#interactive-tree) | TBD / True | TBD / True | TBD / False |
-| [libtorrent.cve-2016-7164](?instance=libtorrent.cve-2016-7164#interactive-tree) | TBD / False | TBD / False | TBD / False |
-| [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree) | TBD / True | TBD / True | TBD / False |
-| [mruby.cve-2022-1071](?instance=mruby.cve-2022-1071#interactive-tree) | TBD / True | TBD / False | TBD / False |
-| [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree) | TBD / False | TBD / False | TBD / False |
+| [libiec61850.cve-2018-19122](?instance=libiec61850.cve-2018-19122#interactive-tree) | True / True | True / False | True / False |
+| [libjpeg-turbo.cve-2020-17541](?instance=libjpeg-turbo.cve-2020-17541#interactive-tree) | True / True | False / False | False / False |
+| [libsass.cve-2018-20822](?instance=libsass.cve-2018-20822#interactive-tree) | True / True | True / True | True / False |
+| [libtorrent.cve-2016-7164](?instance=libtorrent.cve-2016-7164#interactive-tree) | True / False | True / False | True / False |
+| [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree) | True / True | True / True | True / False |
+| [mruby.cve-2022-1071](?instance=mruby.cve-2022-1071#interactive-tree) | True / True | True / False | True / False |
+| [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree) | True / False | True / False | True / False |
 | [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree) | TBD / True | TBD / False | TBD / False |
 | [openjpeg.cve-2017-14164](?instance=openjpeg.cve-2017-14164#interactive-tree) | TBD / True | TBD / True | TBD / False |
 
@@ -63,7 +63,7 @@ Our system clearly outperforms SecVerifier in all 3 stages.
 | --- | --- | --- |
 | 90.48% (19/21) vs 85.71% (18/21) | 80.95% (17/21) vs 33.33% (7/21) | 80.95% (17/21) vs 0% (0/21) |
 
-Output folders and artifacts for all evaluation instances can be found at [here](https://drive.google.com/file/d/1A1y0RjDTqWa0X1aUXNAjKMyY0jsyfa4j/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
+Output folders and artifacts for all evaluation instances can be found at [here](TODO) ---UPDATE OUTPUT FOLDER LINK---. Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
 
 <a id="interactive-tree"></a>
 

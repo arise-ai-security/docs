@@ -1429,3 +1429,6 @@ Below is an interactive React Flow diagram that captures a snapshot of the high-
 
 ## Real Evaluations
 We evaluated our final tree form with real CVE instances on this [page](./Evaluations.md).
+
+## Ablation Studies
+We performed ablation studies to evaluate the effectiveness of each design choice. The results are summarized on this [page](./Ablation_Studies.md).
