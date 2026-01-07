@@ -8,10 +8,11 @@ import AblationInstanceLabel from '@site/src/components/arise-sec-lion-ablations
 # Ablation Studies on CVE Instances
 In this page, we present the real examples of evaluations of the system with [design choices 1 - 7](./intro.md) enabled on CVE instances. We selected 21 CVE instances and compare their results with baselines SecVerifier. 
 
+
+## Overview of Ablation Studies
 We perform the following ablation studies to understand the impact of each design choice on the overall system performance:
 1. Removal of Worker's Retrieval of Relevant Context (Design Choice 5, 6, 7)
 2. Removal of Thinker Justification Pass Down (Design Choice 4)
-
 
 ## Success Criteria
 We follow the same success criteria as SecVerifier:
@@ -55,16 +56,42 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree) | True / True | True / True | True / False |
 | [mruby.cve-2022-1071](?instance=mruby.cve-2022-1071#interactive-tree) | True / True | True / False | True / False |
 | [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree) | True / False | True / False | True / False |
-| [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree) | TBD / True | TBD / False | TBD / False |
-| [openjpeg.cve-2017-14164](?instance=openjpeg.cve-2017-14164#interactive-tree) | TBD / True | TBD / True | TBD / False |
+| [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree) | True / True | False / False | True / False |
+| [openjpeg.cve-2017-14164](?instance=openjpeg.cve-2017-14164#interactive-tree) | True / True | True / True | True / False |
 
 Our system clearly outperforms SecVerifier in all 3 stages. 
 | Builder Success Rate (ARISE vs SecVerifier) | Exploiter Success Rate (ARISE vs SecVerifier) | Fixer Success Rate (ARISE vs SecVerifier) |
 | --- | --- | --- |
-| 90.48% (19/21) vs 85.71% (18/21) | 80.95% (17/21) vs 33.33% (7/21) | 80.95% (17/21) vs 0% (0/21) |
+| 95.24% (20/21) vs 85.71% (18/21) |  71.43% (15/21) vs 33.33% (7/21) |  90.48% (19/21) vs 0% (0/21) |
 
-Output folders and artifacts for all evaluation instances can be found at [here](TODO) ---UPDATE OUTPUT FOLDER LINK---. Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
+### Runtime and Cost
 
+| Instance (CVE) | Runtime (mins) | Cost |
+| --- | ---: | ---: |
+faad2.cve-2021-32273 | 50.23 mins | $0.56
+faad2.cve-2021-32276 | 58.46 mins | $4.24
+flac.cve-2020-22219 | 36.46 mins | $3.48
+gpac.cve-2023-0770 | --------- | $4.77
+gpac.cve-2023-2838 | 58.51 mins | $3.29
+imagemagick.cve-2017-11754 | 33.00 mins | $1.67
+libjpeg-turbo.cve-2020-17541 | 53.18 mins | $4.53
+libsass.cve-2018-20822 | 57.52 mins | $3.39
+libtorrent.cve-2016-7164 | 35.90 mins | $2.53
+mruby.cve-2022-0240 | 29.71 mins | $1.99
+mruby.cve-2022-1071 | 42.40 mins | $3.01
+njs.cve-2022-28049 | 32.96 mins | $2.34
+njs.cve-2022-32414 | 46.66 mins | $4.01
+openjpeg.cve-2017-14164 | 40.37 mins | $2.43
+
+The average end-to-end cost per instance is $3.02
+The average end-to-end runtime per instance is 44.93 mins.
+Output folders and artifacts for all evaluation instances can be found at [here](https://drive.google.com/file/d/13v883IEj6Ywq3tuGnGyilO3iDWQc9TQR/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
+
+
+### Analysis
+The results indicate that the removal of workers' retrieval of relevant context does not significantly impact the success rates compared to the full system, because workers main directions are still under supervisor's guidance. Builder success rate remains relatively stable. Exploiter success rate experiences a slight decrease, while Fixer success rate actually improves. This suggests that relevant context remains as auxiliary information rather than essential for success.
+
+However, there is a noticeable increase (13.11% cost increase) in runtime and cost for several instances, suggesting that while the system can still function without this design choice, it does so less efficiently. This highlights the importance of context retrieval in optimizing performance and resource utilization.
 <a id="interactive-tree"></a>
 
 ### Interactive Tree
