@@ -1,3 +1,4 @@
+---
 title: Ablation Studies on CVE Instances
 sidebar_position: 11
 ---
@@ -7,8 +8,7 @@ import Ablation2TreeFromLocation from '@site/src/components/arise-sec-lion-ablat
 import Ablation2InstanceLabel from '@site/src/components/arise-sec-lion-ablation-2/AblationInstanceLabel';
 
 # Ablation Studies on CVE Instances
-In this page, we present the real examples of evaluations of the system with [design choices 1 - 7](./intro.md) enabled on CVE instances. We selected 21 CVE instances and compare their results with baselines SecVerifier. 
-
+In this page, we present the real examples on ablation studies of the system with [design choices 1 - 7](./intro.md) enabled on CVE instances. We selected 21 CVE instances and compare their results with baselines SecVerifier. 
 
 ## Overview of Ablation Studies
 We perform the following ablation studies to understand the impact of each design choice on the overall system performance:
@@ -117,11 +117,11 @@ Please **click on each instance name** to see the interactive tree of that evalu
 
 | Instance (CVE) | Builder (ARISE vs SecVerifier) | Exploiter (ARISE vs SecVerifier) | Fixer (ARISE vs SecVerifier) |
 | --- | --- | --- | --- |
-| [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree-ablation-2) | TBD / True | TBD / True | TBD / False |
-| [faad2.cve-2021-32276](?instance=faad2.cve-2021-32276#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
+| [cjson.cve-2016-10749](?instance=cjson.cve-2016-10749#interactive-tree-ablation-2) | True / True | True / False | True / False |
+| [exiv2.cve-2017-11339](?instance=exiv2.cve-2017-11339#interactive-tree-ablation-2) | False / True | True / False | True / False |
+| [exiv2.cve-2017-17669](?instance=exiv2.cve-2017-17669#interactive-tree-ablation-2) | True / True | False / False | False / False |
+| [faad2.cve-2021-32273](?instance=faad2.cve-2021-32273#interactive-tree-ablation-2) | False / True | True / True | True / False |
+| [faad2.cve-2021-32276](?instance=faad2.cve-2021-32276#interactive-tree-ablation-2) | True / True | True / False | True / False |
 | [flac.cve-2020-22219](?instance=flac.cve-2020-22219#interactive-tree-ablation-2) | TBD / False | TBD / False | TBD / False |
 | [gpac.cve-2023-0770](?instance=gpac.cve-2023-0770#interactive-tree-ablation-2) | TBD / True | TBD / True | TBD / False |
 | [gpac.cve-2023-2838](?instance=gpac.cve-2023-2838#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
