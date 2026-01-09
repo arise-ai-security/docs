@@ -58,25 +58,26 @@ Our system clearly outperforms SecVerifier in all 3 stages.
 
 ## Cost per Instance
 
-| Instance (CVE) | End-to-End Cost |
-| --- | ---: |
-| gpac.cve-2023-0770 | $1.59 |
-| cjson.cve-2016-10749 | $0.59 |
-| exiv2.cve-2017-11339 | $5.25 |
-| exiv2.cve-2017-17669 | $1.21 |
-| faad2.cve-2021-32273 | $3.58 |
-| faad2.cve-2021-32276 | $1.88 |
-| flac.cve-2020-22219 | $3.99 |
-| gpac.cve-2023-2838 | $2.90 |
-| imagemagick.cve-2017-11754 | $3.99 |
-| imagemagick.cve-2017-12641 | $3.83 |
-| libarchive.cve-2016-10209 | $3.44 |
-| libarchive.cve-2017-14501 | $3.13 |
-| libiec61850.cve-2018-19122 | $1.00 |
+| Instance (CVE) | Runtime (mins) | End-to-End Cost |
+| --- | --- | --- |
+| gpac.cve-2023-0770 | 44.73 | $1.59 |
+| cjson.cve-2016-10749 | 44.30 | $0.59 |
+| exiv2.cve-2017-11339 | 49.33 | $5.25 |
+| exiv2.cve-2017-17669 | 24.32 | $1.21 |
+| faad2.cve-2021-32273 | 45.98 | $3.58 |
+| faad2.cve-2021-32276 | 27.23 | $1.88 |
+| flac.cve-2020-22219 | 40.92 | $3.99 |
+| gpac.cve-2023-2838 | 38.49 | $2.90 |
+| imagemagick.cve-2017-11754 | 27.90 | $3.99 |
+| imagemagick.cve-2017-12641 | 55.17 | $3.83 |
+| libarchive.cve-2016-10209 | 25.13 | $3.44 |
+| libarchive.cve-2017-14501 | 44.68 | $3.13 |
+| libiec61850.cve-2018-19122 | 23.65 | $1.00 |
 
 The average end-to-end cost per instance is $2.67.
+The average runtime per instance is 37.83 minutes.
 
-Output folders and artifacts for all evaluation instances can be found at [here](https://drive.google.com/file/d/1A1y0RjDTqWa0X1aUXNAjKMyY0jsyfa4j/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
+Output folders and artifacts for all evaluation instances can be found at [here](https://drive.google.com/file/d/1A1y0RjDTqWa0X1aUXNAjKMyY0jsyfa4j/view?usp=sharing). The events logging csv is located [here](https://drive.google.com/file/d/16625Y8Mvnafq8s0u-jLv6E-2eaT3DYqB/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
 
 <a id="interactive-tree"></a>
 

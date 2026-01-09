@@ -86,13 +86,13 @@ openjpeg.cve-2017-14164 | 40.37 mins | $2.43
 
 The average end-to-end cost per instance is $3.02
 The average end-to-end runtime per instance is 44.93 mins.
-Output folders and artifacts for all evaluation instances can be found at [here](https://drive.google.com/file/d/13v883IEj6Ywq3tuGnGyilO3iDWQc9TQR/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
+Output folders and artifacts for all evaluation instances can be found at [here](https://drive.google.com/file/d/13v883IEj6Ywq3tuGnGyilO3iDWQc9TQR/view?usp=sharing). The events logging csv is located [here](https://drive.google.com/file/d/1lOY4tC99nQPrRp0_zKyPIXKP9tKRGikx/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
 
 
 ### Analysis
 The results indicate that the removal of workers' retrieval of relevant context does not significantly impact the success rates compared to the full system, because workers main directions are still under supervisor's guidance. Builder success rate remains relatively stable. Exploiter success rate experiences a slight decrease, while Fixer success rate actually improves. This suggests that relevant context remains as auxiliary information rather than essential for success.
 
-However, there is a noticeable increase (13.11% cost increase) in runtime and cost for several instances, suggesting that while the system can still function without this design choice, it does so less efficiently. This highlights the importance of context retrieval in optimizing performance and resource utilization.
+However, there is a noticeable increase (13.11% cost increase and 18.77% runtime increase) in runtime and cost for several instances, suggesting that while the system can still function without this design choice, it does so less efficiently. This highlights the importance of context retrieval in optimizing performance and resource utilization.
 <a id="interactive-tree-ablation-1"></a>
 
 ### Interactive Tree
@@ -128,16 +128,51 @@ Please **click on each instance name** to see the interactive tree of that evalu
 | [imagemagick.cve-2017-11754](?instance=imagemagick.cve-2017-11754#interactive-tree-ablation-2) | False / True | False / True | False / False |
 | [imagemagick.cve-2017-12641](?instance=imagemagick.cve-2017-12641#interactive-tree-ablation-2) | False / True | True / True | False / False |
 | [libarchive.cve-2016-10209](?instance=libarchive.cve-2016-10209#interactive-tree-ablation-2) | True / True | True / False | True / False |
-| [libarchive.cve-2017-14501](?instance=libarchive.cve-2017-14501#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [libiec61850.cve-2018-19122](?instance=libiec61850.cve-2018-19122#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [libjpeg-turbo.cve-2020-17541](?instance=libjpeg-turbo.cve-2020-17541#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [libsass.cve-2018-20822](?instance=libsass.cve-2018-20822#interactive-tree-ablation-2) | TBD / True | TBD / True | TBD / False |
-| [libtorrent.cve-2016-7164](?instance=libtorrent.cve-2016-7164#interactive-tree-ablation-2) | TBD / False | TBD / False | TBD / False |
-| [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree-ablation-2) | TBD / True | TBD / True | TBD / False |
-| [mruby.cve-2022-1071](?instance=mruby.cve-2022-1071#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree-ablation-2) | TBD / False | TBD / False | TBD / False |
-| [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree-ablation-2) | TBD / True | TBD / False | TBD / False |
-| [openjpeg.cve-2017-14164](?instance=openjpeg.cve-2017-14164#interactive-tree-ablation-2) | TBD / True | TBD / True | TBD / False |
+| [libarchive.cve-2017-14501](?instance=libarchive.cve-2017-14501#interactive-tree-ablation-2) | True / True | True / False | True / False |
+| [libiec61850.cve-2018-19122](?instance=libiec61850.cve-2018-19122#interactive-tree-ablation-2) | True / True | False / False | True / False |
+| [libjpeg-turbo.cve-2020-17541](?instance=libjpeg-turbo.cve-2020-17541#interactive-tree-ablation-2) | False / True | True / False | True / False |
+| [libsass.cve-2018-20822](?instance=libsass.cve-2018-20822#interactive-tree-ablation-2) | True / True | True / True | True / False |
+| [libtorrent.cve-2016-7164](?instance=libtorrent.cve-2016-7164#interactive-tree-ablation-2) | True / False | False / False | False / False |
+| [mruby.cve-2022-0240](?instance=mruby.cve-2022-0240#interactive-tree-ablation-2) | False / True | True / True | True / False |
+| [mruby.cve-2022-1071](?instance=mruby.cve-2022-1071#interactive-tree-ablation-2) | True / True | True / False | True / False |
+| [njs.cve-2022-28049](?instance=njs.cve-2022-28049#interactive-tree-ablation-2) | True / False | False / False | True / False |
+| [njs.cve-2022-32414](?instance=njs.cve-2022-32414#interactive-tree-ablation-2) | False / True | True / False | True / False |
+| [openjpeg.cve-2017-14164](?instance=openjpeg.cve-2017-14164#interactive-tree-ablation-2) | True / True | False / True | True / False |
+
+Without thinker justification, our system can not outperform SecVerifier in all 3 stages, but with a significant drop in success rates compared to the [full system](./Evaluations.md#quick-table). Later stages can redo previous timed-out work, leading to some recovery in success rates.
+| Builder Success Rate (ARISE vs SecVerifier) | Exploiter Success Rate (ARISE vs SecVerifier) | Fixer Success Rate (ARISE vs SecVerifier) |
+| --- | --- | --- |
+| 57.14% (12/21) vs 85.71% (18/21) | 71.43%  (15/21) vs 33.33% (7/21) | 71.43% (15/21) vs 0% (0/21) |
+
+### Runtime and Cost
+
+| Instance (CVE) | Runtime (mins) | Cost |
+| --- | ---: | ---: |
+cjson.cve-2016-10749 | 25.61 mins | $3.01
+faad2.cve-2021-32273 | 34.63 mins | $4.03
+flac.cve-2020-22219 | 41.04 mins | $4.02
+gpac.cve-2023-0770  | 46 mins  | $4.59
+gpac.cve-2023-2838  | 55.21 mins | $4.56
+imagemagick.cve-2017-11754  | 56.80 mins | $8.84
+libarchive.cve-2017-14501 | 30.59 mins | $2.14
+libiec61850.cve-2018-19122 | 43.48 mins | $4.14
+libjpeg-turbo.cve-2020-17541 | 35.14 mins | $3.02
+libsass.cve-2018-20822 | 27.69 mins | $2.43
+libtorrent.cve-2016-7164 | 44.09 mins | $4.36
+mruby.cve-2022-0240 | 35.87 mins | $4.56
+mruby.cve-2022-1071 | 44.34 mins | $2.68
+njs.cve-2022-28049 | 36.70 mins | $2.63
+njs.cve-2022-32414 | 27.66 mins | $2.89
+openjpeg.cve-2017-14164 | 48.18 mins | $3.1
+
+The average end-to-end cost per instance is $3.81
+The average end-to-end runtime per instance is 39.56 mins.
+Output folders and artifacts for all evaluation instances can be found at [here](). The events logging csv is located [here](https://drive.google.com/file/d/1r4bQDt5M-S1-1hMnnUA4-xwOChGDBDi7/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
+
+### Analysis
+The results clearly indicate that the removal of Thinker Justification Pass Down has a significant negative impact on the system's performance. To be more specific, all 3 stages experience a substantial drop in success rates compared to the full system. If we compare worker's prompt received with and without thinker justification, we can see that the justification provides critical insights and reasoning that guide the workers in their tasks. Without this guidance, workers' work is vaguely described, and the down-stream performance decay is driven by time-outs. This indicates that the workers try to complete their tasks but often fail to do so within the allocated time, likely due to a lack of clear direction.
+
+In addition, the cost of system increases significantly and runtime increases slightly (42.7% cost increase and 4.57% runtime increase). Thinker's justifications enhances efficiency and reducing resource consumption, by providing workers with a clearer understanding of their tasks in relation to supervisor's objective, significance of their work, how to approach them effectively, and what deliverables are expected.
 
 <a id="interactive-tree-ablation-2"></a>
 
