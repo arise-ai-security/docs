@@ -167,7 +167,7 @@ openjpeg.cve-2017-14164 | 48.18 mins | $3.1
 
 The average end-to-end cost per instance is $3.81
 The average end-to-end runtime per instance is 39.56 mins.
-Output folders and artifacts for all evaluation instances can be found at [here](). The events logging csv is located [here](https://drive.google.com/file/d/1r4bQDt5M-S1-1hMnnUA4-xwOChGDBDi7/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
+Output folders and artifacts for all evaluation instances can be found at [here](https://drive.google.com/file/d/1xLnIAmVmgrpdJbXN9rk6SCLauLZ76V30/view?usp=sharing). The events logging csv is located [here](https://drive.google.com/file/d/1r4bQDt5M-S1-1hMnnUA4-xwOChGDBDi7/view?usp=sharing). Currently, only Columbia University members have access to the folder. Please contact the authors for access if you are from other institutions.
 
 ### Analysis
 The results clearly indicate that the removal of Thinker Justification Pass Down has a significant negative impact on the system's performance. To be more specific, all 3 stages experience a substantial drop in success rates compared to the full system. If we compare worker's prompt received with and without thinker justification, we can see that the justification provides critical insights and reasoning that guide the workers in their tasks. Without this guidance, workers' work is vaguely described, and the down-stream performance decay is driven by time-outs. This indicates that the workers try to complete their tasks but often fail to do so within the allocated time, likely due to a lack of clear direction.
