@@ -187,15 +187,15 @@ const config = {
             items: [
               {
                 label: "CyberGym",
-                to: "/cybergym",
+                to: "/reviews/cybergym",
               },
               {
                 label: "SEC-Bench",
-                to: "/sec-bench",
+                to: "/reviews/sec-bench",
               },
               {
                 label: "Faultline",
-                to: "/faultline",
+                to: "/reviews/faultline",
               },
             ],
           },

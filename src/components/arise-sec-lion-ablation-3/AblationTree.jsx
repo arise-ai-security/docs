@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
-const ablationTreeModules = (() => {
+let cachedModules = null;
+
+// Lazy-load modules only in the browser to avoid SSR issues with window references
+function loadAblationTreeModules() {
+  if (cachedModules) return cachedModules;
+
   const modules = {};
 
   // Webpack context import so all files in this folder get bundled.
+  // This must only be called in browser context since instance files may reference window
   const context = require.context('./', false, /\.jsx$/);
 
   for (const key of context.keys()) {
@@ -33,14 +40,24 @@ const ablationTreeModules = (() => {
     }
   }
 
+  cachedModules = modules;
   return modules;
-})();
-
-export function getAvailableAblationTrees() {
-  return Object.keys(ablationTreeModules).sort();
 }
 
-export default function AblationTree({ instance }) {
+export function getAvailableAblationTrees() {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+  return Object.keys(loadAblationTreeModules()).sort();
+}
+
+function AblationTreeInner({ instance }) {
+  const [modules, setModules] = useState(null);
+
+  useEffect(() => {
+    setModules(loadAblationTreeModules());
+  }, []);
+
   if (!instance) {
     return (
       <div>
@@ -49,7 +66,11 @@ export default function AblationTree({ instance }) {
     );
   }
 
-  const TreeComponent = ablationTreeModules[instance];
+  if (!modules) {
+    return <div>Loading...</div>;
+  }
+
+  const TreeComponent = modules[instance];
 
   if (!TreeComponent) {
     return (
@@ -58,11 +79,19 @@ export default function AblationTree({ instance }) {
           No interactive tree component found for <code>{instance}</code>.
         </p>
         <p>
-          Available: <code>{getAvailableAblationTrees().join(', ') || 'none'}</code>
+          Available: <code>{Object.keys(modules).sort().join(', ') || 'none'}</code>
         </p>
       </div>
     );
   }
 
   return <TreeComponent />;
+}
+
+export default function AblationTree({ instance }) {
+  return (
+    <BrowserOnly fallback={<div>Loading...</div>}>
+      {() => <AblationTreeInner instance={instance} />}
+    </BrowserOnly>
+  );
 }
