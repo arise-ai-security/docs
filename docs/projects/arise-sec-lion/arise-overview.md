@@ -67,6 +67,7 @@ flowchart TD
 ### SEC-bench Baseline Numbers
 
 **Success Rates**:
+SEC-bench rates are **conditional** (each stage only runs if the previous succeeded). "abs" designates the unconditional values.
 
 | Agent          | Success Rate          |
 |----------------|-----------------------|
@@ -136,11 +137,7 @@ These 7 incremental design choices were evaluated in Experiment 2 and are hypoth
 
 ## 4. Results
 
-Both experiments compare against SEC-bench **Verifier** rates from paper Table 1 (898 seed → 200 verified). SEC-bench rates are **conditional** (each stage only runs if the previous succeeded). ARISE rates are **unconditional** (out of all instances — stages run independently).
-
-| | Builder | Exploiter | Fixer | End-to-end | Source |
-|--|---------|-----------|-------|------------|--------|
-| **SEC-bench Verifier** | 81.7% | 39.4% | 69.2% | 22.3% | Paper Table 1 (n=898) |
+ARISE rates are **unconditional** values.
 
 ### Experiment 1: Naive Tree (n=23, DC1 only)
 
