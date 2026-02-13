@@ -11,4 +11,5 @@ This section provides comprehensive documentation on the Tree-Structured Agentic
 ## 📚 Documentation
 
 ### Overview
-- **[Tree Multi-Agent Collaborative Agentic Design](system/)** - Systematic Illustration on How Multiple Agents Collaborate in A Tree Structure. 
+- **[ARISE: Project Overview](arise-overview.md)** - Brief introduction to ARISE and SEC-bench, with experiment results and baseline comparisons.
+- **[Tree Multi-Agent Collaborative Agentic Design](system/)** - Systematic Illustration on How Multiple Agents Collaborate in A Tree Structure.
