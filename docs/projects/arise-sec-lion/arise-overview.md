@@ -22,24 +22,36 @@ SEC-bench starts with a **preprocessing** step: given raw CVE entries, it collec
 Each verified instance is then fed through three sequential agents:
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Preprocessing
-        A[Raw CVE entries\nOSV / NVD] --> B[Collect bug reports\nExtract metadata\nProvision Docker]
+        A["Raw CVE entries
+        OSV / NVD"] --> B["Collect bug reports
+        Extract metadata
+        Provision Docker"]
     end
 
-    B --> C["Instance\n─────────\nRepo URL\nCommit hash\nBug report\nBuild script"]
+    B --> C["Instance
+    ─────────
+    Repo URL
+    Commit hash
+    Bug report
+    Build script"]
 
     subgraph Verifier Pipeline
-        direction LR
-        D[🔨 Builder\nCompile vulnerable code] --> E[💥 Exploiter\nCraft PoC exploit]
-        E --> F[🩹 Fixer\nPatch vulnerability]
+        C --> D["🔨 Builder
+        Compile vulnerable code"]
+        D --> E["💥 Exploiter
+        Craft PoC exploit"]
+        E --> F["🩹 Fixer
+        Patch vulnerability"]
     end
 
-    C --> D
-
-    D -- "secb build\nexit 0?" --> D1{✅ / ❌}
-    E -- "secb repro\nsanitizer error?" --> E1{✅ / ❌}
-    F -- "secb repro\nno errors?" --> F1{✅ / ❌}
+    D -- "secb build
+    exit 0?" --> D1{✅ / ❌}
+    E -- "secb repro
+    sanitizer error?" --> E1{✅ / ❌}
+    F -- "secb repro
+    no errors?" --> F1{✅ / ❌}
 ```
 
 ### Builder → Exploiter → Fixer
