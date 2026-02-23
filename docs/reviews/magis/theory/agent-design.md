@@ -63,6 +63,30 @@ For each file-level task, the Developer and QA Engineer collaborate iteratively:
 
 All finalized file-level code changes are merged into the repository-level code change as the issue solution.
 
+## Evaluation Metrics
+
+MAGIS defines two metrics to evaluate generated patches:
+
+**Applied Ratio** measures whether a generated patch can be successfully applied to the repository:
+
+$$
+\text{Applied Ratio} = \frac{|\mathcal{D}|}{|\mathcal{I}|}
+$$
+
+where $\mathcal{I}$ is the set of all instances in the test set, and $\mathcal{D} \subseteq \mathcal{I}$ is the subset whose generated code changes can be applied to the original repository via `git apply`.
+
+**Resolved Ratio** measures whether an applied patch actually fixes the issue by passing both old and new tests:
+
+$$
+\text{Resolved Ratio} = \frac{\sum_{i=0}^{|\mathcal{D}|} \mathbb{1}[T_{old}(d_i) \wedge T_{new}(d_i)]}{|\mathcal{I}|}
+$$
+
+where $T_{old}$ denotes all test cases that the old version of the repository could already pass (regression tests), and $T_{new}$ represents test cases designed for the new requirements. $T(d_i) = \text{True}$ means the patched code passes all test cases in $T$. A patch is only counted as resolved if it passes **both** — it must not break existing functionality ($T_{old}$) and must satisfy the new requirements ($T_{new}$).
+
+### Test Suite
+
+The unit tests used for evaluation come directly from the **SWE-bench** benchmark, which extracts them from the original repository test suites. Each SWE-bench instance corresponds to a real GitHub pull request from one of 12 popular Python repositories. The associated tests are the ones added or modified in that PR — they serve as $T_{new}$ (verifying the new feature or fix), while the repository's pre-existing test suite serves as $T_{old}$ (verifying no regressions). These tests are **not generated or sampled by MAGIS** — they are real developer-written tests from the open-source projects.
+
 ## Design Rationale
 
 The multi-step coding process is motivated by the empirical findings:
