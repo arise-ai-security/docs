@@ -8,7 +8,7 @@ Even when agents communicate their plans, they struggle to honor commitments and
 
 ## Failure Symptoms
 
-Through iterative qualitative coding of all failed Coop trajectories, the following failure symptom taxonomy is identified (annotated at scale using GPT-5 as LLM-as-a-Judge, validated at 96% agreement with human experts):
+Through iterative qualitative coding of all failed Coop trajectories, the following failure symptom taxonomy is identified (annotated at scale using GPT-5 as LLM-as-a-Judge, validated at 96% agreement with human experts on 50 validation samples):
 
 | Symptom | Description | Frequency |
 |---|---|---|
@@ -35,7 +35,7 @@ One agent has clearly communicated what they are doing, but the other agent stil
 ### Commitment Failures (32%)
 An agent is not doing the things they promised to do. This includes failures to establish or maintain verifiable integration contracts.
 
-**Example**: An agent promises "I will add bypass check at lines 100–104" and later claims completion with a checkmark. But after merge, the bypass code is missing. The partner trusted this claim but had no way to verify it under workspace isolation.
+**Example**: An agent promises *"I will add bypass check at lines 100–104, happens FIRST in get()."* The partner trusts this claim and builds on it. The agent later claims completion with a checkmark. But after merge, the bypass code is entirely missing. Under workspace isolation, there was no mechanism for the partner to verify this claim before acting on it.
 
 ### Communication Failures (26%)
 Breakdowns in using language to coordinate — agents do not effectively communicate their intentions, questions, or status updates.

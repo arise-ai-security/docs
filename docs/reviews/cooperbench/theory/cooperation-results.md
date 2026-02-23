@@ -98,6 +98,8 @@ These findings explain the paradox of why communication helps conflicts but not 
 
 Communication solves the "formatting" problem of avoiding overlapping edits but not the "design" problem of ensuring compatible implementations.
 
+**Case study — Jinja2 `groupby` filter** (Appendix I, pp. 31–33): Two agents add `case_sensitive` and `reverse` parameters to the same function signature. They exchange 10 messages (>3,000 words) successfully coordinating line numbers and edit ranges. They never once discuss the *default value* of `case_sensitive`. Agent 1 correctly implements `False`; Agent 2 reports `case_sensitive=True` in its status message and the merged code fails. A single clarifying message about the intended default would have prevented the failure entirely.
+
 ### Communication Failures
 
 Three major communication problems are identified:

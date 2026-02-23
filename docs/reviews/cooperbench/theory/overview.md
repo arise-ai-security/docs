@@ -16,6 +16,9 @@ CooperBench is the first benchmark designed to measure how well AI coding agents
 
 As AI agents are increasingly deployed in cooperative settings, whether strong individual capabilities translate to effective cooperation remains an open question.
 
+> **Why a benchmark, not a system?**
+> Without a controlled benchmark, if two agents fail together you cannot tell whether the failure came from coordination inability, task difficulty, or the scaffolding imposed by the framework. Existing benchmarks (SWE-bench, HumanEval) only measure individual agent performance — coordination was never the isolated variable. CooperBench fixes this: same task, same total workload, same models, only the coordination requirement changes (Solo vs. Coop). That controlled contrast is what makes the curse of coordination *measurable* — and gives future systems like MAGIS something to be evaluated against.
+
 Existing research on multi-agent systems largely sidesteps the coordination challenge by either:
 - Providing more scaffolds (Magentic-One, AgentOrchestra)
 - Enforcing strict workflows (MetaGPT, ChatDev, AgileCoder)

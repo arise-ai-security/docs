@@ -59,6 +59,20 @@ MAGIS shows much weaker negative correlations for the number of files and functi
 ### QA Engineer Contribution
 The QA Engineer improves resolved ratio by 1.57% (with hints) and 3.31% (without hints). The iterative review-revise loop helps catch and correct errors that single-pass generation misses.
 
+## SWE-bench Lite (App. D, Table 4)
+
+| Method | % Resolved |
+|---|---|
+| AutoCodeRover | 22.33 |
+| SWE-Agent | 18.00 |
+| **MAGIS** | **25.33** |
+
+MAGIS achieves the highest resolved ratio among compared methods on the SWE-bench Lite subset, with robustness confirmed across ablation conditions.
+
+## Comparison with Devin (App. E)
+
+On the shared 140-instance overlap, MAGIS resolves **21 issues (15%)** vs Devin's **18 (12.86%)**. MAGIS relies solely on shell access with no internet; Devin uses browser and external tools. MAGIS also resolves each instance in an average of **~5 minutes**, vs Devin where 72% of resolved instances take >10 minutes.
+
 ## Limitations
 
 The paper acknowledges several limitations:

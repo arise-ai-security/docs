@@ -99,7 +99,7 @@ If patches merge successfully, both sets of unit tests run on the merged codebas
 - Each repository exceeds 1,000 GitHub stars
 - Repositories do **not** appear in SWE-Bench or Multi-SWE-Bench (reducing data contamination)
 - Each repository assigned to an author familiar with its architecture
-- PRs meet strict criteria: clear feature description, code + tests, bounded change size
+- PRs meet strict criteria: clear feature description, code + tests, bounded change size (<200-line diff)
 
 ### Stage II: Feature Extraction and Augmentation
 - Each selected PR is converted into a feature pool with one anchor feature and multiple synthetic adjacent features
