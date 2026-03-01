@@ -12,7 +12,9 @@ SEC-Bench is a benchmark designed to evaluate AI agents' ability to identify and
 
 ## 📚 Documentation
 
-### API's and Architecture
+### Implementation
+- **[Architecture and Reproduction Notes](implementation/overview)** - Pipeline, setup, and practical reproduction notes
+- **[Evaluation Phase and Data Flow](implementation/evaluation-phase-guide)** - Exact evaluation workflow, scoring logic, and per-step data contracts
 
 ### Theory
 - **[Overview](theory/overview)** - Framework overview and key contributions
