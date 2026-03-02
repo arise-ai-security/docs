@@ -1,9 +1,9 @@
 {
   "label": "Weekly Reports",
-  "position": 1,
+  "position": 3,
   "link": {
     "type": "generated-index",
-    "slug": "/weekly",
+    "slug": "/weekly/old",
     "title": "Weekly Reports",
     "description": "All weekly research updates"
   }
