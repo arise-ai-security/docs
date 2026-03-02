@@ -916,8 +916,9 @@ if (len <= dst_size) {
     **Reasoning**: According to [NVD report](https://nvd.nist.gov/vuln/vulnerability-detail-pages#divWeakness), NVD enriches the information related to each CVE with CWE information. This information can be critical for agents to gain better context. CWE provides real examples and common fix patterns for AI agents, and this can significantly improve AI agents' contexts while dealing with the security issues. For example, 
     [CWE-282: Improper Ownership Management](https://cwe.mitre.org/data/definitions/282.html#Demonstrative_Examples) directly provides the code examples and common fix patterns for agents to learn from. [NVD analysts](https://nvd.nist.gov/vuln/categories) score CVEs using CWEs from different levels of the hierarchical structure. This cross section of CWEs allows analysts to score CVEs at both a fine and coarse granularity, which is necessary due to the varying levels of specificity possessed by different CVEs. However, we only ask the AI agents to infer the CWE ID, and the fix-pattern codes are **not** directly loaded from CWE database. As shown below, the recommended fix patterns are AI generated and may not be 100% accurate. However, this is still helpful for agents to gain better context.
 
-    The following is the example of key information extracted from boss context after design choice 6 and 7.
+The following is the example of key information extracted from boss context after design choice 6 and 7.
 
+{% raw %}
 <div style={{ marginBottom: 20, maxHeight: '50vh', overflow: 'auto' }}>
   <h3
     style={{
@@ -1391,6 +1392,7 @@ if (len <= dst_size) {
     </div>
   </div>
 </div>
+{% endraw %}
 
 ### Potential Design Choice 8: Inferred Context Plus with CWE Real Documentations
 - This is not implemented yet. The real implementation is supposed to be built on top of design choice 7 by introducing loader for CWE documentations (identifications, mitigations, and examples) to our boss context knowledge extractions.
