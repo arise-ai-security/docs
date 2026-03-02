@@ -15,7 +15,7 @@ In our [Q-Value based reinforcement learning framework](./intro.md), the task as
 ## Task Assignment Mechanism Workflow
 This part also delineates the agent's responsibilities in task assignment.
 
-- **Key Changes Compared to [brain-storming note](/docs/weekly/brainstorming/agentic-tree#task-assignment-mechanism)**:
+- **Key Changes Compared to [brain-storming note](/docs/weekly(old)/brainstorming/agentic-tree)**:
     1. Introduce Task Fullfillment Queue.
     2. Formalize Redo, Verify against Objective, or Termination Heuristics by Q-Learning method.
     3. Incorporate Sub-Agent Feedback Reports and Corresponding Response Actions.

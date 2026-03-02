@@ -18,7 +18,7 @@ Our agents needs to use online planning to take actions in real world, and typic
 
 Our system have two different agents: thinkers and workers. Thinkers utilize their reasoning capabilities to perform offline planning by creating task breakdowns based on its current understanding of the task and context provided by ancestor agents. Workers, on the other hand, focus on executing specific tasks assigned to them by their parent thinkers. Workers uses online planning by following the instructions provided in the context from ancestor thinkers to perform actions in the coding environment. Their supervisor nodes learn from the actual execution results and real-life behaviors of their workers.
 
-**Notes:** Contrast to the original proposal in [brain-storming notes](/weekly/brainstorming/agentic-tree.md), this page delineates more formal definitions and practical implementations of the reinforcement learning techniques we used to optimize the tree-structured agentic system. 
+**Notes:** Contrast to the original proposal in [brain-storming notes](/docs/weekly(old)/brainstorming/agentic-tree), this page delineates more formal definitions and practical implementations of the reinforcement learning techniques we used to optimize the tree-structured agentic system. 
 - **Major Change 1**: we do not intentionally spawn agents with different models directly. Instead, our supervisor agents decide to regulate sub-agents' model configurations (model name, temperature, max tokens, etc.) as part of the action space when they design sub-tasks. Also, if one branch is failing, the supervisor agent can decide to respawn a sub-agent with a more capable model or more resources.
 - **Major Change 2**: we do not have conflicting notations on rewards and budget changes. Reward here explicitly refers to the feedback signal received by the agent after taking an action in a particular state in the RL setting.
 - **Major Change 3**: we now use more formally defined value function $\mathcal{V}$, implemented by Q-Value, to allow agent to quantify the current state. In the brain-storming notes, we simply ask LLM to use its internal deep-thinking to evaluate the state, which is not very consistent and reliable because we will reconfigure model choices and hyper-parameters for different agents.
@@ -112,7 +112,7 @@ Reward/ Return $\mathcal{R}$ is the feedback signal received by the agent after 
 
 - **Reward Hypothesis**: all goals can be described as the maximization of the expected return (expected cumulative reward). In our system, the reward is gained or lost when the exploration (task execution) is completed, and it can be exponentially propagated back to ancestor agents through reward allocation mechanism. However, if the tree grows too deep, the budget for eacch agent will be so small that the reward signal is weak, so that the tree shoud be kept in a reasonable depth.
 
-- **Discount**: $\gamma$ is a discount factor between 0 and 1 that determines the importance of future rewards. A discount factor close to 0 makes the agent prioritize immediate rewards, while a factor close to 1 encourages the agent to consider long-term rewards. **Note**: this is different from Reward Ratio and Penalty Ratio in the [brain-storming note](/weekly/brainstorming/agentic-tree#reward-mechanism), which are used to calculate the amount of budget gain or loss after one task is completed. The discount factor $\gamma$ is used for furture expected reward calculations not just about one task completion.
+- **Discount**: $\gamma$ is a discount factor between 0 and 1 that determines the importance of future rewards. A discount factor close to 0 makes the agent prioritize immediate rewards, while a factor close to 1 encourages the agent to consider long-term rewards. **Note**: this is different from Reward Ratio and Penalty Ratio in the [brain-storming note](/docs/weekly(old)/brainstorming/agentic-tree), which are used to calculate the amount of budget gain or loss after one task is completed. The discount factor $\gamma$ is used for furture expected reward calculations not just about one task completion.
 
 In our system: rewards are more deliberately designed through the [reward allocation mechanism](./reward_alloc.md) to provide feedback to agents based on their impact on the states.
 On a high level:
@@ -128,7 +128,7 @@ $$
 \pi: \mathcal{S} \rightarrow \mathcal{A}
 $$
 
-We adopts a *stochastic policy*, which means that the action taken by the agent is probabilistic given the current state. This is designed to incorporate several proposed heuristics including the [verification heuristics](/weekly/brainstorming/agentic-tree.md#verification-task-insertion-heuristics). Our policy should be able to randomly decide to spawn verification sub-agents to double-check the work with certain probability not solely determined by reports or objective checks. LLM essentially learn from textual report data, which can be biased by certain hallucinations in the subagents. As discussed in the [Failed Subtask section](/weekly/brainstorming/agentic-tree#agent-lifecycle), one hallucination in a subagent's task can cause direct failure of the entire objective.
+We adopts a *stochastic policy*, which means that the action taken by the agent is probabilistic given the current state. This is designed to incorporate several proposed heuristics including the [verification heuristics](/docs/weekly(old)/brainstorming/agentic-tree). Our policy should be able to randomly decide to spawn verification sub-agents to double-check the work with certain probability not solely determined by reports or objective checks. LLM essentially learn from textual report data, which can be biased by certain hallucinations in the subagents. As discussed in the [Failed Subtask section](/docs/weekly(old)/brainstorming/agentic-tree), one hallucination in a subagent's task can cause direct failure of the entire objective.
 
 $$
 \begin{aligned}
@@ -137,7 +137,7 @@ $$
 \end{aligned}
 $$
 
-**Note**: We expand the original weakly defined heuristics in [brain-storming notes](/weekly/brainstorming/agentic-tree.md) into a more formal stochastic policy framework here.
+**Note**: We expand the original weakly defined heuristics in [brain-storming notes](/docs/weekly(old)/brainstorming/agentic-tree) into a more formal stochastic policy framework here.
 
 
 In our system: the policy guides the agent to perform an [action](#action) given a state.

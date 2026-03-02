@@ -187,5 +187,5 @@ If you're using `colima` instead of Docker Desktop, you may need additional conf
 
 After a successful installation:
 1. Continue to [Local Machine Setup](./quick-start/local_machine) for configuration and running your first experiment.
-2. Review [Theory Overview](/theory/overview) for understanding the framework.
-3. Check [Experiments](/experiments) for detailed experiment procedure and the design of CyberGym.
+2. Review [Theory Overview](/reviews/cybergym/theory/overview) for understanding the framework.
+3. Check [Experiments](/reviews/cybergym/experiments/input-dataset) for detailed experiment procedure and the design of CyberGym.

@@ -16,7 +16,7 @@ Steps of the Preprocessor:
 
 ### Metadata Collection
 CVE instances are collected from the [OSV database](https://osv.dev/). Compared to
-[ARVO](https://arxiv.org/abs/2408.02153) or [OSS-FUZZ](https://google.github.io/oss-fuzz/), OSV was regarded better according to the SEC-Bench team, because it provides validated PoC's. Limitations of ARVO and OSS-Fuzz are also discussed on [the cybergym input dataset page](/cybergym/experiments/input-dataset). Essential metadata are collected, including vulnerability descriptions, reference URLs, provider information, and repository details. This initial collection yields 38,201 potential instances spanning 7,926 open-source projects.
+[ARVO](https://arxiv.org/abs/2408.02153) or [OSS-FUZZ](https://google.github.io/oss-fuzz/), OSV was regarded better according to the SEC-Bench team, because it provides validated PoC's. Limitations of ARVO and OSS-Fuzz are also discussed on [the cybergym input dataset page](/reviews/cybergym/experiments/input-dataset). Essential metadata are collected, including vulnerability descriptions, reference URLs, provider information, and repository details. This initial collection yields 38,201 potential instances spanning 7,926 open-source projects.
 
 ### Bug Report and Candidate Fix Extraction 
 For each instance, the SEC-Bench team employs

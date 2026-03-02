@@ -6,7 +6,7 @@ hide_title: true
 ---
 
 # Agentic Tree Overview
-This overview is largely adapted from [the brainstorming notes and design documents](/docs/weekly/brainstorming/agentic-tree.md) with technical refinements and additional experimental details.
+This overview is largely adapted from [the brainstorming notes and design documents](/docs/weekly(old)/brainstorming/agentic-tree) with technical refinements and additional experimental details.
 
 ## 📚 Documentations
 
@@ -26,7 +26,7 @@ Each node in the tree represents an agent with the following attributes:
 - **Current Budget:** This is a numeric allocation of resources allowed for the node to perform its tasks. An agent node can get more budeget if its subordinate nodes succeed in their tasks, and get a loss in budget if they fail. This part would be more explictly defined in the [Reward Mechanism](./reinforcement_learning/reward_alloc.md).
 - **Objective:** This is text description of the task that the current agent node possesses. If the current node is root node of the entire tree, then the objective is the high-level cybersecurity task with detailed descriptions, including the operating system specifications, the GitHub repository link with specific reported commits, GitHub Issues raised, etc. If the current node is not a root node, then the objective is a sub-task created by its supervisor node.
 - **Task Queue:** This part is a linked list of sub-tasks that are created by the current agent node in order to fullfill the objective. At every single iteration, the current agent node will pop the first task from the task queue, and decide to fullfill it by itself (if it is an atomic task), or spawn subordinate nodes to tackle the sub-task (if it is a composite task). More details about the task list management will be discussed in the [Task Assignment Mechanism](./reinforcement_learning/task_assign.md).
-- **Supervisor Node:** This points to the parent node of the current agent node. The supervisor node is responsible for generating subtasks, monitoring the progress of its subordinate nodes, collecting their results, recalculating the current budget, spawning new tasks, and terminating the sub-tasks. The part related to spawning and killing of sub-agent is more explictly defined in the [Agent Lifecycle](/docs/weekly/brainstorming/agentic-tree#agent-lifecycle).
+- **Supervisor Node:** This points to the parent node of the current agent node. The supervisor node is responsible for generating subtasks, monitoring the progress of its subordinate nodes, collecting their results, recalculating the current budget, spawning new tasks, and terminating the sub-tasks. The part related to spawning and killing of sub-agent is more explictly defined in the [Agent Lifecycle](/docs/weekly(old)/brainstorming/agentic-tree).
 - **Subordiante Nodes:** This a list of child nodes that are spawned 
 
 ### Agent Node Actions
