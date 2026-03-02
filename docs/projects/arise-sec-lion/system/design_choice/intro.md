@@ -918,7 +918,7 @@ if (len <= dst_size) {
 
 The following is the example of key information extracted from boss context after design choice 6 and 7.
 
-{% raw %}
+```jsx
 <div style={{ marginBottom: 20, maxHeight: '50vh', overflow: 'auto' }}>
   <h3
     style={{
@@ -1392,8 +1392,7 @@ The following is the example of key information extracted from boss context afte
     </div>
   </div>
 </div>
-{% endraw %}
-
+```
 ### Potential Design Choice 8: Inferred Context Plus with CWE Real Documentations
 - This is not implemented yet. The real implementation is supposed to be built on top of design choice 7 by introducing loader for CWE documentations (identifications, mitigations, and examples) to our boss context knowledge extractions.
 
